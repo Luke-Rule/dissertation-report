@@ -1,1 +1,115 @@
-12345
+12,500
+
+%% 1 Introduction (900 words)
+%% 1.1 Context and Motivation (500 words)
+%% 1.2 Research Question and Hypothesis (100 words)
+%% 1.3 Scope and Limitations (150 words)
+%% 1.4 Evaluation Methodology Overview (100 words)
+%% 1.5 Dissertation Structure (50 words)
+%% 
+%% 2 Background (2700 words)
+%% 2.1 Microkernels (700 words)
+%% 2.1.1 Definition and Characteristics (250 words)
+%% 2.1.2 Advantages and Disadvantages (200 words)
+%% 2.1.3 IPC overhead in Microkernels (250 words)
+%% 
+%% 2.2 seL4 Microkernel (800 words)
+%% 2.2.1 Overview and Design Principles (150 words)
+%% 2.2.2 Architecture and Components (300 words)
+%% 2.2.3 IPC Mechanisms (150 words)
+%% 2.2.4 Use Cases and Applications (100 words)
+%% 2.2.5 Microkit Framework for seL4 (150 words)
+%% 
+%% 2.3 Client-Server Communication (400 words)
+%% 2.3.1 Synchronous Model (200 words)
+%% 2.3.2 Asynchronous Model (200 words)
+%% 
+%% 2.4 File Servers in Operating Systems (800 words)
+%% 2.4.1 Role and Functionality (100 words)
+%% 2.4.2 Abstractions (150 words)
+%% 2.4.3 Storage and Organisation (500 words)
+%% 2.4.3.1 File Layout (100 words)
+%% 2.4.3.2 Allocation Strategies (100 words)
+%% 2.4.3.3 Metadata Organisation (100 words)
+%% 2.4.4 Client Management (200 words)
+%% 
+%% 2.5 Related Work (400 words)
+%% 2.5.1 IPC Optimisation Techniques in Microkernels (150 words)
+%% 2.5.2 Asynchronous vs Synchronous Server Designs (100 words)
+%% 2.5.3 File Servers in Microkernel-based Systems (100 words)
+%% 2.5.4 Identified Gaps (50 words)
+%% 
+%% 
+%% 3 Design (3000 words)
+%% 
+%% 3.1 System Requirements and Constraints (200 words)
+%% 
+%% 3.2 File Server (1600 words)
+%% 3.2.1 Architectural Overview (300 words)
+%% 3.2.2 Component Design and Interactions (400 words)
+%% 3.2.3 Multiclient Support (300 words)
+%% 3.2.4 File and Directory Operations (100 words)
+%% 3.2.5 Design Decisions (500 words)
+%% 3.2.5.1 Data model choices (150 words)
+%% 3.2.5.2 Trade-offs (150 words)
+%% 3.2.5.3 seL4 and Microkit Constraints (200 words)
+%% 
+%% 3.3 IPC Design and File Server Interface (1200 words)
+%% 3.3.1 Synchronous Model (Baseline) (400 words)
+%% 3.3.2 Asynchronous Model (Proposed IPC Mitigation Strategy) (800 words)
+%% 
+%% 4 Implementation (3500 words)
+%% 
+%% 4.1 Development Environment and Tools (200 words)
+%% 
+%% 4.2 Microkit Framework Setup (400 words)
+%% 
+%% 4.3 File Server (1500 words)
+%% 4.3.1 Data Structures and Access Methods (700 words)
+%% 4.3.1.1 i-nodes (200 words)
+%% 4.3.1.2 Block Management (200 words)
+%% 4.3.1.3 Directory Management (200 words)
+%% 4.3.1.4 File Descriptors (100 words)
+%% 4.3.2 Operations (700 words)
+%% 4.3.2.1 Entry Creation (200 words)
+%% 4.3.2.2 File Writing (200 words)
+%% 4.3.2.3 File Reading (50 words)
+%% 4.3.2.4 Metadata Access and Modification (50 words)
+%% 4.3.2.5 Entry Deletion (200 words)
+%% 
+%% 4.4 Interface (1200 words)
+%% 4.4.1 Synchronous Server Model (350 words)
+%% 4.4.1.1 Client-Server Communication Protocol (100 words)
+%% 4.4.1.2 IPC Mechanism (200 words)
+%% 4.4.1.3 API (50 words)
+%% 4.4.2 Asynchronous Server Model (800 words)
+%% 4.4.2.1 Client-Server Communication Protocol (500 words)
+%% 4.4.2.2 IPC Mechanism (100 words)
+%% 4.4.2.3 API (200 words)
+%% 
+%% 4.5 Error Handling (200 words)
+%% 
+%% 
+%% 5 Evaluation (1700 words)
+%% 
+%% 5.1 Validation (500 words)
+%% 5.1.1 Unit Tests (200 words)
+%% 5.1.2 Integration Tests (300 words)
+%% 5.1.2.1 Single Client (100 words)
+%% 5.1.2.2 Multiple Clients (200 words)
+%% 
+%% 5.2 Performance Evaluation (1200 words)
+%% 5.2.1 Goals (100 words)
+%% 5.2.2 Metrics (100 words)
+%% 5.2.3 Experimental Setup (200 words)
+%% 5.2.4 Benchmark Design (300 words)
+%% 5.2.5 Results (100 words)
+%% 5.2.6 Analysis (400 words)
+%% 
+%% 
+%% 6 Conclusion (600 words)
+%% 6.1 Contributions (200 words)
+%% 6.1.1 System Design and Implementation (100 words)
+%% 6.1.2 IPC Overhead Mitigation Insights (100 words)
+%% 6.2 Drawbacks and Limitations (250 words)
+%% 6.3 Future Work (100 words)
