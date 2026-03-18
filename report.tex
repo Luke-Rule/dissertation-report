@@ -1,0 +1,81 @@
+\documentclass[12pt,BSc,wordcount,twoside]{muthesis}
+% The regulations say that 12pt should be used
+% Change the MSc option to MPhil, MRes or PhD if appropriate
+% Add 'anon' to the above options to replace your name with your student ID
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{url} % typeset URL's reasonably
+\usepackage{listings}
+
+\usepackage{pslatex} % Use Postscript fonts
+
+% Uncomment the next line if you want subsubsections to be numbered
+\setcounter{secnumdepth}{3}
+% Uncomment the next line if you want subsubsections to be appear in
+% the table of contents
+\setcounter{tocdepth}{3}
+
+% Uncomment the following lines if you want to include the date as a
+% header in draft versions
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\lhead{}  % left head
+%\chead{Draft: \today} % centre head
+%\lfoot{}
+%\cfoot{\thepage}
+%\rfoot{}
+
+\begin{document}
+% Uncomment the following lines to leave out list of figures, tables
+% and copyright until final printing
+%\figurespagefalse
+%\tablespagefalse
+%\copyrightfalse
+
+\title{Mitigating IPC Overhead in the seL4 Microkernel:\\
+Design, Implementation, and Evaluation of an Asynchronous, Multiclient File Server}
+\author{Luke Rule}
+\stuid{11012731}
+\principaladviser{James Garside}
+
+\beforeabstract
+
+\prefacesection{Abstract}
+\input{chapters/1_abstract}
+
+\afterabstract
+
+\prefacesection{Acknowledgements}
+I would like to thank...
+
+\prefacesection{Abbreviations}
+\input{abbreviations}
+
+\afterpreface
+
+% These include the actual text
+\include{chapters/2_introduction}
+\include{chapters/3_background}
+\include{chapters/4_design}
+\include{chapters/5_implementation}
+\include{chapters/6_evaluation}
+\include{chapters/7_conclusion}
+
+  \bibliography{refs}    % this causes the references to be listed
+
+\bibliographystyle{abbrv}
+%% the bibliography style determines the format  in which both citations and references are printed,
+%% other possible values are plain and abbrv
+%%
+%% If you want more control of the format of your citations you might want to take a look at
+%% natbib.sty, which should be part of any standard LaTeX installation
+%%
+%% University regulations simply require that your citation style be consistent, so see what style
+%% your supervisor recommends.
+
+% Appendices start here
+
+\appendix
+\include{appendix1}
+
+\end{document}

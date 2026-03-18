@@ -1,0 +1,88 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}{}%
+\contentsline {section}{\numberline {1.1}Context and Motivation}{1}{}%
+\contentsline {section}{\numberline {1.2}Research Question and Hypothesis}{1}{}%
+\contentsline {section}{\numberline {1.3}Aims and Objectives}{1}{}%
+\contentsline {section}{\numberline {1.4}Scope and Limitations}{1}{}%
+\contentsline {section}{\numberline {1.5}Evaluation Methodology Overview}{1}{}%
+\contentsline {section}{\numberline {1.6}Dissertation Structure}{1}{}%
+\contentsline {chapter}{\numberline {2}Background}{2}{}%
+\contentsline {section}{\numberline {2.1}Microkernels}{3}{}%
+\contentsline {subsection}{\numberline {2.1.1}Definition and Characteristics}{3}{}%
+\contentsline {subsection}{\numberline {2.1.2}Advantages and Disadvantages}{3}{}%
+\contentsline {subsection}{\numberline {2.1.3}IPC overhead in Microkernels}{3}{}%
+\contentsline {section}{\numberline {2.2}seL4 Microkernel}{3}{}%
+\contentsline {subsection}{\numberline {2.2.1}Overview and Design Principles}{3}{}%
+\contentsline {subsection}{\numberline {2.2.2}Architecture and Components}{3}{}%
+\contentsline {subsection}{\numberline {2.2.3}IPC Mechanism}{3}{}%
+\contentsline {subsection}{\numberline {2.2.4}Use Cases and Applications}{3}{}%
+\contentsline {subsection}{\numberline {2.2.5}Microkit Framework for seL4}{3}{}%
+\contentsline {section}{\numberline {2.3}Client-Server Communication Models}{3}{}%
+\contentsline {subsection}{\numberline {2.3.1}Synchronous Model}{3}{}%
+\contentsline {subsection}{\numberline {2.3.2}Asynchronous Model}{3}{}%
+\contentsline {section}{\numberline {2.4}File Servers in Operating Systems}{3}{}%
+\contentsline {subsection}{\numberline {2.4.1}Role and Functionality}{3}{}%
+\contentsline {subsection}{\numberline {2.4.2}Architectural Considerations}{3}{}%
+\contentsline {subsubsection}{\numberline {2.4.2.1}Abstractions}{3}{}%
+\contentsline {subsubsection}{\numberline {2.4.2.2}Storage and Organisation}{3}{}%
+\contentsline {subsubsection}{\numberline {2.4.2.3}Client Management}{3}{}%
+\contentsline {section}{\numberline {2.5}Related Work}{3}{}%
+\contentsline {subsection}{\numberline {2.5.1}IPC Optimisation Techniques in Microkernels}{3}{}%
+\contentsline {subsection}{\numberline {2.5.2}Asynchronous vs Synchronous Server Designs}{3}{}%
+\contentsline {subsection}{\numberline {2.5.3}File Servers in Microkernel-based Systems}{3}{}%
+\contentsline {subsection}{\numberline {2.5.4}Identified Gaps}{3}{}%
+\contentsline {chapter}{\numberline {3}Design}{4}{}%
+\contentsline {section}{\numberline {3.1}System Requirements and Constraints}{4}{}%
+\contentsline {section}{\numberline {3.2}File Server}{4}{}%
+\contentsline {subsection}{\numberline {3.2.1}Architectural Overview}{4}{}%
+\contentsline {subsection}{\numberline {3.2.2}Component Design and Interactions}{4}{}%
+\contentsline {subsection}{\numberline {3.2.3}Multiclient Support}{4}{}%
+\contentsline {subsection}{\numberline {3.2.4}File and Directory Operations}{4}{}%
+\contentsline {subsection}{\numberline {3.2.5}Design Decisions}{4}{}%
+\contentsline {subsubsection}{\numberline {3.2.5.1}Data model choices}{4}{}%
+\contentsline {subsubsection}{\numberline {3.2.5.2}Trade-offs}{4}{}%
+\contentsline {subsubsection}{\numberline {3.2.5.3}seL4 and Microkit Constraints}{4}{}%
+\contentsline {section}{\numberline {3.3}IPC Design and File Server Interface}{4}{}%
+\contentsline {subsection}{\numberline {3.3.1}Synchronous Model \textit {(Baseline)}}{4}{}%
+\contentsline {subsection}{\numberline {3.3.2}Asynchronous Model \textit {(Proposed IPC Mitigation Strategy)}}{4}{}%
+\contentsline {chapter}{\numberline {4}Implementation}{5}{}%
+\contentsline {section}{\numberline {4.1}Development Environment and Tools}{6}{}%
+\contentsline {section}{\numberline {4.2}Microkit Framework Setup}{6}{}%
+\contentsline {section}{\numberline {4.3}File Server}{6}{}%
+\contentsline {subsection}{\numberline {4.3.1}Data Structures}{6}{}%
+\contentsline {subsection}{\numberline {4.3.2}Operations}{6}{}%
+\contentsline {subsubsection}{\numberline {4.3.2.1}File Creation}{6}{}%
+\contentsline {subsubsection}{\numberline {4.3.2.2}File Writing}{6}{}%
+\contentsline {subsubsection}{\numberline {4.3.2.3}Directory Deletion}{6}{}%
+\contentsline {section}{\numberline {4.4}Interface}{6}{}%
+\contentsline {subsection}{\numberline {4.4.1}Synchronous Server Model}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.1.1}API}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.1.2}Client-Server Communication Protocol}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.1.3}IPC Mechanism}{6}{}%
+\contentsline {subsection}{\numberline {4.4.2}Asynchronous Server Model}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.2.1}API}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.2.2}Client-Server Communication Protocol}{6}{}%
+\contentsline {subsubsection}{\numberline {4.4.2.3}IPC Mechanism}{6}{}%
+\contentsline {section}{\numberline {4.5}Error Handling}{6}{}%
+\contentsline {chapter}{\numberline {5}Evaluation}{7}{}%
+\contentsline {section}{\numberline {5.1}Validation}{7}{}%
+\contentsline {subsection}{\numberline {5.1.1}Unit Tests}{7}{}%
+\contentsline {subsection}{\numberline {5.1.2}Integration Tests}{7}{}%
+\contentsline {subsubsection}{\numberline {5.1.2.1}Single Client}{7}{}%
+\contentsline {subsubsection}{\numberline {5.1.2.2}Multiple Clients}{7}{}%
+\contentsline {section}{\numberline {5.2}Performance Evaluation}{7}{}%
+\contentsline {subsection}{\numberline {5.2.1}Goals}{7}{}%
+\contentsline {subsection}{\numberline {5.2.2}Metrics}{7}{}%
+\contentsline {subsection}{\numberline {5.2.3}Experimental Setup}{7}{}%
+\contentsline {subsection}{\numberline {5.2.4}Benchmark Design}{7}{}%
+\contentsline {subsection}{\numberline {5.2.5}Results}{7}{}%
+\contentsline {subsection}{\numberline {5.2.6}Analysis}{7}{}%
+\contentsline {chapter}{\numberline {6}Conclusion}{8}{}%
+\contentsline {section}{\numberline {6.1}Contributions}{8}{}%
+\contentsline {subsection}{\numberline {6.1.1}System Design and Implementation}{8}{}%
+\contentsline {subsection}{\numberline {6.1.2}IPC Overhead Mitigation Insights}{8}{}%
+\contentsline {section}{\numberline {6.2}Drawbacks and Limitations}{8}{}%
+\contentsline {section}{\numberline {6.3}Future Work}{8}{}%
+\contentsline {chapter}{Bibliography}{9}{}%
+\contentsline {chapter}{\numberline {A}Appendix Title}{10}{}%
+\contentsline {section}{\numberline {A.1}Example First Section}{10}{}%
+\contentsline {section}{\numberline {A.2}Output}{10}{}%

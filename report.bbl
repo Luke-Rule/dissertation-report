@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{dyke1994}
+W.~Dyke.
+\newblock The nutter's guide to {\LaTeX}.
+\newblock {\em Read Only}, (7), May 1994.
+
+\bibitem{latex2012}
+{\LaTeX}.~Team.
+\newblock {URL}s in {BibTeX} bibliographies.
+\newblock \url{http://www.tex.ac.uk/cgi-bin/texfaq2html?label=citeURL}, 2012.
+
+\end{thebibliography}
