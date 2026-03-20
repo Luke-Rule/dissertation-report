@@ -3,9 +3,45 @@
 
 
 \section{Context and Motivation}
-\section{Research Question and Hypothesis}
-\section{Scope and Limitations}
-\section{Evaluation Methodology Overview}
+Modern software systems are larger, more complex, and more interdependent than ever before[], placing significant demands upon the operating systems that underpin them. Contemporary mainstream operating systems, such as Windows, Linux, and macOS, are largely based upon monolithic kernel designs[], where the majority of system functionality resides in a single privileged address space. This key characteristic enables high performance[], yet it comes at the cost of scalability, security and robustness[], as it requires forming a large trusted computing base (TCB) where a single fault can compromise the entire system[].
+\newline \newline Simultaneously, modern software and hardware architectures are increasingly employing modularity, isolation, and concurrency[]. Distributed systems, cloud-native microservices, and data centre-scale applications all decompose functionality into loosely-coupled components[], and most current hardware performance scaling is driven by multi-core and many-core parallelism[]. These trends place pressure on operating system design to provide stronger security guarantees and better support for concurrent, component-based execution.
+\newline \newline Microkernel design naturally aligns with these requirements[]. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. Yet, this modularity requires costly inter-process communication (IPC), which incurs overhead from context switching, data transfer, and cache disruption[]. 
+\newpage \noindent The L4 family of microkernels addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design[]; yet, despite these advances, IPC overhead remains a fundamental constraint in microkernel-based systems and a barrier to their wider adoption[]. By combining these performance improvements with strong security guarantees through formal verification[], however, the seL4 microkernel represents a significant step toward making microkernel-based designs viable for real-world deployment, particularly in security and safety-critical domains[]. Still, performance constraints remain a limiting factor, especially for high-frequency IPC workloads.
+\newline \newline One of the most frequently accessed operating system services is the file server[], which acts as the primary interface for persistent storage and data exchange. File system operations are both latency-sensitive and IPC-intensive[], making them critical to overall system performance in microkernel environments. In synchronous architectures, even simple file operations may involve multiple IPC invocations between the client and the file server, amplifying the impact of communication overhead.
+\newline \newline This report presents the design and implementation of an asynchronous, multiclient file server for the seL4 microkernel, validates its correctness and usability, and evaluates its effectiveness in mitigating IPC overhead. The proposed architecture decouples request submission from response handling, enabling batching of operations, reducing blocking behaviour, and increasing concurrency. These properties have the potential to improve throughput and resource utilisation under both single and multi-client workloads. In addition, beyond serving as an evaluation platform, the implementation constitutes a practical, reusable system component, demonstrating how critical services can be structured within a microkernel environment using the seL4 Microkit’s component-based design model. 
+
+
+\section{Aims and Objectives}
+Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems, this work aims to further mitigate IPC costs by reducing the number of IPC interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space file server.
+\newpage \noindent This report has the following objectives:
+\begin{itemize}
+    \item Design and implement a viable file system core capable of supporting a wide range of file and directory operations.
+    \item Design and implement an efficient storage model based on inode and block abstractions, supporting effective space utilisation and flexible file and directory representation.
+    \item Design and implement a scalable, asynchronous interface enabling concurrent request submissions and completion handling from multiple clients, alongside a synchronous interface to facilitate comparison between communication models.
+    \item Design and implement a lightweight client-side library providing a simple and usable abstraction over the file server interface.
+    \item Validate the correctness of the file server through comprehensive multi-level testing.
+    \item Design and implement a benchmarking framework to evaluate asynchronous file server performance against a synchronous baseline under realistic workloads.
+    \item Evaluate the effectiveness of the asynchronous file server architecture in reducing IPC overhead and improving performance, in terms of latency, throughput, and scalability.
+\end{itemize}
+
+\section{Evaluation Strategy}
+To evaluate the proposed implementation, this work considers both the correctness of file system operations and the performance characteristics of asynchronous queue-based submission compared to synchronous, blocking calls.
+\newline \newline Correctness is validated at multiple stages of granularity - unit, integration and end-to-end testing - to ensure file operations correctly persist and return data across a range of scenarios, including edge and error cases.
+\newline \newline For performance evaluation, a set of benchmarks are designed to compare the synchronous and asynchronous interfaces under varying workloads and measure key metrics, including latency, throughput, and IPC frequency. Experiments are conducted across different levels of request batching to assess the trade-off between asynchronous overhead in low-batching scenarios and performance gains achieved through reduced IPC at higher batching levels.
+\newline \newline The benchmark workloads are designed to approximate realistic file system usage patterns; however, as the system is novel, custom benchmarks are required. While these may not capture all characteristics of production environments, they are sufficient to provide indicative and comparative insights into the performance impact of asynchronous design.
+
+
+\section{Key Findings}
+The evaluation demonstrates that asynchronous communication introduces negligible overhead compared to synchronous execution when no batching is applied, with per-operation latencies remaining effectively equivalent. Crucially, as batching is introduced, significant performance improvements are observed. For single-client workloads, increasing batch sizes reduces per-operation latency by up to ~60\% for reads and ~50\% for writes, demonstrating that reducing IPC frequency has a substantial impact on performance.
+\newline \newline These improvements extend to more realistic workloads. In a multi-client benchmark simulating typical file system operations with batching opportunities, the asynchronous model achieves an average latency reduction of approximately 35–40\% compared to the synchronous baseline. Notably, these experiments were conducted on a single core, as current seL4 deployments do not fully utilise multicore execution; consequently, greater throughput would be expected from asynchronous designs in a multicore setting due to increased concurrency, allowing requests to be issued and responses processed in parallel.
+\newline \newline However, all evaluations were performed using an in-memory storage model rather than disk-backed persistence. While this isolates IPC and scheduling overhead, real-world performance gains would be less pronounced when incorporating variable disk I/O latency. Nevertheless, the results demonstrate that batching and non-blocking execution can significantly reduce IPC overhead, particularly in high-frequency workloads.
+
+\newpage
 \section{Dissertation Structure}
+The report begins by presenting the background knowledge required to understand the design of the file server and its architectural context. It then introduces the system design, including the overall architecture, interface models, and key design decisions.
+\newline \newline Following this, the implementation of the file server and its two interfaces are described, before outlining the validation strategy and performance evaluation methodology, assessing correctness and comparing the performance of the asynchronous and synchronous communication models.
+\newline \newline The report then discusses related work, situating the contribution within existing research, and concludes with a summary of findings, limitations, and directions for future work.
+
+
 
 

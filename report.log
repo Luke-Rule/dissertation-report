@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  18 MAR 2026 17:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  20 MAR 2026 16:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -282,10 +282,69 @@ Overfull \hbox (5.24059pt too wide) in paragraph at lines 46--46
 
  (chapters/2_introduction.tex
 Chapter 1.
-) [1
+
+Underfull \hbox (badness 10000) in paragraph at lines 6--9
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 6--9
+
+ []
+
+[1
 
 
 ]
+Underfull \hbox (badness 10000) in paragraph at lines 9--12
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--12
+
+ []
+
+[2]
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 18.
+ (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 28--32
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--32
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--32
+
+ []
+
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 35--38
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 35--38
+
+ []
+
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 41--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--44
+
+ []
+
+) [5]
 \openout2 = `chapters/3_background.aux'.
 
  (chapters/3_background.tex
@@ -293,20 +352,20 @@ Chapter 2.
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [2
+ [6
 
 
 
 
 ]
-Overfull \vbox (334.60587pt too high) has occurred while \output is active []
+Overfull \vbox (114.87811pt too high) has occurred while \output is active []
 
- [3]
+ [7]
 \openout2 = `chapters/4_design.aux'.
 
  (chapters/4_design.tex
 Chapter 3.
-) [4
+) [8
 
 
 
@@ -319,7 +378,7 @@ Chapter 4.
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [5
+ [9
 
 
 
@@ -327,12 +386,12 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ]
 Overfull \vbox (222.19415pt too high) has occurred while \output is active []
 
- [6]
+ [10]
 \openout2 = `chapters/6_evaluation.aux'.
 
  (chapters/6_evaluation.tex
 Chapter 5.
-) [7
+) [11
 
 
 
@@ -342,12 +401,12 @@ Chapter 5.
 
  (chapters/7_conclusion.tex
 Chapter 6.
-) [8
+) [12
 
 
 
 
-] (report.bbl) [9
+] (report.bbl) [13
 
 
 
@@ -356,7 +415,7 @@ Chapter 6.
 
  (appendix1.tex
 Appendix A.
-) [10
+) [14
 
 
 ] (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux) (chapters/6_evaluation.aux) (chapters/7_conclusion.aux) (appendix1.aux))
@@ -366,17 +425,17 @@ L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 4007 strings out of 467871
- 67241 string characters out of 5418376
- 478743 words of memory out of 5000000
- 32780 multiletter control sequences out of 15000+600000
- 655286 words of font info for 85 fonts, out of 8000000 for 9000
+ 4035 strings out of 467871
+ 67719 string characters out of 5418376
+ 478749 words of memory out of 5000000
+ 32804 multiletter control sequences out of 15000+600000
+ 655600 words of font info for 86 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 72i,6n,79p,271b,291s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,6n,79p,919b,291s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (22 pages, 102679 bytes).
+Output written on report.pdf (26 pages, 114851 bytes).
 PDF statistics:
- 104 PDF objects out of 1000 (max. 8388607)
+ 117 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
