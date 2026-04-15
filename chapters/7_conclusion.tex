@@ -1,11 +1,87 @@
 \chapter{Conclusion}
 \label{cha:conclusion}
 
+This dissertation set out to investigate whether inter-process communication (IPC) overhead in the seL4 microkernel could be mitigated through architectural and interface-level design choices, specifically via an asynchronous, multiclient file server. In doing so, it involved the design and implementation of a complete system, encompassing not only the file server itself but also the surrounding infrastructure required to support client interaction, memory sharing and communication within the Microkit framework. By reducing the number of synchronous interactions and enabling batching and decoupling of requests, the work demonstrates that meaningful performance improvements are achievable even within the constraints of a formally verified microkernel environment.
+
+The results show that IPC overhead is not merely a function of the underlying kernel primitives, but is significantly influenced by higher-level system design decisions, particularly how clients interact with services, how requests are scheduled and processed and how system components are structured to minimise unnecessary communication. Furthermore, the development of a full, working system highlights that such optimisations must be considered holistically, as performance gains emerge from the interaction between interface design, scheduling behaviour and data management rather than from any single component in isolation.
 
 \section{Contributions}
 \subsection{System Design and Implementation}
+
+This work presents a complete user-space file server built using the seL4 Microkit framework, designed with both synchronous and asynchronous interfaces. The system supports multiple concurrent clients, a structured file system abstraction and a reasonably comprehensive set of file operations including file data, directory, lifecycle and metadata management.
+\newpage
+Key contributions include:
+\begin{itemize}
+    \item A modular file system architecture, that can scale and adapt flexibly through its incorporation of block management, inodes and file descriptors, suitable for microkernel deployment
+    \item A multiclient design supporting permission enforcement and organised client state management
+    \item Dual interface implementations: a traditional synchronous IPC model and an asynchronous model based on notifications, queues and shared buffers
+    \item A flexible API layer enabling transparent, simple use of either communication paradigm
+    \item A full implementation within Microkit, demonstrating practical use of channels, notifications, scheduling and memory management
+\end{itemize}
+
+The implementation validates that complex, stateful services such as file systems can be realised entirely in user space within seL4, while maintaining structured interaction patterns and correctness guarantees.
+
 \subsection{IPC Overhead Mitigation Insights}
 
+The primary analytical contribution lies in demonstrating how asynchronous communication reduces IPC overhead through batching and reduced synchronisation frequency.
+
+The evaluation yields several key insights:
+ 
+\begin{itemize} 
+    \item Baseline parity: Asynchronous communication with batch size 1 performs similarly to synchronous IPC, confirming minimal overhead from the abstraction itself
+    \item Batching effectiveness: Increasing batch sizes significantly reduces per-operation latency, demonstrating amortisation of IPC costs
+    \item Low batch size required for performance maximisation: Performance improvements plateau beyond moderate batch sizes, indicating practical upper bounds for batching efficiency
+    \item Workload sensitivity: The benefits of asynchronous IPC are highly dependent on workload characteristics, especially the degree of operation parallelism and batchability
+    \item Multiclient scalability: In realistic multiclient scenarios, asynchronous design also substantially reduces average operation latency compared to synchronous approaches
+\end{itemize}
+
+These findings reinforce that IPC overhead mitigation is best addressed at the system design level rather than solely through kernel optimisation\cite{}.
+
 \section{Drawbacks and Limitations}
+
+Despite achieving its objectives, the system has several limitations that constrain both performance and general applicability.
+
+\subsection{File System Limitations}
+
+The implemented file system is functionally rich and reasonably well validated, but could be improved in multiple areas. Additional operations such as file renaming and copying could be introduced to improve usability. Furthermore, lookup performance is suboptimal due to linear search mechanisms; the absence of more efficient indexing structures (e.g. hash tables or trees) contributes to increased latency as the file set grows, yet the current implementation is sufficient for general usage and the experiments undertaken in this report.
+
+\subsection{Benchmarking Constraints}
+
+Evaluation required the development of custom benchmarks due to the specialised environment, low-level platform and non-standard interface. While these benchmarks effectively demonstrate relative performance trends, they limit direct comparability with existing systems. Consequently, results should be interpreted as indicative rather than absolute.
+
+\subsection{Lack of Persistent Storage}
+
+The system operates entirely in memory, with no backing disk. Incorporating persistent storage would introduce additional complexity, particularly around buffering strategies, write-back policies and cache management. This would likely require a significantly larger cache and careful coordination between storage and IPC layers, representing a substantial extension beyond the current scope.
+
+As such, the absence of disk I/O results in highly deterministic and relatively low operation latencies. In a realistic system with persistent storage, operation timings would be significantly longer and less deterministic due to device latency, queuing effects and variability in access times. As a result, the relative impact of IPC overhead would be reduced, since communication costs would form a smaller proportion of total operation latency. Consequently, while the results clearly demonstrate IPC-related performance trends, they likely represent an upper bound on the benefits of communication overhead reduction in real-world storage-backed systems. 
+
+However, such systems would typically operate on multi-core hardware, unlike the single-threaded environment used in this work. In these settings, an asynchronous design such as the one presented here, would considerably offset these reduced benefits by enabling significantly higher throughput through concurrent execution.
+
+\subsection{Single-Threaded Execution}
+
+The server operates on a single thread, restricting its ability to exploit concurrency. This inherently limits throughput and reduces the potential benefits of the asynchronous design. In a multi-core system, multiple clients could concurrently issue requests and process responses in parallel with the server executing operations, significantly increasing overall system throughput. In contrast, the synchronous model effectively serialises access, as clients must block and wait while the server processes each request, limiting concurrency at the system level.
+
+The architecture presented here is, however, designed to be transferable to a multicore environment with only minor modifications, once such support is more readily available within seL4.
+
+This limitation also impacts the interpretation of benchmark results. The observed performance improvements arise primarily from reduced communication overhead through asynchronous batching, rather than from true parallel execution. As a result, the measured gains likely represent a conservative estimate of the performance improvements achievable in a fully concurrent system, where additional benefits from overlapping request generation, processing and response handling would be realised.
+
+\subsection{Dependency on Workload Characteristics}
+
+The effectiveness of the asynchronous model is strongly workload-dependent. In scenarios with low concurrency or minimal opportunity for batching, the advantages over synchronous IPC diminish. This indicates that asynchronous designs are not always superior, but instead most effective in systems with naturally parallel or high-throughput workloads.
+
+\subsection{Additional Client Burden}
+
+The asynchronous design introduces additional complexity on the client side, primarily due to the need to manage request queues and response buffers. Each client must maintain its own data structures to support batching, resulting in an increase in per-client memory usage compared to the synchronous model, where requests are issued and resolved immediately hence requiring only a single buffer and no operation queue.
+
+Although a supporting library was implemented to abstract away much of this functionality, the responsibility for correct and efficient usage still lies with the client. In particular, clients must determine how to group operations into batches, which is inherently workload-dependent and not always straightforward. 
+
+Additionally, clients must decide when to flush queued requests and when to synchronise to collect results. Delaying synchronisation increases batching efficiency but introduces latency in observing results, while frequent synchronisation reduces batching opportunities and reintroduces IPC overhead. This creates a trade-off between throughput and responsiveness that must be carefully managed.
+
+Overall, while the asynchronous model provides clear performance advantages, it shifts part of the system complexity from the server to the clients. This increases the burden on client implementation and may make the system harder to use correctly, particularly for developers unfamiliar with asynchronous design patterns or the underlying IPC mechanisms.
+
+
 \section{Future Work}
+
+Future work should focus on extending the system to a multicore environment to fully realise concurrency benefits. Additionally, enhancing the file system with additional operations and more efficient data structures, such as tree-based indexing, would improve scalability, and introducing a caching layer and persistent storage would enable more realistic deployment scenarios. Further exploration of IPC mechanisms, including hybrid synchronous–-asynchronous models and adaptive batching strategies, could yield additional performance improvements.
+
 Cite some references \cite{dyke1994, latex2012}

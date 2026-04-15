@@ -4,21 +4,23 @@
 
 \section{Development Environment and Tools}
 
+The system was implemented in C using the Microkit framework for seL4, specifically version 2.0.1 of the Microkit SDK\cite{}. Development targeted the AArch64 architecture\cite{}, with code compiled using the aarch64-linux-gnu cross-compilation toolchain. The build process was managed using a Make-based system, which coordinated compilation, linking and generation of Microkit system images.
+
+All development and testing were conducted in an emulated environment using QEMU\cite{}, targeting the virt platform with a Cortex-A53 CPU configuration. This allowed rapid iteration without requiring physical hardware, though it limits evaluation of hardware-specific performance characteristics.
+
+Debugging and verification were primarily performed using logging via serial output, enabling inspection of system behaviour during execution. Additional support tools included Git\cite{} for version control and reproducibility of development progress.
+
 \section{Microkit Framework Setup}
 
-\section{File Server}
-\subsection{Data Structures and Access Methods}
-\subsubsection{i-nodes}
-\subsubsection{Block Management}
-\subsubsection{Directory Management}
-\subsubsection{File Descriptors}
+The system is built using the Microkit framework for the seL4, which provides a declarative mechanism for defining system structure, memory layout and inter-process communication\cite{}. A Microkit system is specified using an XML-based description, which is used to generate a complete system image comprising multiple protection domains.
 
-\subsection{Operations}
-\subsubsection{Entry Creation}
-\subsubsection{File Writing}
-\subsubsection{File Reading}
-\subsubsection{Metadata Access and Modification}
-\subsubsection{Entry Deletion}
+Each protection domain represents an independent user-space process with its own address space and execution context. In this system, separate protection domains are defined for the file server and each client. Program images are statically assigned to each domain, and memory regions are explicitly declared and mapped into their address spaces at specified addresses. A dedicated memory region for file system state is declared and mapped solely to the server. Additionally, for each client, regions to hold submission and completion queues and associated buffers are declared and mapped into both the file server and the corresponding client, each with the appropriate permissions, allowing shared access.
+
+Alongside this shared memory, communication between protection domains is established using channels, which define endpoints for inter-process communication, with each client being connected to the file server. For the synchronous system, protected procedure calls\cite{} are used to perform synchronous message passing to request file operations and block until a response is received. In contrast, the asynchronous design utilises notification objects\cite{}, which provide non-blocking signalling to indicate when requests have been submitted or responses are available.
+
+As Microkit systems are statically defined, the number of clients and their associated resources must be specified at build time. To support varying workloads, a script was developed to automatically generate the system description for a configurable number of clients, ensuring consistency while avoiding manual duplication.
+
+In addition to structural configuration, Microkit also requires specification of priority and scheduling parameters for each protection domain. These priorities determine the order in which domains are scheduled by the seL4 kernel, directly influencing system responsiveness and fairness. In this system, the file server is assigned a higher priority than client domains to ensure that incoming requests are serviced promptly, reducing queuing latency and preventing clients from stalling due to delayed processing. Client domains are assigned equal priorities relative to one another to maintain fairness across request sources. This scheduling configuration is particularly important in the asynchronous design, where the server must efficiently respond to notifications and process queued operations without being preempted excessively. Consequently, as seL4 utilises a round-robin style scheduling policy\cite{}, careful time budget allocation ensures that IPC handling remains responsive while still allowing clients sufficient execution time to generate and consume requests.
 
 \section{Interface}
 \subsection{Synchronous Server Model}
@@ -30,4 +32,22 @@
 \subsubsection{IPC Mechanism}
 \subsubsection{API}
 
+\section{File Server}
+\subsection{Data Structures and Access Methods}
+\subsubsection{inodes}
+lorem
+\subsubsection{Blocks}
+\subsubsection{Directories}
+\subsubsection{File Descriptors}
+
+\subsection{Operations}
+\subsubsection{Entry Creation}
+\subsubsection{File Access}
+\subsubsection{Metadata Access and Modification}
+\subsubsection{Entry Deletion}
+
 \section{Error Handling}
+
+The primary sources of errors in this system arise from invalid client requests and resource limitations. These include cases such as invalid permissions, malformed paths or file descriptors, as well as exhaustion of resources such as available blocks or file descriptor space. To maintain correctness, these conditions are explicitly checked before and during the execution of each operation.
+
+To support this, operations are decomposed into smaller functions, each responsible for a specific task. At each potential point of failure, inputs and system state are validated, with failures resulting in the return of a defined error code from a global set. These error codes are propagated through the call chain, allowing higher-level operations to respond appropriately. Where possible, alternative actions are attempted; otherwise, the operation is safely terminated, reverting any partial changes to maintain consistency. The final error state is then communicated back to the client through the response structure. Some errors such as trying to read a size larger than the buffer size do not terminate the operation, but the client is still notified that it was not fully successful.

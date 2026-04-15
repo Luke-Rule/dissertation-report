@@ -19,6 +19,7 @@ The style file: abbrv.bst
 Reallocating 'name_of_file' (item size: 1) to 14 items.
 A level-1 auxiliary file: appendix1.aux
 Database file #1: refs.bib
+Warning--I didn't find a database entry for ""
 Warning--there's a number but no volume in dyke1994
 You've used 2 entries,
             2118 wiz_defined-function locations,
@@ -61,4 +62,4 @@ warning$ -- 1
 while$ -- 4
 width$ -- 3
 write$ -- 23
-(There was 1 warning)
+(There were 2 warnings)

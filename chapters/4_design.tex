@@ -4,16 +4,28 @@
 
 \section{System Requirements and Constraints}
 
+The design of the file server is driven by both functional requirements and the constraints imposed by the Microkit framework for the seL4. These requirements define the expected behaviour of the system, while the constraints shape the design decisions necessary to achieve this within the given environment.
+
+From a functional perspective, the system is required to provide a core set of file system operations, including creation, reading, writing and deletion of files, alongside support for directory structures and getting and setting associated metadata such as permissions and file size. The system must present a consistent interface to clients, ensuring that operations are executed correctly and that appropriate error codes are returned in response to invalid inputs or failure conditions.
+
+A key requirement of the system is support for multiple clients operating concurrently. The file server must therefore be capable of handling requests from multiple independent clients, maintaining correctness and consistency in the presence of interleaved operations. In addition, the system must support both synchronous and asynchronous interaction models. This enables direct comparison between traditional blocking request–response behaviour and the proposed asynchronous, batched approach.
+
+Performance is a central non-functional requirement. In particular, the system is designed to minimise the overhead associated with inter-process communication (IPC), which is a known bottleneck in microkernel-based systems. The asynchronous design must therefore enable efficient batching of operations, reducing the number of required IPC interactions and improving overall throughput. The system must also scale to multiple clients without significant degradation in performance.
+
+Several constraints significantly influence the system design. The Microkit framework enforces a statically defined system configuration, meaning that all protection domains, communication channels and memory regions must be specified at build time. As a result, the number of clients and their associated resources are fixed.
+
+The IPC model provided by seL4 is inherently synchronous, with communication occurring through blocking interactions. This necessitates the use of shared memory and notification mechanisms to enable non-blocking request submission and completion handling.
+\newpage
+Further constraints arise from the execution environment. For development simplicity, the system operates with no access to persistent storage, resulting in a purely in-memory file system. Additionally, due to seL4 constraints, execution is limited to a single core, restricting the ability to exploit parallelism. This requires the system to rely on batching and efficient communication patterns, rather than parallel execution, to achieve performance improvements.
+
+These requirements and constraints directly inform the design of the system, motivating the use of asynchronous batching, shared memory communication and a modular file system structure to balance performance, correctness and simplicity within the limitations of the Microkit environment.
+
+\section{IPC Design and File Server Interface}
+\subsection{Synchronous Model \textit{(Baseline)}}
+\subsection{Asynchronous Model \textit{(Proposed IPC Mitigation Strategy)}}
+
 \section{File Server}
 \subsection{Architectural Overview}
 \subsection{Component Design and Interactions}
 \subsection{Multiclient Support}
 \subsection{File and Directory Operations}
-\subsection{Design Decisions}
-\subsubsection{Data model choices}
-\subsubsection{Trade-offs}
-\subsubsection{seL4 and Microkit Constraints}
-
-\section{IPC Design and File Server Interface}
-\subsection{Synchronous Model \textit{(Baseline)}}
-\subsection{Asynchronous Model \textit{(Proposed IPC Mitigation Strategy)}}

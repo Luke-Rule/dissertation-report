@@ -282,7 +282,7 @@ Documentation:
 
 \usepackage{geometry}
 \geometry{a4paper,twoside,includeheadfoot,nomarginpar,
-  top=25mm,bottom=25mm,inner=25mm,outer=25mm,headsep=10mm}
+  top=15mm,bottom=15mm,inner=15mm,outer=15mm,headsep=10mm}
 
 %% Disallow page breaks at hyphens (this will give some underfull vbox's,
 %% so an alternative is to use \brokenpenalty=100 and manually search
@@ -499,15 +499,13 @@ of \degreetitle.
 \def\afterabstract{
 %% \newpage inserted by DPC 15/9/93
 %% make the declaration come on the page after the abstract.
+        {\singlespacing
         \tableofcontents
-	\ifwordctp@%
+        \ifwordctp@%
         ~\\
         ~\\
-        % TC:ignore
-        \textbf{Word Count: \input{word.count}} % need texcount ignore around
-	           % this to stop error message (open recursion on file)
-       % TC:endignore
-       \fi
+        \textbf{Word Count: \input{word.count}}
+        \fi
        \newpage
         \iftablespage
                 \addvspace{10pt}
@@ -517,7 +515,7 @@ of \degreetitle.
         \iffigurespage
                 \addvspace{10pt}
                 \listoffigures
-                \newpage
+                \newpage}
         \fi
         \newpage
         \declpage
@@ -539,12 +537,12 @@ of \degreetitle.
 \def\afterpreface{\newpage
         \pagenumbering{arabic}
         \setcounter{page}{1}
-        \pagestyle{headings}}
+        \pagestyle{plain}}
 
-\pagestyle{headings}
+\pagestyle{plain}
 
 \def\@makechapterhead#1{%
-        \vspace*{50\p@}%
+        \vspace*{20\p@}%
         {\parindent \z@ \raggedright \normalfont
                 \interlinepenalty\@M
                 \Huge \bfseries #1\par\nobreak
@@ -552,7 +550,7 @@ of \degreetitle.
         }}
 
 \def\@makeschapterhead#1{%
-        \vspace*{50\p@}%
+        \vspace*{20\p@}%
         {\parindent \z@ \raggedright
                 \normalfont
                 \interlinepenalty\@M
