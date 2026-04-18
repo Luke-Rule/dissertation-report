@@ -24,69 +24,67 @@
 \contentsline {subsubsection}{Allocation Strategies}{13}{subsubsection*.9}%
 \contentsline {subsubsection}{Metadata Organisation}{15}{subsubsection*.10}%
 \contentsline {subsubsection}{Directory Structure}{17}{subsubsection*.11}%
-\contentsline {subsection}{\numberline {2.4.4}Client Management}{17}{subsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.4.4}Client Management}{18}{subsection.2.4.4}%
 \contentsline {section}{\numberline {2.5}Related Work}{18}{section.2.5}%
 \contentsline {chapter}{\numberline {3}Design}{19}{chapter.3}%
 \contentsline {section}{\numberline {3.1}System Requirements and Constraints}{19}{section.3.1}%
 \contentsline {section}{\numberline {3.2}IPC Design and File Server Interface}{20}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Synchronous Model \textit {(Baseline)}}{20}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Asynchronous Model \textit {(Proposed IPC Mitigation Strategy)}}{20}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}File Server}{20}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Architectural Overview}{20}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Component Design and Interactions}{20}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Multiclient Support}{20}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}File and Directory Operations}{20}{subsection.3.3.4}%
-\contentsline {chapter}{\numberline {4}Implementation}{21}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Development Environment and Tools}{21}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Microkit Framework Setup}{21}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Interface}{23}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Synchronous Server Model}{23}{subsection.4.3.1}%
-\contentsline {subsubsection}{Client-Server Communication Protocol}{23}{subsubsection*.12}%
-\contentsline {subsubsection}{IPC Mechanism}{23}{subsubsection*.13}%
-\contentsline {subsubsection}{API}{23}{subsubsection*.14}%
-\contentsline {subsection}{\numberline {4.3.2}Asynchronous Server Model}{23}{subsection.4.3.2}%
-\contentsline {subsubsection}{Client-Server Communication Protocol}{23}{subsubsection*.15}%
-\contentsline {subsubsection}{IPC Mechanism}{23}{subsubsection*.16}%
-\contentsline {subsubsection}{API}{23}{subsubsection*.17}%
-\contentsline {section}{\numberline {4.4}File Server}{23}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Methods}{23}{subsection.4.4.1}%
-\contentsline {subsubsection}{inodes}{23}{subsubsection*.18}%
-\contentsline {subsubsection}{Blocks}{24}{subsubsection*.19}%
-\contentsline {subsubsection}{Directories}{24}{subsubsection*.20}%
-\contentsline {subsubsection}{File Descriptors}{24}{subsubsection*.21}%
-\contentsline {subsection}{\numberline {4.4.2}Operations}{24}{subsection.4.4.2}%
-\contentsline {subsubsection}{Entry Creation}{24}{subsubsection*.22}%
-\contentsline {subsubsection}{File Access}{24}{subsubsection*.23}%
-\contentsline {subsubsection}{Metadata Access and Modification}{24}{subsubsection*.24}%
-\contentsline {subsubsection}{Entry Deletion}{24}{subsubsection*.25}%
-\contentsline {section}{\numberline {4.5}Error Handling}{24}{section.4.5}%
-\contentsline {chapter}{\numberline {5}Evaluation}{25}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Validation}{25}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Unit Tests}{25}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Integration Tests}{26}{subsection.5.1.2}%
-\contentsline {subsubsection}{Single Client}{26}{subsubsection*.26}%
-\contentsline {subsubsection}{Multiple Clients}{26}{subsubsection*.27}%
-\contentsline {section}{\numberline {5.2}Performance Evaluation}{27}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Goals}{27}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Metrics}{27}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Experimental Setup}{27}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}Benchmark Design}{28}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}Results and Analysis}{30}{subsection.5.2.5}%
-\contentsline {subsubsection}{Single-Client Per-Operation Benchmark}{30}{subsubsection*.28}%
-\contentsline {subsubsection}{Multiclient Realistic Workload}{32}{subsubsection*.29}%
-\contentsline {chapter}{\numberline {6}Conclusion}{34}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Contributions}{34}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}System Design and Implementation}{34}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}IPC Overhead Mitigation Insights}{35}{subsection.6.1.2}%
-\contentsline {section}{\numberline {6.2}Drawbacks and Limitations}{36}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}File System Limitations}{36}{subsection.6.2.1}%
-\contentsline {subsection}{\numberline {6.2.2}Benchmarking Constraints}{36}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Lack of Persistent Storage}{36}{subsection.6.2.3}%
-\contentsline {subsection}{\numberline {6.2.4}Single-Threaded Execution}{37}{subsection.6.2.4}%
-\contentsline {subsection}{\numberline {6.2.5}Dependency on Workload Characteristics}{37}{subsection.6.2.5}%
-\contentsline {subsection}{\numberline {6.2.6}Additional Client Burden}{37}{subsection.6.2.6}%
-\contentsline {section}{\numberline {6.3}Future Work}{38}{section.6.3}%
-\contentsline {chapter}{Bibliography}{39}{chapter*.30}%
-\contentsline {chapter}{\numberline {A}Appendix Title}{40}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Example First Section}{40}{section.A.1}%
-\contentsline {section}{\numberline {A.2}Output}{40}{section.A.2}%
+\contentsline {subsection}{\numberline {3.2.2}Asynchronous Model \textit {(Proposed IPC Mitigation Strategy)}}{22}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}File Server}{24}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Architectural Overview}{24}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Component Design and Interactions}{24}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Multiclient Support}{24}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}File and Directory Operations}{24}{subsection.3.3.4}%
+\contentsline {chapter}{\numberline {4}Implementation}{25}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Development Environment and Tools}{25}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Microkit Framework Setup}{25}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Interface}{27}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Synchronous Server Model}{27}{subsection.4.3.1}%
+\contentsline {subsubsection}{Client-Server Communication}{27}{subsubsection*.12}%
+\contentsline {subsubsection}{API}{28}{subsubsection*.13}%
+\contentsline {subsection}{\numberline {4.3.2}Asynchronous Server Model}{29}{subsection.4.3.2}%
+\contentsline {subsubsection}{Client-Server Communication}{29}{subsubsection*.14}%
+\contentsline {subsubsection}{API}{33}{subsubsection*.15}%
+\contentsline {section}{\numberline {4.4}File Server}{34}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Methods}{34}{subsection.4.4.1}%
+\contentsline {subsubsection}{inodes}{34}{subsubsection*.16}%
+\contentsline {subsubsection}{Blocks}{34}{subsubsection*.17}%
+\contentsline {subsubsection}{Directories}{34}{subsubsection*.18}%
+\contentsline {subsubsection}{File Descriptors}{34}{subsubsection*.19}%
+\contentsline {subsection}{\numberline {4.4.2}Operations}{34}{subsection.4.4.2}%
+\contentsline {subsubsection}{Entry Creation}{34}{subsubsection*.20}%
+\contentsline {subsubsection}{File Access}{34}{subsubsection*.21}%
+\contentsline {subsubsection}{Metadata Access and Modification}{34}{subsubsection*.22}%
+\contentsline {subsubsection}{Entry Deletion}{34}{subsubsection*.23}%
+\contentsline {section}{\numberline {4.5}Error Handling}{34}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Evaluation}{36}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Validation}{36}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Unit Tests}{36}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Integration Tests}{37}{subsection.5.1.2}%
+\contentsline {subsubsection}{Single Client}{37}{subsubsection*.24}%
+\contentsline {subsubsection}{Multiple Clients}{37}{subsubsection*.25}%
+\contentsline {section}{\numberline {5.2}Performance Evaluation}{38}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Goals}{38}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Metrics}{38}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Experimental Setup}{38}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Benchmark Design}{39}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}Results and Analysis}{40}{subsection.5.2.5}%
+\contentsline {subsubsection}{Single-Client Per-Operation Benchmark}{40}{subsubsection*.26}%
+\contentsline {subsubsection}{Realistic Multiclient Workload}{41}{subsubsection*.27}%
+\contentsline {chapter}{\numberline {6}Conclusion}{44}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Contributions}{44}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}System Design and Implementation}{44}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}IPC Overhead Mitigation Insights}{45}{subsection.6.1.2}%
+\contentsline {section}{\numberline {6.2}Drawbacks and Limitations}{46}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}File System Limitations}{46}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Benchmarking Constraints}{46}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Lack of Persistent Storage}{46}{subsection.6.2.3}%
+\contentsline {subsection}{\numberline {6.2.4}Single-Threaded Execution}{47}{subsection.6.2.4}%
+\contentsline {subsection}{\numberline {6.2.5}Dependency on Workload Characteristics}{47}{subsection.6.2.5}%
+\contentsline {subsection}{\numberline {6.2.6}Additional Client Burden}{47}{subsection.6.2.6}%
+\contentsline {section}{\numberline {6.3}Future Work}{48}{section.6.3}%
+\contentsline {chapter}{Bibliography}{49}{chapter*.28}%
+\contentsline {chapter}{\numberline {A}Appendix Title}{50}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Example First Section}{50}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Output}{50}{section.A.2}%

@@ -1,18 +1,19 @@
 \chapter{Background}
 \label{cha:background}
+This section provides the necessary background for understanding the design and implementation of the file server. It introduces the key concepts underlying file servers and microkernel systems, with a focus on inter-process communication in seL4 and its impact on system performance. These concepts form the foundation for the designs explored in the following sections. 
 
 \section{Operating System Kernels}
 
 \subsection{Definition and Characteristics}
 
-The kernel is the core component of an operating system, executing at the highest privilege level (if not running on a hypervisor\cite{}) of the processor (typically referred to as supervisor mode\cite{}). It provides the fundamental interface between hardware and software, managing critical system resources, as shown in Figure \ref{fig:kernel-interaction}.
+The kernel is the core component of an operating system, executing at the highest privilege level of the processor (typically referred to as supervisor mode\cite{}). It provides the fundamental interface between hardware and software, managing critical system resources, as shown in Figure \ref{fig:kernel-interaction}.
 
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[
     scale=0.95, transform shape,
     boxa/.style={draw, rectangle, minimum width=3.5cm, minimum height=1cm, align=center, fill=green!15},
-    boxo/.style={draw, rectangle, minimum width=3.5cm, minimum height=1cm, align=center, fill=orange!15},
+    boxo/.style={draw, dashed, rectangle, minimum width=4.5cm, minimum height=3cm, align=center, fill=orange!10},
     boxk/.style={draw, rectangle, minimum width=3.5cm, minimum height=1cm, align=center, fill=cyan!15},
     smallbox/.style={draw, rectangle, minimum width=2cm, minimum height=1cm, align=center, fill=blue!12},
     arrow/.style={->, thick}
@@ -20,7 +21,7 @@ The kernel is the core component of an operating system, executing at the highes
 
 % Top layers
 \node[boxa] (apps) at (0,4.4) {Applications};
-\node[boxo] (os) at (0,2.7) {Operating System};
+\node[boxo] (os) at (0,1.7) {\raisebox{25pt}{Operating System}};
 \node[boxk] (kernel) at (0,1.0) {Kernel};
 
 % Hardware row
@@ -31,7 +32,6 @@ The kernel is the core component of an operating system, executing at the highes
 
 % Vertical arrows between layers
 \draw[arrow] (apps.south) -- (os.north);
-\draw[arrow] (os.south) -- (kernel.north);
 
 % Kernel to hardware arrows
 \draw[arrow] (kernel.south) -- (cpu.north);
@@ -44,7 +44,7 @@ The kernel is the core component of an operating system, executing at the highes
 \label{fig:kernel-interaction}
 \end{figure}
 
-The specific set of managed resources varies by system design, but at a minimum the kernel must provide services that cannot be implemented safely or reliably in user space, such as memory management and process or thread scheduling\cite{}. By acting as the sole authority over these resources, the kernel enforces isolation and protection, preventing unintended or malicious interference between processes or to the system as a whole\cite{}.
+The specific set of managed resources varies by system design, but at a minimum the kernel must provide services that cannot be implemented safely or reliably in user space, such as memory management, device management and process or thread scheduling\cite{}. By acting as the sole authority over these resources, the kernel enforces isolation and protection, preventing unintended or malicious interference between processes or to the system as a whole\cite{}.
 \newpage
 \subsection{Microkernels Versus Monolithic Kernels}
 
@@ -69,39 +69,39 @@ The specific set of managed resources varies by system design, but at a minimum 
 \node[app] (appL) at (-6,5.2) {Application};
 
 % Services (more spaced)
-\node[service] (s1) at (-8.2,3.2) {IPC};
-\node[service] (s2) at (-6.8,3.2) {Unix};
-\node[service] (s3) at (-5.4,3.2) {Drivers};
-\node[service] (s4) at (-4.0,3.2) {File};
+\node[service] (s1) at (-8.6,2.9) {IPC};
+\node[service] (s2) at (-6.9,2.9) {Unix};
+\node[service] (s3) at (-5.15,2.9) {Drivers};
+\node[service] (s4) at (-3.4,2.9) {File};
 
 % Kernel
-\node[kernel] (kernL) at (-6,1.15) {Basic IPC, Virtual Memory, Scheduling};
+\node[kernel] (kernL) at (-6,0.45) {Basic IPC, Virtual Memory, Scheduling};
 
 % Hardware
-\node[hardware] (hwL) at (-6,-0.25) {Hardware};
+\node[hardware] (hwL) at (-6,-1.3) {Hardware};
 
 % Boundary
-\draw[boundary] (-9.5,1.9) -- (-2.5,1.9);
+\draw[boundary] (-9.5,1.35) -- (-2.5,1.38);
 
 \node at (0,4.5) {User Space};
-\node at (0,1.45) {Kernel Space};
+\node at (0,1.15) {Kernel Space};
 
 % Arrows (clean vertical)
-\draw[arrow] (s1.north) -- ++(0,0.4);
-\draw[arrow] (s2.north) -- ++(0,0.4);
-\draw[arrow] (s3.north) -- ++(0,0.4);
-\draw[arrow] (s4.north) -- ++(0,0.4);
+\draw[arrow] (s1.north) -- ++(0,0.7);
+\draw[arrow] (s2.north) -- ++(0,0.7);
+\draw[arrow] (s3.north) -- ++(0,0.7);
+\draw[arrow] (s4.north) -- ++(0,0.7);
 
-\draw[sarrow] (s1.south) -- ++(0,-0.55);
-\draw[sarrow] (s2.south) -- ++(0,-0.55);
-\draw[sarrow] (s3.south) -- ++(0,-0.55);
-\draw[sarrow] (s4.south) -- ++(0,-0.55);
+\draw[sarrow] (s1.south) -- ++(0,-0.95);
+\draw[sarrow] (s2.south) -- ++(0,-0.95);
+\draw[sarrow] (s3.south) -- ++(0,-0.95);
+\draw[sarrow] (s4.south) -- ++(0,-0.95);
 
 \draw[arrow] (hwL.north) -- (kernL.south);
 
-\draw[line] (-8.2,1.55) -- (-4,1.55);
+\draw[line] (-8.6,0.85) -- (-3.4,0.85);
 
-\draw[boundary] (-2.5,1.9) -- (2.5,4.48);
+\draw[boundary] (-2.5,1.38) -- (2.5,4.48);
 
 % ================= MONOLITHIC =================
 \node at (5.5,6.5) {\textbf{Monolithic Kernel}};
@@ -124,17 +124,17 @@ The specific set of managed resources varies by system design, but at a minimum 
 
 
 \end{tikzpicture}
-\caption{Comparison of microkernel and monolithic kernel architectures.}
+\caption{Comparison of microkernel and monolithic kernel architectures. Adapted from source: \cite{}}
 \label{fig:micro-vs-mono}
 \end{figure}
 
-In addition to the required functionality, monolithic kernels also incorporate other low-level services such as device drivers and file systems directly within the kernel address space, as shown in Figure \ref{fig:micro-vs-mono}. All operating system services can then be accessed via system calls\cite{}, which transfer control from user space to kernel space through a controlled privilege level switch\cite{}. Because these services execute within the same privileged address space, interactions between kernel components can be performed through efficient function calls, utilising direct access to process data structures. This results in low-overhead service invocation, enabling high-performance systems\cite{}.
+In addition to the required functionality, monolithic kernels also incorporate other low-level services such as device drivers and file systems directly within the kernel address space, as shown in Figure \ref{fig:micro-vs-mono}. All operating system services can then be accessed via system calls\cite{}, which transfer control from user space to kernel space through a restricted privilege level switch\cite{}. Because all these services execute within the same privileged address space, interactions between kernel components can be performed through efficient function calls, with direct access to process data structures. This results in low-overhead service invocation, facilitating high-performance systems\cite{}.
 
-From a design perspective, monolithic kernels therefore benefit from simpler service integration - yet, this leads to increased complexity as the system grows. The inherent tight coupling of components can make them more difficult to extend, debug, and maintain\cite{}, as faults may propagate across sub-system boundaries and be harder to isolate\cite{}. Combined with the larger size of monolithic kernels, this increases the likelihood of defects within the trusted computing base\cite{}. This is significant, as faults within the kernel can have system-wide consequences due to its privileged execution context\cite{}. 
+From a design perspective, monolithic kernels therefore benefit from simpler service integration -- yet, this leads complexity rising factorially as the system grows. The inherent tight coupling of components can make them more difficult to extend, debug, and maintain\cite{}, as faults may propagate across sub-system boundaries and be harder to isolate\cite{}. Combined with the larger size of monolithic kernels, this increases the likelihood of defects within the trusted computing base\cite{}. This is significant, as faults within the kernel can have system-wide consequences due to its privileged execution context\cite{}. 
 
-In contrast, microkernels predominantly restrict kernel functionality to essential mechanisms, delegating higher-level services to user-space components, which must communicate via message passing across their protection boundaries\cite{}, as illustrated in Figure \ref{fig:micro-vs-mono}. As a result, requesting a service introduces considerably more overhead when compared to monolithic architectures\cite{}. This primarily arises from context switching and scheduler involvement, when the server resides in a separate process from the client, potentially disrupting processor caches and pipelines\cite{}. However, various optimisations – discussed in Section \ref{sec:sel4} – can significantly reduce these costs.
-
-Additionally, because processes reside in separate address spaces, data may need to be copied or explicitly shared between them, introducing further overhead. In some cases, this cost can be mitigated through alternative communication mechanisms. Shared memory\cite{}, for example, allows processes to exchange data without copying by mapping a common region into multiple address spaces. When combined with techniques such as polling or lock-free data structures\cite{}, communication can occur with minimal kernel involvement. These approaches, however, require careful design to ensure correct synchronisation, memory ordering and preservation of isolation guarantees\cite{}.
+In contrast, microkernels predominantly restrict kernel functionality to essential mechanisms, delegating higher-level services to user-space components, which must communicate via message passing across their protection boundaries\cite{}, as illustrated in Figure \ref{fig:micro-vs-mono}. As a result, invoking a service introduces considerably more overhead when compared to monolithic architectures\cite{}. This primarily arises from context switching and scheduler involvement, when the server resides in a separate process from the client, potentially disrupting processor caches and pipelines\cite{}. However, various optimisations – discussed in Section \ref{sec:sel4} – can significantly reduce these costs.
+\newpage
+Additionally, because services are executed in user space and processes reside in separate address spaces, data may need to be copied or explicitly shared between them, introducing further overhead. In some cases, this cost can be mitigated through alternative communication mechanisms. Shared memory\cite{}, for example, allows processes to exchange data without copying by mapping a common memory region into multiple processes' address spaces. When combined with techniques such as lock-free data structures\cite{}, communication can occur with minimal kernel involvement. These approaches, however, require careful design to ensure correct synchronisation, memory ordering and preservation of isolation guarantees\cite{}.
 
 Despite these challenges, the reduced kernel size and strong isolation between components in microkernel architectures enable significantly improved security assurance and fault containment\cite{}. These advantages motivated the design of the L4 family of microkernels, which demonstrated that IPC overhead can be significantly reduced through careful kernel design and optimisation\cite{}.
 
@@ -142,21 +142,21 @@ Despite these challenges, the reduced kernel size and strong isolation between c
 
 \subsection{Overview and Characteristics}
 
-The L3, and subsequently L4, microkernels were developed in response to the poor performance of earlier microkernel designs\cite{}, based on the premise that prioritising efficiency was essential for practical adoption. By recognising IPC as the dominant factor in microkernel performance and optimising these mechanisms accordingly, the L4 design achieved approximately a 20× performance improvement over Mach\cite{}, the most widely used microkernel at the time\cite{}. This demonstrated that microkernels could achieve competitive performance, leading to significant further research and the development of multiple L4-derived systems\cite{}, including seL4.
+In 1993, the L4 microkernel was developed by Jochen Liedtke in response to the poor performance of earlier microkernel designs\cite{}, based on the premise that prioritising efficiency was essential for practical adoption. By recognising IPC as the dominant factor in microkernel performance and optimising these mechanisms accordingly, the L4 design achieved approximately a 20× performance improvement over Mach\cite{}, the most widely used microkernel at the time\cite{}. This demonstrated that microkernels could achieve competitive performance, leading to significant further research and the development of multiple L4-derived systems\cite{}, including seL4.
 
-seL4 (Security-Enhanced L4) extends this architecture by combining the high-performance IPC with comprehensive formal verification\cite{}, becoming the only microkernel to do so\cite{}. Through the complete kernel implementation being proven correct against its specification, seL4 ensures that system calls behave as specified and that key safety properties – such as memory isolation – are upheld. Assuming correct hardware behaviour\cite{}, this provides a high degree of assurance that kernel integrity and availability are maintained and that information is not leaked between processes, only explicitly shared\cite{}.
+seL4 (Security-Enhanced L4) extends this architecture by combining the high-performance IPC with comprehensive formal verification\cite{}, becoming the only microkernel to do so\cite{}. Through the complete kernel implementation being proven correct against its specification, seL4 ensures that system calls behave as specified and that key safety properties – such as memory isolation – are upheld. Assuming correct hardware behaviour\cite{}, this provides a high degree of assurance that kernel integrity and availability are maintained and that information is not exposed between processes, only explicitly shared\cite{}.
 
-However, these guarantees apply only to the kernel itself. User-space components are rarely formally verified\cite{} and may still exhibit incorrect behaviour and cause failures at that level. While such faults are isolated and cannot compromise kernel correctness, they may still impact overall system functionality.
+These guarantees apply only to the kernel itself, however. User-space components are rarely formally verified\cite{} and may still exhibit incorrect behaviour and cause failures at that level. While such faults are isolated and cannot compromise kernel correctness, they may still impact overall system functionality.
 
 This separation of concerns makes seL4 particularly well-suited to exploring user-space approaches to performance optimisation, as the minimal and stable kernel design enables flexibility in higher-level system components, without modifying the verified core.
 
-\subsection{Design}
+\subsection{Design}\label{sec:sel4design}
 
-The L4 specification optimises IPC through furthered kernel shrinkage and efficient message passing\cite{}. Earlier microkernel designs attempted to support richer communication abstractions within the kernel, introducing additional and often unnecessary overhead\cite{}. In contrast, L4 adopts a minimal design, providing only basic, synchronous IPC primitives\cite{}. This approach prioritises low latency and in the common case, removing more complex mechanisms – such as asynchronous buffering and batching – from the kernel\cite{}. These may instead be constructed externally when required, utilising the efficiency of the primitives provided without burdening the kernel.
+The L4 specification optimises IPC through a reduced kernel size and efficient message passing\cite{}. Earlier microkernel designs attempted to support richer communication abstractions within the kernel, introducing additional and often unnecessary overhead\cite{}. In contrast, L4 adopts a minimal design, providing only basic, synchronous IPC primitives\cite{}. This approach prioritises low latency in the common case, removing more complex mechanisms – such as asynchronous buffering and batching – from the kernel\cite{}. These may instead be constructed externally when required, utilising the efficiency of the primitives provided without burdening the kernel.
 
-Kernel involvement is also minimised, with direct process-to-process communication enabled where possible\cite{}. A key aim developed during this design was to ensure that all critical IPC paths fit within the L1 instruction cache\cite{}, thereby reducing cache misses and execution latency. Furthermore, Remote Procedure Call (RPC) semantics\cite{} are supported, combining message passing and control transfer into a single operation. This reduces scheduling overhead by enabling direct handoff between client and server threads when a service is invoked. 
+Kernel involvement is also minimised, with direct process-to-process communication enabled where possible\cite{}. A key aim developed during this design was to ensure that all critical IPC paths had a combined instruction footprint small enough to fit within the L1 instruction cache\cite{}, improving cache locality and reducing execution latency when cache residency can be maintained. Furthermore, Remote Procedure Call (RPC) semantics\cite{} are supported, combining message passing and control transfer into a single operation. This reduces scheduling overhead by enabling direct handoff between client and server threads when a service is invoked. 
 
-To make full-system verification realistically possible, seL4 is minimised near completely, more so than even the original L4 design\cite{}. To enforce the security properties specified in its proof, seL4 employs a capability-based access control model\cite{} as shown in Figure \ref{fig:acl-vs-capability}, which associate permission ownership with clients, rather than with objects. Capabilities are unforgeable tokens initially provided by the kernel, where possession of them grants explicit rights to their corresponding kernel objects, instead of a server having a list of client permissions, and clients having credentials to validate their requests with. This removal of ambient user authority eliminates ‘confused deputy\cite{}’ type problems.
+The minimal kernel size of sel4 makes full-system formal verification realistically possible. To enforce the security properties specified in its proof, seL4 employs a capability-based access control model\cite{} as shown in Figure \ref{fig:acl-vs-capability}, which associates permission ownership with clients, rather than with objects. Capabilities are unforgeable tokens, initially provided by the kernel, where possession grants explicit rights to their corresponding kernel objects, instead of a server having a list of client permissions and clients having credentials to validate their requests with. This removal of ambient user authority eliminates `confused deputy' type problems, in which a privileged component is mislead into abusing its authority on behalf of an unprivileged caller.
 
 \begin{figure}[h]
 \centering
@@ -215,9 +215,9 @@ To make full-system verification realistically possible, seL4 is minimised near 
 
 % Permission labels inside capability boxes
 \node[perm] at (2.45,1.72) {R};
-\node[perm] at (2.45,1.28) {R};
+\node[perm] at (2.45,1.28) {RW};
 
-\node[perm] at (2.45,0.22) {RW};
+\node[perm] at (2.45,0.22) {R};
 \node[perm] at (2.45,-0.22) {R};
 
 % Objects
@@ -232,25 +232,28 @@ To make full-system verification realistically possible, seL4 is minimised near 
 \draw[arr] (2.9,-0.22) to[out=-10,in=180] (bar2.west);
 
 \end{tikzpicture}
-\caption{Comparison of ACLs and Capability Based Access Control Models.}
+\caption{Comparison of ACLs and capability based access control models. Adapted from source: \cite{}}
 \label{fig:acl-vs-capability}
 \end{figure}
 
-This distribution of authority also decentralises access control, removing the single-point of failure risk, and simplifies security management by eliminating identity permission checks\cite{}. Following the principle of least privilege\cite{}, capabilities are granted by the kernel only when required for operation and may only be transferred explicitly between processes via a request to the kernel, ensuring that authority delegation is controlled and auditable.
+\newpage
+This distribution of authority also decentralises access control, removing the single-point-of-failure risk, and simplifies security management by eliminating identity permission checks. Following the principle of least privilege\cite{}, capabilities are granted by the kernel only when required for operation and may only be transferred explicitly between processes via the kernel, ensuring that authority delegation is controlled and auditable.
 
 \subsection{Use Cases and Applications}
 
-seL4’s principles of minimality and high assurance lend themselves particularly well to safety-critical and real-time systems, such as aerospace, automotive, and medical devices, where correctness and isolation are crucial. However, it is also intended as a general-purpose microkernel\cite{} to enable high-performance systems, establishing that strong security guarantees are not a barrier to efficiency.
+seL4’s principles of minimality and high assurance lend themselves particularly well to safety-critical and real-time systems, such as aerospace, automotive and medical devices, where correctness and isolation are crucial. However, it is also intended as a general-purpose microkernel\cite{} to enable high-performance systems, establishing that strong security guarantees are not a barrier to efficiency.
 
-\subsection{Microkit Framework for seL4}
+\subsection{Microkit Framework for seL4}\label{sec:microkitbg}
 
-The seL4 Microkit is a lightweight operating system framework built on top of seL4, designed to simplify and accelerate system development, while still leveraging the microkernel's performance and security benefits. It achieves this by abstracting away many complex, low-level seL4 mechanisms – such as capability management and system initialisation – and manages them automatically under a structured component model\cite{}. As such, systems are composed of Protection Domains (PDs)\cite{}, each representing an isolated execution environment containing a thread, an address space and a capability space (CSpace).
+The seL4 Microkit is a lightweight operating system framework built on top of seL4, designed to simplify and accelerate system development, while still leveraging the microkernel's performance and security benefits. It achieves this by abstracting many complex, low-level seL4 mechanisms – such as capability management and system initialisation – and manages them automatically under a structured component model\cite{}. As such, systems are composed of Protection Domains (PDs)\cite{}, each representing an isolated execution environment containing a thread, an address space and a capability space (CSpace).
+
+This small number of simple abstractions lie very close to the implementation of seL4 itself, and as such, allow very efficient implementations. They also provide a clear and consistent structure for system design, which naturally encourages use of seL4 as it was intended.
 
 To aid this abstraction simplicity, Microkit systems are defined statically through a system description\cite{}, from which initialisation code is generated, as displayed in Figure \ref{fig:microkit-build-runtime}.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[
-    scale=1, transform shape,
+    scale=0.85, transform shape,
     box/.style={draw, rectangle, minimum width=2.2cm, minimum height=1.1cm, align=center, fill=cyan!10},
     boxsdf/.style={draw, rectangle, minimum width=2.5cm, minimum height=1.1cm, align=center, fill=cyan!10},
     elfbox/.style={draw, rectangle, minimum width=1.5cm, minimum height=1.0cm, fill=green!10},
@@ -303,18 +306,16 @@ To aid this abstraction simplicity, Microkit systems are defined statically thro
 \draw[arrow] (sel4.north) -- (capdl.south);
 
 \end{tikzpicture}
-\caption{Build-time and Run-time Structures for a Microkit-based System.}
+\caption{Build-time and run-time structures for a Microkit-based system. Adapted from source: \cite{}}
 \label{fig:microkit-build-runtime}
 \end{figure}
-
-This enables explicit specification of communication channels and shared memory regions between PDs, easing system construction and improving predictability.
 \newpage
-These communication channels between PDs are connected via well-defined entry points\cite{}, as shown in Figure \ref{fig:pd-communication}.
-
-\begin{figure}[h]
+This enables explicit specification of communication channels and shared memory regions between PDs, easing system construction and improving predictability. These communication channels between PDs are connected via well-defined entry points\cite{}, as shown in Figure \ref{fig:pd-communication}.
+\vspace{0.5cm}
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-    scale=0.95, transform shape,
+    scale=0.8, transform shape,
     pd/.style={draw, dashed, rectangle, minimum width=4.8cm, minimum height=5cm},
     func1/.style={draw, rectangle, minimum width=3.0cm, minimum height=0.8cm, align=center, fill=green!15},
     func2/.style={draw, rectangle, minimum width=3.0cm, minimum height=0.8cm, align=center, fill=cyan!15},
@@ -369,13 +370,23 @@ These communication channels between PDs are connected via well-defined entry po
 };
 
 \end{tikzpicture}
-\caption{Communication Channels Between PDs.}
+\caption{Communication channels between PDs. Adapted from source: \cite{}}
 \label{fig:pd-communication}
 \end{figure}
 
 Synchronous interactions are implemented using RPC communication, while asynchronous interactions are supported via notification objects\cite{}, enabling event-driven signalling between components.
 
 \section{Client-Server Communication}
+
+\subsection{Synchronous Model}
+
+Synchronous interfacing is a communication model in which the client blocks upon issuing a request and resumes execution only once a response is received from the server, as illustrated in Figure \ref{fig:sync-async}. This is most effective in systems where the server is highly available and response latency is low, such that blocking delays are minimised. It is therefore commonly employed in tightly-coupled environments, as they are built around assumptions of strong coordination and shared resources\cite{}. This enforced ordering of operations also significantly improves the predictability of interactions and reduces the system complexity\cite{}, hence its use within the seL4 kernel.
+
+It is also particularly appropriate for situations where any subsequent computation depends on the result of the request. However, when this dependency is absent, performance can be limited by this blocking mechanism due to client idling and high communication overhead for high-frequency operations, as only one may be completed per request. 
+
+\subsection{Asynchronous Model}
+
+Alternatively, asynchronous interfacing decouples the client’s request from server-side processing, allowing execution to continue independently from response handling, if further processing does not depend on the operation response, as shown in Figure \ref{fig:sync-async}. This enables significantly improved system throughput and resource utilisation potential. This effect is amplified in multiclient environments, where multiple clients may issue requests concurrently, avoiding the widespread blocking that arises when the server must service each request sequentially.
 
 \begin{figure}[h]
 \centering
@@ -443,28 +454,18 @@ Synchronous interactions are implemented using RPC communication, while asynchro
 \draw[arrow] (5.35,2.2) -- (2.65,2.2);
 
 % labels
-\node[label] at (1.0,3.0) {Continue\\working};
+\node[label] at (0.5,3.0) {Continue working,\\if not dependent\\on response};
 
 \end{tikzpicture}
-\caption{Comparison of Synchronous and Asynchronous Communication Models.}
+\caption{Comparison of synchronous and asynchronous communication. Adapted from source: \cite{}.}
 \label{fig:sync-async}
 \end{figure}
 
-\subsection{Synchronous Model}
+In addition, asynchronous designs enable batching, where multiple requests may be combined, sent and processed together. By reducing the number of IPC interactions, batching can significantly lower communication overhead and improve overall efficiency\cite{}.
 
-Synchronous interfacing is a communication model in which the client blocks upon issuing a request and resumes execution only once a response is received from the server, as illustrated in Figure \ref{fig:sync-async}. This is most effective in systems where the server is highly available and response latency is low, such that blocking delays are minimised. It is therefore commonly employed in tightly-coupled environments, as they are built around assumptions of strong coordination and shared resources\cite{}. This enforced ordering of operations also significantly improves the predictability of interactions and reduces the system complexity\cite{}, hence its use within the seL4 kernel.
+This model aligns naturally with microkernel design, where IPC is a dominant factor in performance\cite{}. As system components are structured as loosely-coupled, user-space services, minimising IPC-induced synchronisation delays between services is key to improving overall system efficiency.
 
-It is also ideal for situations where subsequent computation depends on the result of the request. However, when this dependency is absent, performance can be limited by this blocking mechanism due to client idling and high communication overhead for high-frequency operations, as only one may be completed per request. 
-
-\subsection{Asynchronous Model}
-
-Alternatively, asynchronous interfacing decouples the client’s request from server-side processing, allowing execution to continue independently of response handling, as shown in Figure \ref{fig:sync-async}, enabling significantly improved system throughput and resource utilisation potential. This effect is amplified in multiclient environments, where multiple clients may issue requests concurrently, avoiding the widespread blocking that arises when the server must service each request synchronously.
-
-In addition, asynchronous designs enable batching, where multiple requests are combined and processed together. By reducing the number of IPC interactions required, batching can significantly lower communication overhead and improve overall efficiency\cite{}.
-
-This model aligns naturally with microkernel design, where IPC is a dominant factor in performance\cite{}. As system components are structured as loosely-coupled user-space services, minimising IPC-induced synchronisation delays between services is key to improving overall system efficiency.
-
-However, these benefits come at the cost of increased design complexity. Supporting concurrent and non-deterministic usage patterns requires the use of queues and buffers to manage outstanding requests and responses. These structures must be carefully sized and managed (by both the client and the server) to prevent request loss or backpressure. If insufficient buffering/queueing is available, the system may degrade towards synchronous behaviour, as clients are forced to wait for available capacity.
+However, these benefits come at the cost of increased design complexity. Supporting concurrent and non-deterministic usage patterns requires the use of queues and buffers to manage outstanding requests and responses. These structures must be carefully sized and managed (by both the client and the server) to prevent request loss or backpressure, preserving system elasticity. If insufficient buffering or queueing is available, the system may degrade towards synchronous behaviour, as clients are forced to wait for available capacity.
 
 More generally, asynchronous communication shifts the overhead from client idle time to memory usage: latency due to blocking is reduced, but additional data structures and coordination are required to manage multiple requests.
 
@@ -472,11 +473,11 @@ More generally, asynchronous communication shifts the overhead from client idle 
 \subsection{Role and Functionality}
 
 A file server is a centralised operating system component responsible for managing persistent data storage and providing controlled access to that data for multiple clients, as described in Figure \ref{fig:file-server-structure}. Persistence is typically achieved through disk-backed storage, allowing data to outlive the execution of individual processes and, in many cases, system restarts. This enables clients to externalise state once it becomes relatively stable, reducing their memory usage while ensuring durability.
-
+\vspace{0.2cm}
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}[
-    scale=1.05, transform shape,
+    scale=0.95, transform shape,
     client/.style={draw, rectangle, minimum width=1.0cm, minimum height=0.8cm, align=center, fill=green!15},
     server/.style={draw, rectangle, minimum width=2.2cm, minimum height=1.2cm, align=center, fill=cyan!10},
     storage/.style={draw, rectangle, minimum width=2.0cm, minimum height=1.2cm, align=center, fill=orange!15},
@@ -507,36 +508,37 @@ A file server is a centralised operating system component responsible for managi
 \node at (-4.5,-1.2) {Clients};
 
 \end{tikzpicture}
-\caption{Multiclient File Server Structure.}
+\caption{Multiclient file server structure.}
 \label{fig:file-server-structure}
 \end{figure}
+\vspace{-0.3cm}
 
-By maintaining data within a shared, centralised repository, the file server facilitates implicit data sharing between clients without requiring explicit inter-process data transfer. This improves efficiency by reducing duplication and minimising communication overhead. However, such a shared access model requires robust mechanisms for access control and isolation. The file server must enforce policies that govern which clients can read, write, or modify specific files, ensuring security, integrity, and consistency in a concurrent multiclient environment.
+By maintaining data within a shared, centralised repository, the file server facilitates implicit data sharing between clients without requiring explicit inter-process data transfer. This improves efficiency by reducing duplication and minimising communication overhead. However, such a shared access model requires robust mechanisms for access control and isolation. The file server must enforce policies that govern which clients can read, write, or modify specific files, ensuring security, integrity and consistency in a concurrent multiclient environment.
 
 \subsection{Abstractions}\label{sec:abstractions}
 
-To facilitate efficient data storage and retrieval, a file system introduces multiple layers of abstraction over raw storage. The primary abstraction is the file, which represents a named, persistent sequence of bytes that is independent of its physical organisation on the underlying medium. This logical abstraction enables interactions with the data as though it were stored contiguously, regardless of fragmentation or layout optimisations performed by the system.
+To facilitate efficient data storage and retrieval, a file system introduces multiple layers of abstraction over raw storage. The primary abstraction is the file, which represents a named, persistent sequence of bytes independent of its physical layout on the underlying medium. This logical abstraction enables interactions with the data as though it were stored contiguously, regardless of fragmentation or layout optimisations performed by the system.
 
-In addition to the byte sequence itself, each file is associated with metadata that describes its properties. This metadata commonly includes attributes such as file size, access permissions and ownership\cite{}. Such information is essential for enforcing access control and supporting higher-level system functionality.
+In addition to the byte sequence itself, each file is associated with metadata which describes its properties. This metadata commonly includes attributes such as file size, access permissions and ownership\cite{}. Such information is essential for enforcing access control and supporting higher-level system functionality.
 
 Client interactions with files are mediated through a well-defined set of parameterisable operations, typically including create, open, read, write, close and delete as a minimal interface\cite{}. These operations provide a consistent and reliable mechanism for managing the file lifecycle and accessing file contents.
 
-To decouple user processes from file server internals\cite{}, these operations reference files indirectly via a process-local handle, obtained through an open or create operation. These handles, commonly referred to as file descriptors, additionally encapsulate per-process state associated with an open file instance. This state includes attributes such as the access mode (e.g. read or write) and the current file offset, reducing the need to repeatedly specify this information across operations.
+To decouple user processes from file server internals\cite{}, these operations reference files indirectly via a process-local `handle', obtained through an open or create operation. These handles, commonly referred to as `file descriptors', additionally encapsulate per-process state associated with an open file instance. This state includes attributes such as the access mode (e.g. read or write) and the current file byte offset, reducing the need to repeatedly specify this information across operations.
 
-Furthermore, to support client management of multiple files, files are often organised hierarchically within directory structures, providing a namespace that maps human-readable names to underlying file objects. This organisation also allows easier metadata management and lookup operations for groups of files.
+Furthermore, to support client management of multiple files, they are often organised hierarchically within directory structures, providing a namespace that maps human-readable names to underlying file objects. This organisation also allows easier metadata management and lookup operations for groups of files.
 
 \subsection{Storage and Organisation}
 \subsubsection{File Layout}
 
-Unlike the logical view of a file as a contiguous byte sequence, physical storage does not generally store files contiguously. Doing so would make storage management inefficient, as operations such as file growth could require relocating large portions of data if the next bytes are not free. As such, most file systems instead employ a block-based storage model\cite{}.
+Unlike the logical view of a file as a contiguous byte sequence, physical storage does not generally store files contiguously. Doing so would make storage management inefficient, as operations such as file growth could require relocating the entire file's data if the next bytes are not free. As such, most file systems instead employ a block-based storage model\cite{}.
 
-In this model, storage is divided into fixed-size blocks, which can be allocated to files independently. A file is therefore represented as a collection of these blocks, with metadata structures maintaining the mapping between logical byte offsets and their corresponding physical locations. Block sizes (typically around 4KB) are often chosen to align with virtual memory page sizes, allowing more efficient interaction between the file system and memory accesses\cite{}.
+In this model, storage is divided into fixed-size blocks, which can be allocated to files independently. A file is therefore represented as a collection of these blocks, with metadata structures maintaining the mapping between logical byte offsets and their corresponding physical locations. Block sizes (typically around 4KiB) are often chosen to align with virtual memory page sizes, allowing more efficient interaction between the file system and memory transfers\cite{}.
 
-While this approach improves flexibility and space utilisation, it introduces additional overhead. Sequential data may be physically non-contiguous, potentially reducing read performance due to increased seek or access costs\cite{}. Furthermore, as all accesses occur at block granularity, the choice of block size represents a trade-off between space efficiency and operational overhead. Smaller blocks reduce internal fragmentation and wasted space when storing small files, but increase metadata overhead and the number of accesses required for large files.
+While this approach improves flexibility and space utilisation, it introduces  overhead. Sequential data may be physically non-contiguous, potentially reducing access performance due to increased seeking costs\cite{}. Furthermore, as all accesses occur at block granularity, the choice of block size represents a trade-off between space efficiency and operational overhead. Smaller blocks reduce wasted space when storing small files, but increase metadata overhead and the number of accesses required for large files.
 
 \subsubsection{Allocation Strategies}
 
-There are various methods through which these blocks are mapped to hold the contiguous file data. 
+There are various methods through which these blocks are mapped to the contiguous file data. 
 
 \textbf{Contiguous Allocation}
 
@@ -545,7 +547,7 @@ The simplest strategy is contiguous allocation, where a file is stored in a sequ
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.42\linewidth]{chapters/images/contig.png}
-    \caption{Contiguous Allocation Example.}
+    \caption{Contiguous allocation example. Source: \cite{silberschatz2013operating}.}
     \label{fig:contiguous}
 \end{figure}
 
@@ -558,7 +560,7 @@ Linked allocation avoids the limitations of contiguous allocation while maintain
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.42\linewidth]{chapters/images/linked.png}
-    \caption{Linked Allocation Example.}
+    \caption{Linked allocation example. Source: \cite{silberschatz2013operating}.}
     \label{fig:linked}
 \end{figure}
 
@@ -571,7 +573,7 @@ Indexed allocation, which is the most commonly used approach\cite{}, addresses t
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{chapters/images/indexed.png}
-    \caption{Indexed Allocation Example.}
+    \caption{Indexed allocation example. Source: \cite{silberschatz2013operating}.}
     \label{fig:indexed}
 \end{figure}
 
@@ -583,53 +585,52 @@ Metadata may be organised either centrally or on a per-file basis. In centralise
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.63\linewidth]{chapters/images/fat.png}
-    \caption{File Allocation Table Example.}
+    \includegraphics[width=0.52\linewidth]{chapters/images/fat.png}
+    \caption{FAT example. Source: \cite{silberschatz2013operating}.}
     \label{fig:fat}
 \end{figure}
 
 This means per-file block metadata need only store the index of the file’s starting block. While this approach is simple and centralises metadata management, it inherits the limitations of linked allocation.
 
 \newpage
-Alternatively, per-file metadata strategies, such as inode-based systems\cite{}, associate each file with a dedicated metadata structure that stores both file attributes and references to its data blocks. These references may be stored using a combination of direct and indirect pointers. Direct pointers reference data blocks directly, but as inodes are fixed-size structures, their number is limited. To support larger files, indirect pointers are used, where a pointer instead references a block containing further block addresses. This is illustrated in Figure \ref{fig:blocks}.
+Alternatively, per-file metadata strategies, such as inode-based policies used in POSIX-compliant systems\cite{}, associate each file with a dedicated metadata structure that stores both file attributes and references to its data blocks. These references may be stored using a combination of direct and indirect pointers. Direct pointers reference data blocks directly, but as inodes are fixed-size structures, their number is limited. To support larger files, indirect pointers are used, where a pointer instead references a block containing further block addresses. This is illustrated in Figure \ref{fig:blocks}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.68\linewidth]{chapters/images/blocks.png}
-    \caption{Indirect Block Indexing Example.}
+    \includegraphics[width=0.5\linewidth]{chapters/images/blocks.png}
+    \caption{Indirect block indexing example. Source: \cite{silberschatz2013operating}.}
     \label{fig:blocks}
 \end{figure}
 
+\newpage
 While this enables scalable file representation, it introduces additional levels of indirection, increasing the overhead required to resolve data locations.
 
 Hybrid approaches of these are also common such as New Technology File System (NTFS)\cite{}, which superseded FAT in Windows. NTFS employs per-file metadata structures similar to inodes, but represents file data using extents, storing ranges of contiguous blocks rather than listing each block individually, reducing metadata overhead for large, contiguous files.
 
 \subsubsection{Directory Structure}
 
-A directory is a structure that stores references to files rather than file data, enabling files to be organised hierarchically through the use of subdirectories, as demonstrated in Figure \ref{fig:dirs}.
-
+A directory is a structure that stores references to files rather than the file data itself, allowing files to be organised hierarchically through subdirectories, as illustrated in Figure \ref{fig:dirs}. They are typically also implemented using block-based storage, where each directory consists of one or more blocks containing a list of directory entries.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{chapters/images/dirs.png}
-    \caption{Directory Structure Example.}
+    \includegraphics[width=0.65\linewidth]{chapters/images/dirs.png}
+    \caption{Directory structure example. Source: \cite{silberschatz2013operating}.}
     \label{fig:dirs}
 \end{figure}
 
-This is achieved via directory entries, which associate a human-readable name with either a subdirectory or a file’s corresponding metadata structure, either directly in the entry for centralised systems or via a reference in per-file systems. Path-based access is used to locate files, where a path represents a sequence of directories that must be traversed to resolve a name to its associated metadata.
-
+Each directory entry is a structured record that represents either a nested file or subdirectory. These records are used to bind a human-readable name to the corresponding entry’s metadata structure. This design is inherently recursive, since a directory entry can reference another directory whose blocks contain further lists of entries. Entries are then accessed via paths, where a path specifies a sequence of directory entries that must be traversed to resolve a name to its associated metadata.
 \subsection{Client Management}
 
 As previously discussed in Section \ref{sec:abstractions}, metadata stores information such as file ownership and access permissions. These are required to ensure that clients can control access to their files and prevent unauthorised modification or retrieval by others. At the simplest level, files may be designated as private, where only the owner has access, or public, where any client may access them.
 
-More fine-grained systems define separate permissions for operations such as reading, writing and execution, allowing, for example, a file to be read but not modified by other clients. More advanced models, such as capability-based access control\cite{} or access control lists (ACLs)\cite{}, allow permissions to be specified for individual clients or groups, providing greater flexibility at the cost of increased complexity in storage and management.
+More fine-grained systems define separate permissions for operations such as reading, writing and execution, allowing, for example, a file to be read but not modified by other clients. More advanced models, such as capability-based access control or access control lists (ACLs), as discussed in Section \ref{sec:sel4design}, allow permissions to be specified for individual clients or groups of clients, providing greater flexibility at the cost of increased complexity in storage and management.
 
-Additionally, when multiple clients have write access to a file, mechanisms may be employed to prevent race conditions\cite{} and ensure consistency, particularly for deletion operations.
+Additionally, when multiple clients may have write access to a file, mechanisms may be employed to prevent race conditions -- where concurrent updates may overwrite or invalidate one another -- and ensure consistency, particularly for deletion operations.
 
 \section{Related Work}
 
-Existing file systems and I/O services are commonly implemented using synchronous request-response models, where operations block until completion\cite{}. While this simplifies reasoning and integration with existing software, it can limit concurrency and lead to inefficient resource utilisation. Recent developments such as \texttt{io\_uring} have demonstrated significant performance improvements by enabling asynchronous I/O through submission and completion queues, reducing syscall overhead and allowing multiple outstanding operations\cite{}. However, this shift in execution model has introduced security concerns, as existing security mechanisms were not designed for such interfaces, leading to vulnerabilities arising from increased complexity and a larger attack surface\cite{}.
+Existing file systems and I/O services are commonly implemented using synchronous request-response models, where operations block until completion\cite{}. While this simplifies reasoning and integration with existing software, it can limit concurrency and lead to inefficient resource utilisation. Recent developments, such as \texttt{io\_uring} in Linux, have demonstrated significant performance improvements by enabling asynchronous I/O through submission and completion queues, reducing syscall overhead and allowing multiple outstanding operations\cite{}. However, this shift in execution model has introduced security concerns, as existing security mechanisms were not designed for such interfaces, leading to vulnerabilities arising from increased complexity and a larger attack surface\cite{}.
 
-In contrast, seL4 is a comparatively recent system designed with strong security guarantees and minimal trusted computing base. As a result, it lacks much of the legacy infrastructure that constrains the adoption of new interfaces in more established systems\cite{}. Furthermore, unlike some other microkernel designs, seL4 does not provide asynchronous primitives at the kernel level, instead relying on synchronous IPC. While this design performs well for individual interactions, it can limit concurrency in user-space services where operations may require multiple sequential IPC calls, and have multiple clients.
+In contrast, seL4 is a comparatively less scaled and more recent system, designed with strong security guarantees and a minimal trusted computing base. As a result, it lacks much of the legacy infrastructure that constrains the adoption of new interfaces in more established systems\cite{}. Furthermore, unlike some other microkernel designs, seL4 does not provide asynchronous primitives at the kernel level, instead relying on synchronous IPC. While this design performs well for individual interactions, it can limit concurrency in user-space services where operations may require multiple sequential IPC calls and have multiple clients.
 
-Consequently, introducing asynchronous behaviour at the user level presents a promising approach to improving seL4 performance without compromising the kernel’s design principles. However, there is limited existing work exploring asynchronous, multiclient file server designs in seL4 specifically targeting the reduction of IPC overhead.
+Consequently, introducing asynchronous behaviour at the user level presents a promising approach to improving seL4 performance without compromising the kernel’s design principles. However, there is limited existing work exploring asynchronous file server designs in seL4.
 

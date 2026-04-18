@@ -1,4 +1,23 @@
 \documentclass[12pt,BSc,wordcount,twoside]{muthesis}
+\makeatletter
+
+\def\@makechapterhead#1{%
+  \vspace*{20\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries \thechapter\quad #1\par\nobreak
+    \vskip 30\p@
+  }}
+
+\def\@makeschapterhead#1{%
+  \vspace*{20\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \interlinepenalty\@M
+    \Huge \bfseries #1\par\nobreak
+    \vskip 30\p@
+  }}
+
+\makeatother
 % The regulations say that 12pt should be used
 % Change the MSc option to MPhil, MRes or PhD if appropriate
 % Add 'anon' to the above options to replace your name with your student ID
@@ -8,12 +27,13 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{pslatex} % Use Postscript fonts
-\usepackage{titlesec} 
+\usepackage{titlesec}
+\usepackage[caption=false]{subfig}
 \usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usetikzlibrary{arrows.meta, positioning}
-\titlespacing*{\chapter}{0pt}{-20pt}{10pt}
+\titlespacing*{\chapter}{0pt}{-20pt}{0pt}
 \titlespacing*{\section}{0pt}{1.5ex}{1ex}
 \titlespacing*{\subsection}{0pt}{1.2ex}{0.8ex}
 \titlespacing*{\subsubsection}{0pt}{1ex}{0.6ex}
@@ -33,8 +53,28 @@
 %\chead{Draft: \today} % centre head
 %\lfoot{}
 %\cfoot{\thepage}
-%\rfoot{}
+%\rfoot{}  
+\usepackage{listings}
+\usepackage{xcolor}
 
+\lstdefinestyle{cstyle}{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    tabsize=4,
+    breaklines=true,
+    frame=single,
+    captionpos=b
+}
+
+\lstset{style=cstyle}
 \begin{document}
 % Uncomment the following lines to leave out list of figures, tables
 % and copyright until final printing
