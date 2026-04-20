@@ -1,28 +1,27 @@
 \chapter{Evaluation}
 \label{cha:evaluation}
 
-To address both correctness and performance, the entire file server implementation was evaluated via multiple stages of testing and performance analysis. 
+To increase confidence in both the correctness and performance of the file server implementation, evaluation was conducted via multiple stages of testing and performance analysis. 
 
 \section{Validation}
 
 Extensive validation was conducted to evaluate the correctness, robustness and reliability of the file server under both normal and adverse conditions. Given the range of supported operations, numerous edge cases and error scenarios arise. Additionally, the presence of multiple clients and asynchronous communication introduces further complexity, requiring testing not only to verify functional correctness but also to ensure that the system maintains consistency and stability under interleaved workloads.
 
-To increase confidence in the correctness of the system as a whole, testing was conducted at multiple levels. Initially, unit testing was used to verify the functionality of individual components in isolation. This enabled a modular development approach, allowing components to be validated incrementally during implementation. Testing at this level also simplified debugging, as errors were easier to localise due to their limited scope and the reduced code surface. 
-
-However, as the system relies heavily on interactions between components and protection domains, integration testing was also necessary. This enabled validation of end-to-end behaviour, ensuring that all operations functioned correctly when executed through the full client–server interface under a range of conditions.
-
 \subsection{Unit Tests}
 
-Unit tests were developed for the core of the file system, including components such as block, inode and directory management and file handle operations. These tests focused solely on verifying the correctness of the file server’s data structures and their accesses.
+Unit tests were developed for the core of the file system, including components such as block, inode and directory management and file handle operations. These tests focused solely on verifying the correctness of the file server’s data structures and their accesses in isolation.
 
-To ensure this isolation, these components were tested by directly invoking their functions outside the Microkit environment. This allowed inputs and supporting data to be simulated through deterministic flows, and the internal state of the file system to be inspected, enabling correctness to be validated at each stage of execution. Testing regular inputs alongside failure conditions, such as resource exhaustion, gave confidence that the fundamental building blocks of the file system operated correctly before integration and would not cause wider issues upon failure.
+Testing at this level enabled a modular development approach, allowing components to be validated incrementally during implementation. This also simplified debugging, as errors were easier to localise due to their limited scope.
+
+To ensure separation of concerns, these components were tested by directly invoking their functions outside the Microkit environment. This allowed inputs and supporting data to be simulated through deterministic flows, and the internal state of the FS to be inspected, enabling correctness to be validated at each stage of execution. Testing regular inputs alongside failure conditions, such as resource exhaustion, gave confidence that the fundamental building blocks of the FS operated correctly before integration and would not cause wider issues upon failure.
 \newpage
-For example, one test constructs a mock `indirect block' containing a list of allocated block indices, invokes the \texttt{release\_indirect\_block} routine, and then verifies that each referenced block is marked free in the block allocation table.
+For example, one test constructs a mock `indirect block' containing a list of allocated block indices, invokes the \texttt{release\_indirect\_block} routine, and then verifies that each referenced block is marked free in the BAT.
 
 
 \subsection{Integration Tests}
 
-Once the components were verified, integration testing was used to validate the behaviour of the system as a whole, exercising all file system operations through its regular running microkit environment. Rather than directly inspecting internal state, validation was performed through the responses and error codes returned to clients, such as creating a file then listing the root directory. This ensured that testing reflected real system usage and confirmed that correct behaviour was exposed through the public interface.
+Once the components were verified, integration testing was used to validate the behaviour of the system as a whole, exercising all FS operations through its regular running microkit environment. Rather than directly inspecting internal state, validation was performed through the responses and error codes returned to clients, such as creating a file then listing the root directory. This ensured that testing reflected real system usage and confirmed that correct behaviour was exposed through the public interface.
+
 
 \subsubsection{Single Client}
 
@@ -30,9 +29,9 @@ These tests exercised the majority of functionality from the client’s perspect
 
 \subsubsection{Multiple Clients}
 
-To ensure that all clients were serviced correctly and fairly, and that the system operated reliably under load, extended tests were conducted which interleaved operations from multiple clients. This enabled validation of scenarios that cannot be observed in a single-client context, including permission enforcement and modification of shared resources.
+To ensure that all clients were serviced correctly, and that the system operated reliably under load, extended tests were conducted which interleaved operations from multiple clients. This enabled validation of scenarios that cannot be observed in a single-client context, including permission enforcement and modification of shared resources.
 
-As clients execute independently, explicit synchronisation was required. This was achieved through the use of marker files, where clients created files with predefined names that were monitored by other clients. These acted as barriers, allowing coordination of execution order and enabling clients to signal completion of operations to both the server and one another. For example, one test creates a publicly readable file as client 1, after which client 2 attempts to read that file to verify access is permitted. The file is then modified by client 1 to be private, and client 2 subsequently attempts to read it again, verifying that the operation is correctly rejected with an \texttt{INVALID\_PERMISSIONS} error.
+As clients execute independently, explicit synchronisation was required. This was achieved through the use of marker files, where files where created with predefined names and were monitored by other clients. These acted as barriers, allowing coordination of execution order and enabling clients to signal completion of operations to both the server and one another. For example, one test creates a publicly readable file as client 1, after which client 2 attempts to read that file to verify access is permitted. The file is then modified by client 1 to be private, and client 2 subsequently attempts to read it again, verifying that the operation is correctly rejected with an \texttt{INVALID\_PERMISSIONS} error.
 
 \section{Performance Evaluation}
 
@@ -42,29 +41,29 @@ The primary goal of this evaluation was to compare the performance characteristi
 
 \subsection{Metrics}
 
-For the per-operation benchmarking, performance was evaluated using the average time per-operation, calculated by measuring the total execution time of a long sequence of the specified operation, to amortise any stochastic effects, and dividing by the number of operations performed. For the more realistic workflows, time taken to complete the whole suite was used. These provided consistent bases for comparing synchronous and asynchronous implementations.
+For the per-operation benchmarking, performance was evaluated using the average time per-operation, taken from the total execution time of a long sequence of the specified operation, to amortise any stochastic effects. For the more realistic workflows, time taken to complete the whole suite was used.
 
 Time measurement was performed using the CPU cycle counter, as the low-level execution environment did not provide native timing facilities. The cycle count was recorded before and after each client’s measurable operations, and converted to elapsed time using the processor’s clock frequency. Results were averaged across multiple runs to mitigate run-to-run noise and improve reliability.
 
-In multiclient scenarios, fairness was also considered. This was validated by recording the total time taken by each client to complete its workload, ensuring that no individual client experienced disproportionate delay.
+In multiclient scenarios, fairness was also considered. This was validated by recording the total time taken by each client to complete its workload.
 
 \subsection{Experimental Setup}
 
-All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platform, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and file system state.
+All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platform, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and FS state.
 
-For each experiment, the only variables altered were the server design (synchronous or asynchronous), the batching configuration and the number of clients. All operations were validated for correctness during execution to ensure that performance results reflected valid system behaviour rather than erroneous outcomes. During the varied workload, this processing also mimicked non-file I/O that would occur in a typical system, helping to ensure that the measured performance reflected realistic operating conditions.
+All operations were validated for correctness during execution to ensure that performance results reflected valid system behaviour rather than erroneous outcomes. During the varied workload, this processing also mimicked non-file I/O that would occur in a typical system, helping measured performance reflect realistic operating conditions.
 
 \subsection{Benchmark Design} 
  
 Two benchmark suites were developed to evaluate system performance. The first was designed to isolate and quantify the reduction in communication overhead achieved by the asynchronous server, while the second evaluated overall system performance under more realistic and varied workloads.
 
-This initial aim was achieved through a single-client benchmark which repeatedly executed a single type of operation allowing controlled measurements of individual operation costs for both systems. Both read and write operations were evaluated independently, as they are representative of common file system usage and exhibit differing behaviour. As timing was recorded from the client’s perspective, this included both internal server processing time and communication overhead.
+This initial aim was achieved through a single-client benchmark which repeatedly executed a single type of operation allowing controlled measurements of individual operation costs for both systems. Both read and write operations were evaluated independently, as they are representative of common FS usage and exhibit differing behaviour. As timing was recorded from the client’s perspective, this included both internal server processing time and communication overhead.
  
-For the asynchronous implementation, the benchmark was executed with varying batch sizes. A batch size of one provided a baseline comparison, to ensure that the asynchronous design does not significantly degrade performance when batching is not possible, which is important as many real workloads contain inherent dependencies. Larger batch sizes allowed evaluation of how batching reduces per-operation cost, identifying the point at which performance improvements are significant and where further increases yield diminishing returns.
+For the asynchronous implementation, the benchmark was executed with varying batch sizes. A batch size of one provided a baseline comparison, to ensure that the asynchronous design did not significantly degrade performance when batching was not possible, which is important as many real workloads contain inherent dependencies, while larger batch sizes allowed evaluation of how less IPC reduces per-operation cost.
 
-The second benchmark was a multiclient, realistic workload designed to simulate typical file system usage. Multiple clients executed independently, each performing a sequence of  varied operations across many files. This sequence consisted of Create, Write, Close, Open, Seek, Read and Delete operations, representing a complete file lifecycle. Operations were interleaved across clients to introduce contention and better reflect real-world usage patterns.
+The second benchmark was a multiclient, realistic workload designed to simulate typical FS usage. Multiple clients executed independently, each performing a sequence of varied operations across many files. This sequence represented a complete file lifecycle. Operations were interleaved across clients to introduce contention and better reflect real-world usage patterns.
 
-As batching is central to the performance benefits of the asynchronous design, this benchmark was structured to allow batching where it would naturally occur, without artificially constraining the workload. While it is possible to construct workloads with strict dependencies between operations, this would reduce asynchronous behaviour to that of the synchronous system and provide limited insight beyond the single-operation benchmark. 
+As batching is central to the performance benefits of the asynchronous design, this benchmark was structured to allow batching where it would naturally occur, without artificially constraining the workload, as a workload with strict dependencies between operations would remove the asynchronous benefits and provide limited insight beyond the single-operation baseline benchmark. 
 
 Instead, operations were grouped into realistic batches:
 \vspace{-0.3cm}
@@ -75,7 +74,7 @@ Instead, operations were grouped into realistic batches:
     \item \textbf{Batch 4:} Seek and Read and Delete.
 \end{itemize}
 \vspace{-0.3cm}
-Performance was measured across varying numbers of clients, enabling analysis of scalability, contention and the impact of interleaved access. This approach provided a balanced evaluation, allowing direct comparison of synchronous and asynchronous designs under both controlled and realistic conditions.
+Performance was measured across varying numbers of clients, enabling analysis of scalability and contention to provide a more balanced comparison between the designs.
 
 \subsection{Results and Analysis}
 
@@ -88,15 +87,15 @@ Performance was measured across varying numbers of clients, enabling analysis of
     \label{fig:avg_operation_time_by_batch_size}
 \end{figure}
 
-Figure~\ref{fig:avg_operation_time_by_batch_size} shows the average time taken per operation against batch size for both read and write operations, alongside the synchronous baseline for comparison. The synchronous system achieves 70~$\mu$s for writes and 58~$\mu$s for reads, reflecting the lower internal processing cost of read operations in this in-memory system.
+Figure~\ref{fig:avg_operation_time_by_batch_size} shows how the average time taken per operation is affected by batch size for both read and write operations, alongside the synchronous baseline for comparison. The synchronous system achieves 70~$\mu$s for writes and 58~$\mu$s for reads.
 
-When the asynchronous system is configured with a batch size of one, performance is effectively identical to the synchronous case, with writes at 69~$\mu$s and reads at 57~$\mu$s. This confirms that the asynchronous interface introduces negligible overhead in the absence of batching, validating that it can be used without performance degradation when batching is not possible.
+At a batch size of one, asynchronous performance is effectively identical to the synchronous case, with writes at 69~$\mu$s and reads at 57~$\mu$s. This confirms that negligible overhead is introduced in the absence of batching, validating that it can be used without performance degradation in more dependent workflows.
 
-As batch size increases, a substantial reduction in per-operation cost is observed, indicating that communication overhead forms a significant component of total operation latency. For write operations, latency decreases from 69~$\mu$s at batch size one to a minimum of 27~$\mu$s at batch sizes of seven and above, corresponding to an approximate 60\% reduction. Read operations exhibit an even greater improvement, decreasing from 57~$\mu$s to approximately 17~$\mu$s, yielding reductions of around 70\%. The total time reduction per operation, however, is roughly equal for both operations ($\approx 40~\mu s$), indicating that the relative improvement is greater for reads due to their lower internal processing cost.
+As batch size increases, a substantial reduction in per-operation cost is observed, indicating that communication overhead forms a significant component of total operation latency. For write operations, latency decreases from 69~$\mu$s at batch size one to a minimum of 27~$\mu$s at batch sizes of seven and above, corresponding to an approximate 60\% reduction. Read operations, with less internal processing cost, exhibit an even greater relative improvement, decreasing from 57~$\mu$s to approximately 17~$\mu$s, yielding reductions of around 70\%.
 \newpage
-The majority of this improvement occurs at relatively small batch sizes, with both the write and read operations exhibiting extremely similar trends, showing this behaviour is consistent over varied conditions. Increasing the batch size from one to four reduces write latency from 69~$\mu$s to 33~$\mu$s ($\sim52\%$) and read latency from 57~$\mu$s to 23~$\mu$s ($\sim60\%$). Beyond this point, performance improvements become incremental, plateauing completely beyond a batch size of 7, as the system approaches its performance bound.
+The majority of this improvement occurs at relatively small batch sizes, with both the write and read operations exhibiting extremely similar trends, showing this that behaviour is consistent. 90\% of the total reduction seen was achieved by a batch size of 4, beyond this point, performance improvements become incremental, plateauing completely beyond a batch size of 7, as the system approaches its performance bound.
 
-This trend is further supported by Figure \ref{fig:avg_operation_time_gradient_by_batch_size}, which shows the gradient of the per-operation time with respect to batch size. The gradient magnitude decreases rapidly as batch size increases, approaching zero at larger batch sizes.
+This trend is further supported by Figure \ref{fig:avg_operation_time_gradient_by_batch_size}. The gradient magnitude of the per-operation time for both operations decreases rapidly as batch size increases, approaching zero at larger batch sizes.
 
 \begin{figure}[H]
     \centering
@@ -105,7 +104,7 @@ This trend is further supported by Figure \ref{fig:avg_operation_time_gradient_b
     \label{fig:avg_operation_time_gradient_by_batch_size}
 \end{figure}
 
-These results closely follow the analytical model discussed in section \ref{sec:ipc_design}. The stabilising of performance at larger batch sizes indicates that the communication overhead has been effectively amortised, and the system is now operating close to its computational performance bound. At a batch size of 7, this upper bound is relatively achievable, indicating that IPC overhead could be effectively mitigated in realistic system conditions.
+These results closely follow the analytical model discussed in section \ref{sec:ipc_design}. The stabilising of performance at larger batch sizes indicates that the communication overhead has been effectively amortised, and the system is now operating close to its limit. At a batch size of 7, this upper bound is relatively achievable, indicating that IPC overhead could be effectively mitigated in realistic system conditions.
 
 \subsubsection{Realistic Multiclient Workload}
 
@@ -123,26 +122,23 @@ For a single client, the synchronous system took approximately 232~ms to complet
 
 Although there is some variation across client counts, it is minimal and exhibits no clear trend, suggesting that the workload scales predictably and that the systems remain robust as load increases.
 
-Fairness between clients is illustrated in Figure \ref{fig:completion_variation_by_clients}, which shows the distribution of variation of completion times for individual clients in the synchronous and asynchronous systems respectively. Because the measurement is relatively coarse, capturing only the global time from a client starting to a client finishing rather than its time spent actively processing, it is of limited significance. In particular, it does not reflect fairness during execution, having no periodic measurements, as these are difficult to implement reliably in a single-core pre-emptive system, where execution order depends on scheduler behaviour. However it still provides some safety checks that no client is being excessively delayed.
+Fairness between clients is illustrated in Figure~\ref{fig:completion_variation_by_clients} through variation in client completion times. While this is a coarse measure, capturing only overall completion time rather than fairness during execution, it provides a basic check that no client is excessively delayed.
 
-Both graphs exhibit very similar trends, with the range of completion times remaining relatively low across all client counts. For the synchronous system, the variation increases gradually from 4~ms at 2 clients to 28~ms at 10 clients. A similar pattern is observed for the asynchronous system, where the range grows from 0~ms at 2 clients to 31~ms at 10 clients.
 
 \begin{figure}[H]
     \centering
     \subfloat[Synchronous]{%
-        \includegraphics[width=0.49\linewidth]{chapters/images/sync_completion_variation_by_clients.png}
+    \includegraphics[width=0.49\linewidth]{chapters/images/sync_completion_variation_by_clients.png}
     }
     \hfill
     \subfloat[Asynchronous]{%
-        \includegraphics[width=0.49\linewidth]{chapters/images/async_completion_variation_by_clients.png}
+    \includegraphics[width=0.49\linewidth]{chapters/images/async_completion_variation_by_clients.png}
     }
     \caption{Client completion time variability (min - max) by number of clients}
     \label{fig:completion_variation_by_clients}
 \end{figure}
 
 
-There is a slight upward trend for both systems, which is expected, because, as the number of clients increases, there is greater opportunity for minor scheduling differences, resource contention and execution overlap to accumulate. 
+Both systems exhibit very similar behaviour, with relatively low completion-time variation that increases modestly with client count, as expected under growing contention. Although the synchronous system shows slightly lower variation, the difference is minimal. Overall, neither design exhibits a significant fairness issue or introduces disproportionate delays for individual clients.
 
-While the synchronous system exhibits slightly lower variation, the difference is minimal and does not indicate a significant fairness issue in either system. Both systems maintain relatively consistent performance across clients, suggesting that neither design introduces disproportionate delays for any individual client, even under high contention.
-
-Overall, these results show that the asynchronous design provides substantially better performance under realistic multiclient workloads, while maintaining fairness comparable to the synchronous system. Although the performance gains are lower than those observed in the single-operation benchmark, due to the presence of dependencies and less consistent batching opportunities, the asynchronous system still achieves significant improvements. This confirms that batching and reduced IPC frequency remain effective in more complex and realistic usage scenarios.
+Overall, these results show that the asynchronous design can substantially reduce IPC overhead and improve performance where batching opportunities exist, while maintaining fairness comparable to the synchronous system and introducing negligible overhead when batching is not exploited.
