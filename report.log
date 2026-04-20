@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  18 APR 2026 12:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  20 APR 2026 17:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -50,7 +50,46 @@ Package: iftex 2024/12/12 v1.0g TeX engine tests
 \Gm@layouthoffset=\dimen155
 \Gm@layoutvoffset=\dimen156
 \Gm@dimlist=\toks18
- (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/tools\verbatim.sty
+ (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/tocloft\tocloft.sty
+Package: tocloft 2017/08/31 v2.3i parameterised ToC, etc., typesetting
+Package tocloft Info: The document has chapter divisions on input line 51.
+\cftparskip=\skip51
+\cftbeforetoctitleskip=\skip52
+\cftaftertoctitleskip=\skip53
+\cftbeforepartskip=\skip54
+\cftpartnumwidth=\skip55
+\cftpartindent=\skip56
+\cftbeforechapskip=\skip57
+\cftchapindent=\skip58
+\cftchapnumwidth=\skip59
+\cftbeforesecskip=\skip60
+\cftsecindent=\skip61
+\cftsecnumwidth=\skip62
+\cftbeforesubsecskip=\skip63
+\cftsubsecindent=\skip64
+\cftsubsecnumwidth=\skip65
+\cftbeforesubsubsecskip=\skip66
+\cftsubsubsecindent=\skip67
+\cftsubsubsecnumwidth=\skip68
+\cftbeforeparaskip=\skip69
+\cftparaindent=\skip70
+\cftparanumwidth=\skip71
+\cftbeforesubparaskip=\skip72
+\cftsubparaindent=\skip73
+\cftsubparanumwidth=\skip74
+\cftbeforeloftitleskip=\skip75
+\cftafterloftitleskip=\skip76
+\cftbeforefigskip=\skip77
+\cftfigindent=\skip78
+\cftfignumwidth=\skip79
+\c@lofdepth=\count287
+\c@lotdepth=\count288
+\cftbeforelottitleskip=\skip80
+\cftafterlottitleskip=\skip81
+\cftbeforetabskip=\skip82
+\cfttabindent=\skip83
+\cfttabnumwidth=\skip84
+) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/tools\verbatim.sty
 Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
 \every@verbatim=\toks19
 \verbatim@line=\toks20
@@ -74,24 +113,24 @@ File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
-\lst@mode=\count287
+\lst@mode=\count289
 \lst@gtempboxa=\box53
 \lst@token=\toks21
-\lst@length=\count288
+\lst@length=\count290
 \lst@currlwidth=\dimen159
-\lst@column=\count289
-\lst@pos=\count290
+\lst@column=\count291
+\lst@pos=\count292
 \lst@lostspace=\dimen160
 \lst@width=\dimen161
-\lst@newlines=\count291
-\lst@lineno=\count292
+\lst@newlines=\count293
+\lst@lineno=\count294
 \lst@maxwidth=\dimen162
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty
 File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
-\c@lstnumber=\count293
-\lst@skipnumbers=\count294
+\c@lstnumber=\count295
+\lst@skipnumbers=\count296
 \lst@framebox=\box54
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
 File: listings.cfg 2025/11/14 1.11b listings configuration
@@ -106,7 +145,7 @@ Package: listings 2025/11/14 1.11b (Carsten Heinz)
     so I'm assuming it got fixed.
 (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count295
+\c@float@type=\count297
 \float@exts=\toks22
 \float@box=\box55
 \@float@everytoks=\toks23
@@ -149,8 +188,8 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \ttl@box=\box57
-\beforetitleunit=\skip51
-\aftertitleunit=\skip52
+\beforetitleunit=\skip85
+\aftertitleunit=\skip86
 \ttl@plus=\dimen163
 \ttl@minus=\dimen164
 \ttl@toksa=\toks24
@@ -171,19 +210,17 @@ Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@hangindent=\dimen175
 Package caption Info: Standard document class detected.
 )
-\c@KVtest=\count296
-\sf@farskip=\skip53
+\c@KVtest=\count298
+\sf@farskip=\skip87
 \sf@captopadj=\dimen176
-\sf@capskip=\skip54
-\sf@nearskip=\skip55
-\c@subfigure=\count297
-\c@subfigure@save=\count298
-\c@lofdepth=\count299
-\c@subtable=\count300
-\c@subtable@save=\count301
-\c@lotdepth=\count302
-\sf@top=\skip56
-\sf@bottom=\skip57
+\sf@capskip=\skip88
+\sf@nearskip=\skip89
+\c@subfigure=\count299
+\c@subfigure@save=\count300
+\c@subtable=\count301
+\c@subtable@save=\count302
+\sf@top=\skip90
+\sf@bottom=\skip91
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty
@@ -277,7 +314,7 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
 )
-\Hy@SectionHShift=\skip58
+\Hy@SectionHShift=\skip92
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.sty (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.sty (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil-common.tex
 \pgfutil@everybye=\toks25
 \pgfutil@tempdima=\dimen181
@@ -488,31 +525,35 @@ File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count336
-) (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux) (chapters/6_evaluation.aux) (chapters/7_conclusion.aux) (appendix1.aux))
+) (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux
+
+LaTeX Warning: Label `lst:file-open-ops' multiply defined.
+
+) (chapters/6_evaluation.aux) (chapters/7_conclusion.aux))
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 78.
-LaTeX Font Info:    Trying to load font information for OMS+pzccm on input line 78.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OMS/pzccm/m/n on input line 91.
+LaTeX Font Info:    Trying to load font information for OMS+pzccm on input line 91.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omspzccm.fd
 File: omspzccm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/pzccm.
 )
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 78.
-LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 91.
+LaTeX Font Info:    ... okay on input line 91.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -571,7 +612,7 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 78.
+Package hyperref Info: Link coloring OFF on input line 91.
  (report.out) (report.out)
 \@outlinefile=\write4
 \openout4 = `report.out'.
@@ -581,64 +622,44 @@ Package hyperref Info: Link coloring OFF on input line 78.
 {C:/Users/luker/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}] (chapters/1_abstract.tex) [1
 
 ] (report.toc
-LaTeX Font Info:    Trying to load font information for OT1+ptmcm on input line 2.
+LaTeX Font Info:    Trying to load font information for OT1+ptmcm on input line 1.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptmcm.fd
 File: ot1ptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ptmcm.
 )
-LaTeX Font Info:    Trying to load font information for OML+ptmcm on input line 2.
+LaTeX Font Info:    Trying to load font information for OML+ptmcm on input line 1.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omlptmcm.fd
 File: omlptmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ptmcm.
 )
-LaTeX Font Info:    Trying to load font information for OMX+psycm on input line 2.
+LaTeX Font Info:    Trying to load font information for OMX+psycm on input line 1.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\omxpsycm.fd
 File: omxpsycm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/psycm.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 2.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 2.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 2.
- [2
-
-] [3] [4])
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
+ [2] [3])
 \tf@toc=\write5
 \openout5 = `report.toc'.
 
  (word.count)
-Underfull \hbox (badness 10000) in paragraph at lines 95--95
+Underfull \hbox (badness 10000) in paragraph at lines 108--108
 
  []
 
-[5] (report.lof
-
-LaTeX Warning: Citation `' on page vi undefined on input line 5.
-
-
-LaTeX Warning: Citation `' on page vi undefined on input line 6.
-
-
-LaTeX Warning: Citation `' on page vi undefined on input line 7.
-
-
-LaTeX Warning: Citation `' on page vi undefined on input line 8.
-
-
-LaTeX Warning: Citation `' on page vi undefined on input line 9.
-
-)
+[4] (report.lof)
 \tf@lof=\write6
 \openout6 = `report.lof'.
 
- [6
+ [5] [6
 
 ] [7
 
 ] [8
 
-] [9
-
-] (abbreviations.tex) [10
+] (abbreviations.tex) [9
 
 ]
 \openout2 = `chapters/2_introduction.aux'.
@@ -745,9 +766,6 @@ LaTeX Warning: Citation `' on page 5 undefined on input line 47.
 
 ]
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 127.
-
-
 LaTeX Warning: Citation `' on page 6 undefined on input line 131.
 
 
@@ -850,9 +868,6 @@ Overfull \hbox (21.12471pt too wide) in paragraph at lines 157--158
 
 LaTeX Warning: Citation `' on page 8 undefined on input line 159.
 
-
-LaTeX Warning: Citation `' on page 8 undefined on input line 235.
-
 [8]
 
 LaTeX Warning: Citation `' on page 9 undefined on input line 240.
@@ -869,15 +884,9 @@ LaTeX Warning: Citation `' on page 9 undefined on input line 248.
 
 LaTeX Warning: Citation `' on page 9 undefined on input line 252.
 
-
-LaTeX Warning: Citation `' on page 9 undefined on input line 309.
-
 [9]
 
 LaTeX Warning: Citation `' on page 10 undefined on input line 313.
-
-
-LaTeX Warning: Citation `' on page 10 undefined on input line 373.
 
 
 LaTeX Warning: Citation `' on page 10 undefined on input line 377.
@@ -889,9 +898,6 @@ LaTeX Warning: Citation `' on page 10 undefined on input line 383.
 LaTeX Warning: Citation `' on page 10 undefined on input line 383.
 
 [10]
-
-LaTeX Warning: Citation `' on page 11 undefined on input line 460.
-
 
 LaTeX Warning: Citation `' on page 11 undefined on input line 464.
 
@@ -918,13 +924,13 @@ LaTeX Warning: Citation `' on page 13 undefined on input line 535.
 
 LaTeX Warning: Citation `' on page 13 undefined on input line 537.
 
-<chapters/images/contig.png, id=631, 432.11438pt x 414.79968pt>
+<chapters/images/contig.png, id=653, 432.11438pt x 414.79968pt>
 File: chapters/images/contig.png Graphic file (type png)
 <use chapters/images/contig.png>
 Package pdftex.def Info: chapters/images/contig.png  used on input line 549.
 (pdftex.def)             Requested size: 215.1019pt x 206.48158pt.
 [13]
-<chapters/images/linked.png, id=639, 407.27156pt x 399.74344pt>
+<chapters/images/linked.png, id=661, 407.27156pt x 399.74344pt>
 File: chapters/images/linked.png Graphic file (type png)
 <use chapters/images/linked.png>
 Package pdftex.def Info: chapters/images/linked.png  used on input line 562.
@@ -933,7 +939,7 @@ Package pdftex.def Info: chapters/images/linked.png  used on input line 562.
 
 LaTeX Warning: Citation `' on page 15 undefined on input line 571.
 
-<chapters/images/indexed.png, id=649, 336.50719pt x 292.09125pt>
+<chapters/images/indexed.png, id=670, 336.50719pt x 292.09125pt>
 File: chapters/images/indexed.png Graphic file (type png)
 <use chapters/images/indexed.png>
 Package pdftex.def Info: chapters/images/indexed.png  used on input line 575.
@@ -941,7 +947,7 @@ Package pdftex.def Info: chapters/images/indexed.png  used on input line 575.
 
 LaTeX Warning: Citation `' on page 15 undefined on input line 584.
 
-<chapters/images/fat.png, id=652, 415.5525pt x 361.35pt>
+<chapters/images/fat.png, id=673, 415.5525pt x 361.35pt>
 File: chapters/images/fat.png Graphic file (type png)
 <use chapters/images/fat.png>
 Package pdftex.def Info: chapters/images/fat.png  used on input line 588.
@@ -955,7 +961,7 @@ Overfull \hbox (4.45656pt too wide) in paragraph at lines 596--597
 []\OT1/ptm/m/n/12 Alternatively, per-file meta-data strate-gies, such as inode-based poli-cies used in POSIX-compliant systems[[]],
  []
 
-<chapters/images/blocks.png, id=660, 565.36218pt x 536.75531pt>
+<chapters/images/blocks.png, id=682, 565.36218pt x 536.75531pt>
 File: chapters/images/blocks.png Graphic file (type png)
 <use chapters/images/blocks.png>
 Package pdftex.def Info: chapters/images/blocks.png  used on input line 600.
@@ -964,7 +970,7 @@ Package pdftex.def Info: chapters/images/blocks.png  used on input line 600.
 
 LaTeX Warning: Citation `' on page 17 undefined on input line 608.
 
-<chapters/images/dirs.png, id=669, 687.31781pt x 534.49687pt>
+<chapters/images/dirs.png, id=691, 687.31781pt x 534.49687pt>
 File: chapters/images/dirs.png Graphic file (type png)
 <use chapters/images/dirs.png>
 Package pdftex.def Info: chapters/images/dirs.png  used on input line 615.
@@ -996,101 +1002,133 @@ LaTeX Warning: Citation `' on page 19 undefined on input line 14.
 
 
 ] [20]
-<chapters/images/sync.png, id=694, 724.20563pt x 487.8225pt>
+<chapters/images/sync.png, id=715, 724.20563pt x 487.8225pt>
 File: chapters/images/sync.png Graphic file (type png)
 <use chapters/images/sync.png>
 Package pdftex.def Info: chapters/images/sync.png  used on input line 52.
 (pdftex.def)             Requested size: 307.2929pt x 206.99057pt.
  [21 <./chapters/images/sync.png>] [22]
-<chapters/images/async.png, id=706, 730.98094pt x 478.78876pt>
+<chapters/images/async.png, id=728, 730.98094pt x 478.78876pt>
 File: chapters/images/async.png Graphic file (type png)
 <use chapters/images/async.png>
 Package pdftex.def Info: chapters/images/async.png  used on input line 78.
 (pdftex.def)             Requested size: 348.258pt x 228.10645pt.
- [23 <./chapters/images/async.png>]) [24]
+ [23 <./chapters/images/async.png>] [24]
+<chapters/images/arch.png, id=742, 791.20593pt x 686.565pt>
+File: chapters/images/arch.png Graphic file (type png)
+<use chapters/images/arch.png>
+Package pdftex.def Info: chapters/images/arch.png  used on input line 116.
+(pdftex.def)             Requested size: 281.68385pt x 244.42894pt.
+ [25 <./chapters/images/arch.png>]
+<chapters/images/block_alloc.png, id=749, 520.19344pt x 436.63126pt>
+File: chapters/images/block_alloc.png Graphic file (type png)
+<use chapters/images/block_alloc.png>
+Package pdftex.def Info: chapters/images/block_alloc.png  used on input line 145.
+(pdftex.def)             Requested size: 281.68385pt x 236.43695pt.
+ [26 <./chapters/images/block_alloc.png>]
+<chapters/images/inode.png, id=755, 737.00343pt x 343.2825pt>
+File: chapters/images/inode.png Graphic file (type png)
+<use chapters/images/inode.png>
+Package pdftex.def Info: chapters/images/inode.png  used on input line 158.
+(pdftex.def)             Requested size: 409.72125pt x 190.83832pt.
+ [27 <./chapters/images/inode.png>]
+<chapters/images/dir_inode.png, id=763, 721.19438pt x 456.95718pt>
+File: chapters/images/dir_inode.png Graphic file (type png)
+<use chapters/images/dir_inode.png>
+Package pdftex.def Info: chapters/images/dir_inode.png  used on input line 177.
+(pdftex.def)             Requested size: 460.93153pt x 292.04718pt.
+ [28 <./chapters/images/dir_inode.png>]
+<chapters/images/fds.png, id=771, 939.51pt x 487.8225pt>
+File: chapters/images/fds.png Graphic file (type png)
+<use chapters/images/fds.png>
+Package pdftex.def Info: chapters/images/fds.png  used on input line 196.
+(pdftex.def)             Requested size: 358.50317pt x 186.14116pt.
+ [29 <./chapters/images/fds.png>] [30]) [31]
 \openout2 = `chapters/5_implementation.aux'.
 
  (chapters/5_implementation.tex
 Chapter 4.
 
-LaTeX Warning: Citation `' on page 25 undefined on input line 8.
+LaTeX Warning: Citation `' on page 32 undefined on input line 8.
 
 
-LaTeX Warning: Citation `' on page 25 undefined on input line 10.
+LaTeX Warning: Citation `' on page 32 undefined on input line 10.
 
 
-LaTeX Warning: Citation `' on page 25 undefined on input line 12.
+LaTeX Warning: Citation `' on page 32 undefined on input line 12.
 
 
-LaTeX Warning: Citation `' on page 25 undefined on input line 16.
+LaTeX Warning: Citation `' on page 32 undefined on input line 16.
 
-[25
+[32
 
 
 
 
 ]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 22.
- [26]
-
-LaTeX Warning: Citation `' on page 27 undefined on input line 57.
-
-[27] [28]
-<chapters/images/queues.png, id=774, 758.835pt x 581.17125pt>
+ [33] [34] [35]
+<chapters/images/queues.png, id=840, 758.835pt x 581.17125pt>
 File: chapters/images/queues.png Graphic file (type png)
 <use chapters/images/queues.png>
 Package pdftex.def Info: chapters/images/queues.png  used on input line 114.
 (pdftex.def)             Requested size: 368.74835pt x 282.41753pt.
- [29 <./chapters/images/queues.png>]
-<chapters/images/buffers.png, id=781, 449.42906pt x 415.5525pt>
+ [36 <./chapters/images/queues.png>]
+<chapters/images/buffers.png, id=847, 449.42906pt x 415.5525pt>
 File: chapters/images/buffers.png Graphic file (type png)
 <use chapters/images/buffers.png>
 Package pdftex.def Info: chapters/images/buffers.png  used on input line 123.
 (pdftex.def)             Requested size: 204.85672pt x 189.41273pt.
- [30 <./chapters/images/buffers.png>] [31] [32] [33] [34]) [35]
+ [37 <./chapters/images/buffers.png>] [38] [39] [40] [41] [42]
+<chapters/images/traversal.png, id=926, 593.21625pt x 472.01344pt>
+File: chapters/images/traversal.png Graphic file (type png)
+<use chapters/images/traversal.png>
+Package pdftex.def Info: chapters/images/traversal.png  used on input line 278.
+(pdftex.def)             Requested size: 409.72125pt x 326.02094pt.
+ [43 <./chapters/images/traversal.png>] [44] [45] [46] [47] [48] [49]) [50]
 \openout2 = `chapters/6_evaluation.aux'.
 
  (chapters/6_evaluation.tex
 Chapter 5.
-[36
+[51
 
 
 
 
-] [37] [38]
-<chapters/images/avg_operation_time_by_batch_size.png, id=858, 454.5783pt x 282.8166pt>
+] [52] [53]
+<chapters/images/avg_operation_time_by_batch_size.png, id=1014, 454.5783pt x 282.8166pt>
 File: chapters/images/avg_operation_time_by_batch_size.png Graphic file (type png)
 <use chapters/images/avg_operation_time_by_batch_size.png>
 Package pdftex.def Info: chapters/images/avg_operation_time_by_batch_size.png  used on input line 86.
 (pdftex.def)             Requested size: 358.50317pt x 223.04721pt.
- [39] [40 <./chapters/images/avg_operation_time_by_batch_size.png>]
-<chapters/images/avg_operation_time_gradient_by_batch_size.png, id=871, 455.7828pt x 282.8166pt>
+ [54] [55 <./chapters/images/avg_operation_time_by_batch_size.png>]
+<chapters/images/avg_operation_time_gradient_by_batch_size.png, id=1027, 455.7828pt x 282.8166pt>
 File: chapters/images/avg_operation_time_gradient_by_batch_size.png Graphic file (type png)
 <use chapters/images/avg_operation_time_gradient_by_batch_size.png>
 Package pdftex.def Info: chapters/images/avg_operation_time_gradient_by_batch_size.png  used on input line 103.
 (pdftex.def)             Requested size: 358.50317pt x 222.45169pt.
-<chapters/images/total_execution_time_by_clients.png, id=873, 455.7828pt x 282.8166pt>
+<chapters/images/total_execution_time_by_clients.png, id=1029, 455.7828pt x 282.8166pt>
 File: chapters/images/total_execution_time_by_clients.png Graphic file (type png)
 <use chapters/images/total_execution_time_by_clients.png>
 Package pdftex.def Info: chapters/images/total_execution_time_by_clients.png  used on input line 114.
 (pdftex.def)             Requested size: 384.11221pt x 238.3411pt.
- [41 <./chapters/images/avg_operation_time_gradient_by_batch_size.png>]
-<chapters/images/sync_completion_variation_by_clients.png, id=881, 456.0237pt x 283.0575pt>
+ [56 <./chapters/images/avg_operation_time_gradient_by_batch_size.png>]
+<chapters/images/sync_completion_variation_by_clients.png, id=1037, 456.0237pt x 283.0575pt>
 File: chapters/images/sync_completion_variation_by_clients.png Graphic file (type png)
 <use chapters/images/sync_completion_variation_by_clients.png>
 Package pdftex.def Info: chapters/images/sync_completion_variation_by_clients.png  used on input line 134.
 (pdftex.def)             Requested size: 250.95612pt x 155.7728pt.
-<chapters/images/async_completion_variation_by_clients.png, id=882, 456.0237pt x 283.0575pt>
+<chapters/images/async_completion_variation_by_clients.png, id=1038, 456.0237pt x 283.0575pt>
 File: chapters/images/async_completion_variation_by_clients.png Graphic file (type png)
 <use chapters/images/async_completion_variation_by_clients.png>
 Package pdftex.def Info: chapters/images/async_completion_variation_by_clients.png  used on input line 138.
 (pdftex.def)             Requested size: 250.95612pt x 155.7728pt.
- [42 <./chapters/images/total_execution_time_by_clients.png>]) [43 <./chapters/images/sync_completion_variation_by_clients.png> <./chapters/images/async_completion_variation_by_clients.png>]
+ [57 <./chapters/images/total_execution_time_by_clients.png>]) [58 <./chapters/images/sync_completion_variation_by_clients.png> <./chapters/images/async_completion_variation_by_clients.png>]
 \openout2 = `chapters/7_conclusion.aux'.
 
  (chapters/7_conclusion.tex
 Chapter 6.
-[44
+[59
 
 
 
@@ -1101,21 +1139,29 @@ Overfull \hbox (3.02672pt too wide) in paragraph at lines 19--20
  []
 
 
-LaTeX Warning: Citation `' on page 45 undefined on input line 38.
+LaTeX Warning: Citation `' on page 60 undefined on input line 38.
 
-[45] [46] [47]) [48] (report.bbl) [49
+[60] [61] [62]) [63] (report.bbl
+** WARNING: IEEEtran.bst: No hyphenation pattern has been
+** loaded for the language `en'. Using the pattern for
+** the default language instead.
 
-
-
-]
-\openout2 = `appendix1.aux'.
-
- (appendix1.tex
-Appendix A.
-) [50
+Underfull \hbox (badness 1681) in paragraph at lines 26--30
+[]\OT1/ptm/m/n/12 GeeksforGeeks, ``Micro-Kernel and Mono-lithic Ker-nel,'' Ac-cessed: 2026-
+ []
 
 
-] (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux) (chapters/6_evaluation.aux) (chapters/7_conclusion.aux) (appendix1.aux))
+Underfull \hbox (badness 6493) in paragraph at lines 26--30
+\OT1/ptm/m/n/12 04-18. [On-line]. Avail-able: []$https : / / www . geeksforgeeks . org / operating-[]systems /
+ []
+
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
+(Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 39.
+) [64
+
+
+
+] (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux) (chapters/6_evaluation.aux) (chapters/7_conclusion.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
@@ -1124,21 +1170,24 @@ L3 programming layer <2025-12-24>
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: D5676B3642EB7DA5754B35B65235A5E7;14622.
+(rerunfilecheck)             Checksum: F35F34CE5DF6E9490FAA94B5B953B28C;14784.
  ) 
 Here is how much of TeX's memory you used:
- 24877 strings out of 467871
- 466005 string characters out of 5418376
- 1197865 words of memory out of 5000000
- 53045 multiletter control sequences out of 15000+600000
- 677295 words of font info for 127 fonts, out of 8000000 for 9000
+ 25339 strings out of 467871
+ 473627 string characters out of 5418376
+ 1202918 words of memory out of 5000000
+ 53442 multiletter control sequences out of 15000+600000
+ 679428 words of font info for 130 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,12n,104p,1217b,1226s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,12n,104p,1132b,1226s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (61 pages, 1308329 bytes).
+Output written on report.pdf (74 pages, 1564310 bytes).
 PDF statistics:
- 1019 PDF objects out of 1200 (max. 8388607)
- 254 named destinations out of 1000 (max. 500000)
- 808 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1189 PDF objects out of 1200 (max. 8388607)
+ 321 named destinations out of 1000 (max. 500000)
+ 846 words of extra memory for PDF output out of 10000 (max. 10000000)
 

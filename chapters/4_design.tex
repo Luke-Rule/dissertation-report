@@ -105,10 +105,136 @@ This highlights the fundamental advantage of batching, as it allows the system t
 The following subsections discuss the internal design of the file system, including its data structures and organisation. The design focuses on providing a simple and efficient structure to support the required operations, while remaining compatible with both synchronous and asynchronous interface models. 
 
 \subsection{Architectural Overview}
-TODO
+
+The file server is structured as a set of modular components, each responsible for a distinct aspect of file system operation. Rather than treating the server as a single monolithic body of logic, functionality is decomposed into separate components for request handling, file system operations, runtime state management and storage management. Together, these provide a unified file system service to clients while maintaining clear internal separation of concerns, in keeping with core microkernel design principles.  Furthermore, this modularity supports uniform error handling, allowing failures to be detected accurately, propagated naturally between components and returned to clients in a consistent manner.
+
+At the highest level, the request handling layer forms the entry point into the server, receiving operations from clients and dispatching them to the appropriate file system logic. The file system core implements the semantics of individual file operations, coordinating access to the internal data structures required to service them. Runtime state management maintains transient execution state associated with active file handles, such as access modes and file offsets, while the storage management layer manages the underlying in-memory representation of file contents, metadata and allocation state. This decomposition is illustrated in Figure~\ref{fig:arch}.
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{chapters/images/arch.png}
+    \caption{Architectural overview of the file server.}
+    \label{fig:arch}
+\end{figure}
+
+At a system level, the file server is responsible for servicing client file operations, maintaining correctness of file system state, managing storage resources, and coordinating access across multiple clients. Importantly, these responsibilities are independent of whether requests arrive through the synchronous or asynchronous interface, as both models share the same internal file system logic. This ensures that differences in measured performance arise from interface behaviour rather than differences in core file system operation.
+
+This modular structure allows internal structures or algorithms to be modified without affecting the overall architecture, while supporting extensibility, as features such as persistent storage, more advanced allocation schemes or alternative caching strategies could be introduced without fundamentally redesigning the server.
+
+Hierarchical file storage through a directory structure is supported, allowing files and directories to be organised using path-based naming. Directories may contain both files and subdirectories, enabling nested storage and traversal in a conventional tree-like structure. This was chosen over a flat namespace to support structured organisation and realistic file system behaviour. 
+
+The file server supports a set of operations intended to provide a sufficiently complete and practical file system interface for both functional use and evaluation. These include file and directory creation (Create File, Create Directory), data access (Read, Write, Seek), file lifecycle management (Open, Close, Delete), metadata and state queries (Get Size, Exists, Get Permissions, Set Permissions), and directory enumeration (List).
+
+This set was chosen to provide a balanced interface spanning namespace management, data access, runtime file state and metadata handling. Together, these operations exercise the principal structures and responsibilities of the file server without introducing unnecessary complexity beyond the scope of this work.
+
 \subsection{Component Design and Interactions}
-TODO
+
+Significant storage management is required to support file system operations, motivating separate structures for representing data, metadata, runtime state and namespace organisation, along with mechanisms to govern their interaction. 
+
+\subsubsection{Blocks}
+
+Blocks form the fundamental unit of data storage in the file server. They represent fixed-size regions of memory used flexibly to hold dynamic file system data, including file contents, directory entries and, where required, block indices for indirect blocks. Using a unified block abstraction allows storage to be allocated according to demand, rather than partitioning memory into separate fixed regions for different data types. This provides greater flexibility, allowing files and directories to grow as required while also avoiding unnecessary reservation of space when demand is low.
+
+A fixed block size was chosen to simplify allocation, indexing and data extension. A size of 4~KiB was selected as a practical balance between storage granularity and management overhead. While fixed-size allocation means all operations occur at block granularity, potentially wasting space when storing very small files, this was accepted in exchange for more efficient allocation management and simpler indexing. As the system is modular, however, this block size remains configurable.
+
+Blocks are managed through an block allocation table, as illustrated in Figure~\ref{fig:bat}. This maintains one entry per block, with each entry storing a flag indicating whether the corresponding block is free or allocated. This enables rapid assignment and release of blocks, simplifying rearrangement of file system data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{chapters/images/block_alloc.png}
+    \caption{Block allocation table structure.}
+    \label{fig:bat}
+\end{figure}
+
+All blocks are stored contiguously and are accessed by index into the block pool, with these indices being stored within inodes.
+
+\subsubsection{inodes}
+
+Inodes provide the central metadata structure of the file system, representing either files or directories and linking their logical identity to the underlying storage by holding both entry metadata and block references. This structure was chosen to separate metadata from data storage, simplifying management of file system state. It also provides a uniform representation for file system objects, reducing special-case handling. Furthermore, resolving persistent objects independently of their names avoids repeated path-based lookup. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{chapters/images/inode.png}
+    \caption{inode and block reference structure.}
+    \label{fig:indirect-blocks}
+\end{figure}
+
+This metadata must hold a variety of information to allow rich and secure system functionality. To avoid requiring a separate allocation table, each inode includes an in-use flag to enable rapid allocation and deallocation. The inode type (file or directory) is also stored, ensuring associated data is interpreted appropriately and supporting valid file traversal. Ownership and access permissions are additionally stored to support multiple clients safely. 
+
+Inodes store block references either directly or, where additional references are required, through indirect blocks, as shown in Figure~\ref{fig:indirect-blocks}. This allows files to grow beyond the capacity of direct block references while preserving a uniform access model, although very large files may incur modest additional access overhead due to indirect reference resolution. 
+
+To aid efficient data access and ensure only initialised storage is accessed, an inode also stores the file size, indicating the extent of valid file data. Together with the block references, this supports Read operations through resolution of valid file data and Write operations through access to existing blocks, while determining when file extension requires allocation of additional blocks. 
+
+This design introduces an additional level of indirection between file system objects and their underlying data, but this was accepted in exchange for the flexibility, uniformity and scalability the inode structure provides. 
+
+\subsubsection{Directories}
+
+Directories provide the namespace structure of the file system, enabling hierarchical organisation through mappings from names to inode references. They are represented using the same inode and block structures used elsewhere in the file system, reusing existing abstractions rather than requiring a separate storage mechanism, thereby preserving flexibility in data use and storage efficiency. 
+\vspace{0.3cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{chapters/images/dir_inode.png}
+    \caption{Directory structure via inodes and blocks.}
+    \label{fig:directory-entries}
+\end{figure}
+
+A directory is represented by a directory inode whose associated blocks store a list of nested files and subdirectories as directory entries. Each directory entry is a structure linking an entry name to its respective inode via an index, as shown in Figure~\ref{fig:directory-entries}. 
+\newpage
+This recursive structure enables hierarchical namespace organisation through arbitrary nesting of directories and files, supporting structured management beyond what would be possible in a flat namespace. It also provides inherent path-based access, where successive path segments are resolved by searching the entries of the current directory, descending into a child directory when a matching entry is found, until the target inode is reached, or a path is deemed invalid. This traversal mechanism is used by file system operations to inspect and modify directory entries, enabling Create to enforce valid paths and prevent duplicate names within a directory, while supporting recursive directory deletion through traversal of all contained entries to ensure no unreachable data is left allocated. 
+
+For general use, a root directory is created during system initialisation, through which all files and directories are organised upon, hence, may not be deleted. Special directory entries such as . and .., as well as symbolic links, are not supported, reducing namespace complexity and avoiding additional traversal cases. 
+
+This structure was chosen to support path-based access and structured file lookup, allowing files to be located through traversal rather than requiring a flat naming model. However, as path resolution requires directory traversal, lookup incurs some overhead, particularly due to linear directory scans and possibly deeply nested paths. Linear scanning was chosen over more complex indexed lookup structures to reduce management overhead and implementation complexity, which was considered appropriate for the expected scale of the file system, while not affecting comparisons of the synchronous and asynchronous communication models. 
+
+\subsubsection{File Descriptors}
+
+File descriptors maintain runtime state for open files, providing a layer of indirection between client operations and persistent file metadata. As shown in Figure~\ref{fig:file-descriptors}, a file descriptor links a client-visible handle to the inode representing the underlying file, while additionally storing the transient state required for continued access.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{chapters/images/fds.png}
+    \caption{File descriptor structure.}
+    \label{fig:file-descriptors}
+\end{figure}
+\newpage
+
+This state includes a reference to the associated inode, the current file offset, and the mode in which the file was opened. Separating this runtime state from inode metadata allows information specific to an active open instance, rather than the file itself, to be maintained, supporting multiclient access. This is additionally useful for operations such as sequential reads or writes, where file position may persist across operations and need not be re-specified.
+
+File descriptors are created and returned to a client when a file is opened, and are subsequently used by operations such as Read, Write, Seek and Close to reference the open file. This improves efficiency by avoiding path resolution for every operation, as the file descriptor is used to link directly to the associated inode.
+
+This design does introduce some overhead in maintaining descriptor state, but this is modest relative to the performance benefits it provides. Fixed-size file descriptor regions do, however, impose a bounded number of simultaneously open files per client.
+
+\subsection{Request Processing Flow}
+
+File system requests follow a common processing path regardless of operation type. Once a request is received by the file server, it is first decoded to determine the requested operation and extract any associated parameters. Basic validation is then performed, such as verifying the operation code is recognised, the required parameters are present and checking that any referenced file handles or paths are correctly formed.
+
+Following validation, the request is dispatched to the appropriate file system logic. Although the specific structures accessed differ by operation, all requests follow the same general pattern of interacting with the file system core, consulting or updating the relevant runtime state, accessing the underlying storage structures as required, and generating a result to return to the client.
+
+The general flow is:
+\begin{itemize}
+    \item Receive request
+    \item Decode operation
+    \item Validate parameters
+    \item Service operation
+    \item Access internal structures
+    \item Update state if required
+    \item Generate response
+\end{itemize}
+
+For example, Read request follows this general structure by validating the supplied file handle exists and is a file, consulting the open file state to determine the current offset, resolving the relevant storage blocks containing the requested data, and returning the result while updating the file offset. Operations such as Create and Write access and modify different state, but follow the same overall dispatch and servicing model.
+
+This shared processing path was chosen to reduce duplicated logic, ensure consistent validation across operations, and simplify reasoning about correctness within the file server.
+
 \subsection{Multiclient Support}
-TODO
-\subsection{File and Directory Operations}
-TODO
+
+Multiclient support is provided through a combination of per-client runtime state, client isolation and centralised coordination through the file server. This allows multiple clients to access the file system concurrently while preserving correct behaviour and separation of client context.
+
+Per-client state is maintained through both persistent and runtime structures. Ownership and access permissions are stored within inode metadata, allowing access control decisions to be enforced consistently regardless of which client issues a request. Permissions are represented using read, write and execute flags, allowing the file server to determine whether a client may perform a requested operation. Ownership associates each file or directory with the client that created it and restricts operations such as permission modification. Ownership also supports private access: if a permission flag is unset, only the owner may perform the corresponding operation, whereas if the flag is set, any client may do so. 
+
+Runtime state associated with open files, such as file offsets and access modes, is maintained in file descriptors. To preserve client independence, each client is assigned a separate region of the file descriptor table, with a local maximum number of open files. This ensures that one client’s open file state cannot interfere with that of another. This separation of runtime state provides client isolation even when multiple clients access shared resources. While multiple clients may access the same underlying file, each does so through its own client context, maintaining independent offsets, access modes and descriptor state.
+
+Consistency of shared resources is preserved through centralised mediation by the file server; all file operations pass through the server and are serviced atomically, with updates to shared file system structures serialised. 
+
+A particular case of shared resource consistency arises when one client deletes a file that remains open by others. In this case, deletion is deferred until the final client closes the file, ensuring that active references remain valid and preventing removal of data still in use.
+

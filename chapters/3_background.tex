@@ -124,7 +124,7 @@ The specific set of managed resources varies by system design, but at a minimum 
 
 
 \end{tikzpicture}
-\caption{Comparison of microkernel and monolithic kernel architectures. Adapted from source: \cite{}}
+\caption{Comparison of microkernel and monolithic kernel architectures. Adapted from source: \cite{micro_mono_diag_adapt}}
 \label{fig:micro-vs-mono}
 \end{figure}
 
@@ -144,7 +144,7 @@ Despite these challenges, the reduced kernel size and strong isolation between c
 
 In 1993, the L4 microkernel was developed by Jochen Liedtke in response to the poor performance of earlier microkernel designs\cite{}, based on the premise that prioritising efficiency was essential for practical adoption. By recognising IPC as the dominant factor in microkernel performance and optimising these mechanisms accordingly, the L4 design achieved approximately a 20× performance improvement over Mach\cite{}, the most widely used microkernel at the time\cite{}. This demonstrated that microkernels could achieve competitive performance, leading to significant further research and the development of multiple L4-derived systems\cite{}, including seL4.
 
-seL4 (Security-Enhanced L4) extends this architecture by combining the high-performance IPC with comprehensive formal verification\cite{}, becoming the only microkernel to do so\cite{}. Through the complete kernel implementation being proven correct against its specification, seL4 ensures that system calls behave as specified and that key safety properties – such as memory isolation – are upheld. Assuming correct hardware behaviour\cite{}, this provides a high degree of assurance that kernel integrity and availability are maintained and that information is not exposed between processes, only explicitly shared\cite{}.
+seL4 (Security-Enhanced L4) extends this architecture by combining the high-performance IPC with comprehensive formal verification\cite{}, becoming the only microkernel to do so\cite{}. Through the complete kernel implementation being proven correct against its specification, seL4 ensures that system calls behave as specified and that key safety properties – such as memory isolation – are upheld. Assuming correct hardware behaviour\cite{}, this provides a high degree of assurance that kernel integrity and availability are maintained and that information is not \textit{leaked} between processes, only explicitly shared\cite{}.
 
 These guarantees apply only to the kernel itself, however. User-space components are rarely formally verified\cite{} and may still exhibit incorrect behaviour and cause failures at that level. While such faults are isolated and cannot compromise kernel correctness, they may still impact overall system functionality.
 
@@ -232,12 +232,12 @@ The minimal kernel size of sel4 makes full-system formal verification realistica
 \draw[arr] (2.9,-0.22) to[out=-10,in=180] (bar2.west);
 
 \end{tikzpicture}
-\caption{Comparison of ACLs and capability based access control models. Adapted from source: \cite{}}
+\caption{Comparison of ACLs and capability based access control models. Adapted from source: \cite{cap_diag_adapt}}
 \label{fig:acl-vs-capability}
 \end{figure}
 
 \newpage
-This distribution of authority also decentralises access control, removing the single-point-of-failure risk, and simplifies security management by eliminating identity permission checks. Following the principle of least privilege\cite{}, capabilities are granted by the kernel only when required for operation and may only be transferred explicitly between processes via the kernel, ensuring that authority delegation is controlled and auditable.
+This distribution of authority also decentralises access control, removing the single-point-of-failure risk, and simplifies security management by eliminating identity permission checks. Following the principle of least privilege\cite{}, capabilities are granted by the kernel only when required for operation and may only be transferred explicitly between processes \textit{via} the kernel, ensuring that authority delegation is controlled and auditable.
 
 \subsection{Use Cases and Applications}
 
@@ -306,7 +306,7 @@ To aid this abstraction simplicity, Microkit systems are defined statically thro
 \draw[arrow] (sel4.north) -- (capdl.south);
 
 \end{tikzpicture}
-\caption{Build-time and run-time structures for a Microkit-based system. Adapted from source: \cite{}}
+\caption{Build-time and run-time structures for a Microkit-based system. Adapted from source: \cite{microkit_diag_adapt}}
 \label{fig:microkit-build-runtime}
 \end{figure}
 \newpage
@@ -370,7 +370,7 @@ This enables explicit specification of communication channels and shared memory 
 };
 
 \end{tikzpicture}
-\caption{Communication channels between PDs. Adapted from source: \cite{}}
+\caption{Communication channels between PDs. Adapted from source: \cite{microkit_diag_adapt}}
 \label{fig:pd-communication}
 \end{figure}
 
@@ -457,7 +457,7 @@ Alternatively, asynchronous interfacing decouples the client’s request from se
 \node[label] at (0.5,3.0) {Continue working,\\if not dependent\\on response};
 
 \end{tikzpicture}
-\caption{Comparison of synchronous and asynchronous communication. Adapted from source: \cite{}.}
+\caption{Comparison of synchronous and asynchronous communication models.}
 \label{fig:sync-async}
 \end{figure}
 
@@ -525,7 +525,7 @@ Client interactions with files are mediated through a well-defined set of parame
 
 To decouple user processes from file server internals\cite{}, these operations reference files indirectly via a process-local `handle', obtained through an open or create operation. These handles, commonly referred to as `file descriptors', additionally encapsulate per-process state associated with an open file instance. This state includes attributes such as the access mode (e.g. read or write) and the current file byte offset, reducing the need to repeatedly specify this information across operations.
 
-Furthermore, to support client management of multiple files, they are often organised hierarchically within directory structures, providing a namespace that maps human-readable names to underlying file objects. This organisation also allows easier metadata management and lookup operations for groups of files.
+Furthermore, to support client management of multiple files, they are often organised hierarchically within \textit{directory structures}, providing a namespace that maps human-readable names to underlying file objects. This organisation also allows easier metadata management and lookup operations for groups of files.
 
 \subsection{Storage and Organisation}
 \subsubsection{File Layout}
@@ -547,7 +547,7 @@ The simplest strategy is contiguous allocation, where a file is stored in a sequ
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.42\linewidth]{chapters/images/contig.png}
-    \caption{Contiguous allocation example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of contiguous block allocation. Source: \cite{silberschatz2013operating}.}
     \label{fig:contiguous}
 \end{figure}
 
@@ -560,7 +560,7 @@ Linked allocation avoids the limitations of contiguous allocation while maintain
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.42\linewidth]{chapters/images/linked.png}
-    \caption{Linked allocation example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of linked block allocation. Source: \cite{silberschatz2013operating}.}
     \label{fig:linked}
 \end{figure}
 
@@ -573,7 +573,7 @@ Indexed allocation, which is the most commonly used approach\cite{}, addresses t
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{chapters/images/indexed.png}
-    \caption{Indexed allocation example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of indexed block allocation. Source: \cite{silberschatz2013operating}.}
     \label{fig:indexed}
 \end{figure}
 
@@ -586,7 +586,7 @@ Metadata may be organised either centrally or on a per-file basis. In centralise
 \begin{figure}
     \centering
     \includegraphics[width=0.52\linewidth]{chapters/images/fat.png}
-    \caption{FAT example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of FAT based file management. Source: \cite{silberschatz2013operating}.}
     \label{fig:fat}
 \end{figure}
 
@@ -598,7 +598,7 @@ Alternatively, per-file metadata strategies, such as inode-based policies used i
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{chapters/images/blocks.png}
-    \caption{Indirect block indexing example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of inode based file management with indirect block indexing. Source: \cite{silberschatz2013operating}.}
     \label{fig:blocks}
 \end{figure}
 
@@ -613,7 +613,7 @@ A directory is a structure that stores references to files rather than the file 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.65\linewidth]{chapters/images/dirs.png}
-    \caption{Directory structure example. Source: \cite{silberschatz2013operating}.}
+    \caption{Example of a hierarchical directory structure. Source: \cite{silberschatz2013operating}.}
     \label{fig:dirs}
 \end{figure}
 
@@ -622,7 +622,7 @@ Each directory entry is a structured record that represents either a nested file
 
 As previously discussed in Section \ref{sec:abstractions}, metadata stores information such as file ownership and access permissions. These are required to ensure that clients can control access to their files and prevent unauthorised modification or retrieval by others. At the simplest level, files may be designated as private, where only the owner has access, or public, where any client may access them.
 
-More fine-grained systems define separate permissions for operations such as reading, writing and execution, allowing, for example, a file to be read but not modified by other clients. More advanced models, such as capability-based access control or access control lists (ACLs), as discussed in Section \ref{sec:sel4design}, allow permissions to be specified for individual clients or groups of clients, providing greater flexibility at the cost of increased complexity in storage and management.
+More fine-grained systems define separate permissions for operations such as reading, writing and execution, allowing, for example, a file owned by one client to be private in terms of modification to other clients, while remaining public in terms of access. More advanced models, such as capability-based access control or access control lists (ACLs), as discussed in Section \ref{sec:sel4design}, allow permissions to be specified for individual clients or groups of clients, providing greater flexibility at the cost of increased complexity in storage and management.
 
 Additionally, when multiple clients may have write access to a file, mechanisms may be employed to prevent race conditions -- where concurrent updates may overwrite or invalidate one another -- and ensure consistency, particularly for deletion operations.
 

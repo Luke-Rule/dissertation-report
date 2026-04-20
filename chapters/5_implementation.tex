@@ -54,7 +54,7 @@ Alongside this shared memory, IPC between protection domains was established usi
 \newpage
 As Microkit systems are statically defined, the number of clients and their associated resources must be specified at build time. To support varying workloads, a script was developed to generate the system description for a configurable number of clients automatically, ensuring consistency while avoiding manual duplication.
 
-In addition to structural configuration, Microkit also requires specification of priority and scheduling parameters for each protection domain. These priorities determine the order in which domains are scheduled by the seL4 kernel, directly influencing system responsiveness and fairness. The file server was, therefore, assigned a higher priority than the client domains to ensure that incoming requests were serviced promptly, reducing queuing latency and preventing clients from stalling due to delayed processing. Client domains were assigned equal priorities relative to one another to maintain fairness across request sources. This scheduling configuration was particularly important in the asynchronous design, where the server must efficiently respond to notifications and process queued operations without being preempted excessively. Consequently, as seL4 utilises a round-robin scheduling policy\cite{}, careful time budget allocation was required to ensure that IPC handling remained responsive while still allowing clients sufficient execution time to generate and consume requests.
+In addition to structural configuration, Microkit also requires specification of priority and scheduling parameters for each protection domain. These priorities determine the order in which domains are scheduled by the seL4 kernel, directly influencing system responsiveness and fairness. The file server was, therefore, assigned a higher priority than the client domains to ensure that incoming requests were serviced promptly, reducing queuing latency and preventing clients from stalling due to delayed processing. Client domains were assigned equal priorities relative to one another to maintain fairness across request sources. This scheduling configuration was particularly important in the asynchronous design, where the server must efficiently respond to notifications and process queued operations without being preempted excessively. 
 
 \section{Interface}
 
@@ -215,25 +215,222 @@ Results are then retrieved using \texttt{get\_next\_completion\_entry}. After an
 
 \section{File Server}
 
-\subsection{Data Structures and Access Methods}
-\subsubsection{inodes}
-TODO
-\subsubsection{Blocks}
-TODO
-\subsubsection{Directories}
-TODO
-\subsubsection{File Descriptors}
-TODO
+This section details the realisation of the file server design, covering implementation of its internal structures and the mechanisms used to handle file system operations.
 
+\subsection{Data Structures and Access Mechanisms}
+
+The file server is allocated a large chunk of memory for internal use during initialisation through the Microkit setup, which is then partitioned using statically defined constants into the internal data structures described in this section. This partitioning primarily determines the relative space assigned to inodes, blocks and the BAT, and therefore defines key system scale properties. 
+
+For example, increasing inode capacity allows more files and directories to be represented, but reduces available block space and therefore the potential size of stored file data. These allocations must therefore be balanced carefully. As this partitioning is performed within the file server itself, however, these values may be modified easily, providing flexibility in configuring the system. 
+
+\subsubsection{Blocks}
+
+Blocks are implemented as fixed-size regions within a contiguous memory pool, with allocation managed through the BAT. This is realised by structuring the block-data region of the memory pool as an array of elements of size \texttt{BLOCK\_SIZE}. The number of blocks that fit within this region is recorded, and a Boolean array of equal size is created to form the BAT. Each block is therefore associated with a corresponding index, which is used both to access block data directly from the memory pool and to update the corresponding BAT entry during deallocation, both in constant time.
+
+As all blocks share the same representation, any block may store file data, directory entries or indirect block indices. Allocation for all such uses is performed through a linear scan of the BAT for an unset entry indicating a free block, while deallocation simply marks the corresponding BAT entry as free.
+
+\subsubsection{inodes}
+
+Inodes are implemented as fixed-size metadata structures, each representing a file system object and linking it to its associated storage blocks. To enable direct access, these are stored contiguously in an inode table. The inode structure is shown in Listing~\ref{lst:inode}.
+\newpage
+\begin{lstlisting}[caption={Inode structure.}, label={lst:inode}]
+struct i_node
+{
+    size_t entry_size;
+    size_t blocks_used;
+    size_t block_indices[DIRECT_BLOCKS_PER_INODE + 1]; 
+    uint8_t mode; 
+    uint8_t owner_id;
+    uint8_t padding[2];
+} typedef i_node_t;
+\end{lstlisting}
+\vspace{-0.2cm}
+The \texttt{entry\_size} field stores the exact number of bytes of file data, or the number of entries within a directory, returned when queried through the Get Size operation.In contrast, \texttt{blocks\_used} limits reads and indicates when additional blocks are required for writes. This must be stored separately from \texttt{entry\_size}, as directory entries may be deleted, meaning a directory’s allocated blocks need not be full, so the number of blocks that must be scanned to reach all child entries cannot be inferred from \texttt{entry\_size} alone. This additionally allows excess blocks to be identified and freed through defragmentation. 
+
+Blocks are referenced both directly and through single indirection. Space for eleven direct block references was chosen to minimise inode size while allowing reasonably large files and directories before indirect access is required, providing 44~KiB of directly addressable storage. For simplicity, and given the intended scale of the file system, only one indirect block is supported. This still allows substantial file growth, as a single indirect block may hold up to 128 additional block references. These capacities are defined through statically configured constants, allowing simple modification of system limits if requirements change. 
+
+To maximise block availability, block index fields are initially empty other than the first direct block, as every entry is allocated an initial block on creation to ensure immediate storage availability. Additional block indices are populated only as growth requires, allowing later access to those blocks for both use and deallocation during deletion.  As long as the number of allocated blocks does not exceed the maximum number of direct pointers, newly allocated block addresses can be stored directly in the inode. Once this limit is exceeded, an indirect block must first be allocated and its address stored in the inode’s indirect block field. Any further block addresses are then stored in the indirect block rather than in the inode itself. 
+
+To reduce space overhead, the deletion required flag, in-use flag, inode type and permissions are packed into a single byte, which is set and read using bit masks, as shown in Listing~\ref{lst:inode-mode}.  Padding is also included to support efficient alignment of inode entries in memory. 
+\vspace{0.3cm}
+\begin{lstlisting}[caption={Inode mode field bit packing.}, label={lst:inode-mode}]
+    i_node->mode = IS_DELETED_BIT << 5 | PERMISSION_BITS << 2 | DIRECTORY_BIT << 1| IN_USE_BIT;
+\end{lstlisting}
+
+
+\subsubsection{Directories}
+
+Directories are implemented through directory inodes whose associated blocks store directory entries, realising the hierarchical organisation described in the design. The directory entry structure is illustrated in Listing~\ref{lst:directory-entry}.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={Directory entry structure.}, label={lst:directory-entry}]
+struct directory_entry
+{
+    unsigned char name[MAX_NAME_LENGTH];
+    uint32_t i_node_index;
+} typedef directory_entry_t;
+\end{lstlisting}
+
+By storing both the entry name and corresponding inode index, directory entries encode the namespace structure of the file system. To simplify entry management and maintain space and lookup efficiency, file and directory names are constrained to a fixed maximum length. Additionally, to ensure all created entries are accessible, names must not be empty or duplicate another entry within the same directory.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{chapters/images/traversal.png}
+    \caption{Path-based lookup through directory traversal.}
+    \label{fig:path}
+\end{figure}
+
+This representation enables resolution of entries through path-based lookup, as illustrated in Figure~\ref{fig:path}. A path is represented as a sequence of directory names to traverse, terminating in the target file or directory. Path segments are delineated by the ‘/’ character, with all paths beginning at the root directory, denoted by a leading ‘/’. The root directory is initialised at system startup as inode~0, with all entries contained beneath it. 
+
+Path resolution proceeds through successive traversal of directory entries. For each path segment, the entries of the current directory are searched via a linear scan until a matching name is found. If a match is found and the segment is not the final component of the path, the corresponding inode is accessed and its blocks are searched to continue traversal. However, this continued traversal only occurs if the client has Execute permissions for the directory to be entered, otherwise a permission denied error is returned. If a non-directory entry is encountered before the final segment, the path is deemed invalid. The traversal is implemented recursively, which aligns naturally with the tree structure of the search space. 
+
+When the final segment is reached and a matching entry is found, the inode index stored in the corresponding directory entry is returned. If no match is found at any stage, the entry is deemed nonexistent. 
+
+\subsubsection{File Descriptors}
+File descriptors are implemented as runtime structures within per-client regions of the file descriptor table (FDT), maintaining open-file state for subsequent file operations. These link a client-accessible handle to a file and its current open state. For minimal abstraction and overhead, the file handles returned to clients are simply the index of the file descriptor within that client’s FDT region. A file’s open instance may therefore be retrieved by direct indexing into the FDT using the client ID and file descriptor handle.
+
+The Open operation both allocates a given file descriptor and returns the handle to it. This locates a free entry in the FDT through a linear scan of the descriptor entries. To simplify this check, an unused entry is indicated by an inode index value of \texttt{UINT32\_MAX}, which is otherwise invalid. When a file is closed, the corresponding file descriptor is released by restoring this sentinel value. 
+
+File descriptors are realised as structs holding open-state metadata and the associated file inode index, as illustrated in Listing~\ref{lst:file-descriptor}.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={File descriptor structure.}, label={lst:file-descriptor}]
+struct file_descriptor
+{
+    uint32_t i_node_index;
+    size_t cursor_position;
+    file_open_operations_t valid_operations;
+    uint8_t padding[3];
+} typedef file_descriptor_t;
+\end{lstlisting}
+
+\newpage
+By storing the inode index directly, the file server may resolve the associated inode from a file descriptor in constant time through direct indexing into the inode table, and immediately begin file data access or modification. When operations are performed through a file descriptor, the relevant state is supplied automatically where required, for example the cursor position during reads. The valid operations field is represented as an enum value, as shown in Listing~\ref{lst:file-open-ops}, enabling operation validation while maintaining readability. 
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={File open operations enum.}, label={lst:file-open-ops}]
+typedef enum {
+    READ_OP = 0b01,
+    WRITE_OP = 0b10,
+    READ_WRITE_OP = 0b11
+} file_open_operations_t;
+\end{lstlisting}
+\vspace{-0.4cm}
 \subsection{Operations}
-\subsubsection{Entry Creation}
-TODO
-\subsubsection{File Access}
-TODO
+
+These data structures and their associated mechanisms are used to implement the file system operations defined in the design. Each operation is implemented as a function that performs the necessary checks, manipulates the relevant data structures, and returns appropriate results or error codes. The following sections detail the implementation of each operation, highlighting key aspects of their functionality and considerations taken to ensure correctness and efficiency. All operations, excluding Read, Write and Close, operate on paths rather than file descriptors and therefore require path traversal. As this traversal is described fully following Figure~\ref{fig:path}, it is only referenced briefly where relevant. 
+
+\subsubsection{Namespace Mutation}
+
+The organisation of the file system is managed through Create and Delete operations. These are implemented through path validation, traversal and modification of directory, inode and block structures. 
+
+\textbf{Create}
+
+A creation operation takes as parameters the path of the entry to create, whether the entry is a file or directory, and the permissions to assign to it. The first step is to locate the inode of the target entry’s parent directory, allowing the new entry to be initialised and added as a child of that parent. This ordering allows path validation to occur inherently during traversal, avoiding a separate validation stage and preventing the need to undo partial initialisation should the path prove invalid. 
+
+Once the parent directory has been reached, the remaining path consists only of the desired entry name. This name is validated to ensure it falls within the maximum supported length, is non-empty, does not contain the path delineation character, and terminates correctly. The parent directory’s blocks are then scanned to ensure no entry with the same name already exists. A further permission check verifies that the calling client holds Write permissions on the parent directory. 
+
+Once validation is complete, a free inode is allocated by scanning the inode table for an unset in-use flag, and a starting data block is allocated similarly. If either allocation fails, an appropriate error code is returned. Otherwise, the inode is initialised with the supplied metadata and the allocated block index. 
+
+A directory entry is then formed from the entry name and allocated inode index, and inserted into the parent directory. This is achieved by scanning the parent’s blocks for free space. If none exists, a new block is allocated, linked to the parent, and used to store the new entry, with the parent inode’s size updated accordingly. 
+
+Additionally, if creation of a file completes successfully, the library wrapper automatically triggers an Open operation for the issuing client, as the file is likely to be used immediately. Consequently, an opening mode must also be provided during file creation. 
+
+\textbf{Delete}
+
+Deletion requires removal of both the target entry and its reference within its parent directory. This requires locating both the target inode and the inode of its parent, achieved through the same traversal mechanism used for lookup, extended to additionally retain the parent inode index. Therefore it takes the target path as the sole operation parameter.
+
+Once the parent inode is located, its blocks are scanned linearly until the matching directory entry is found, which is then marked not in use. Before the target inode may be deallocated, any associated data blocks must also be freed. For files, this involves marking all directly referenced blocks, any indirectly referenced blocks, and the indirect block itself, as free within the BAT. 
+
+For directories, deletion is recursive. As simply freeing a non-empty directory’s blocks would lose references to nested entries, all contained files and subdirectories must first be deleted. This is achieved by scanning the directory’s blocks and invoking the appropriate deletion function recursively for each contained entry. Only once all contents have been removed safely are the directory’s own blocks deallocated. 
+
+Deleting a file additionally causes it to be closed automatically for the issuing client, avoiding an additional client operation. To preserve multiclient correctness, however, files are only fully deleted once all clients have closed their handles to them. Their directory entry is removed immediately, preventing further opens, and allowing wider directory deletion, but the inode and associated data are retained until no descriptors referencing that inode remain. 
+
+This is implemented by scanning the file descriptor table for references to the target inode during deletion. If any remain, a deletion-pending flag is set within the inode rather than deallocating it immediately. Close operations must then check this condition and trigger final deletion once the last handle is released. 
+
+\subsubsection{Runtime State Management}
+
+The management of client specific data is done through Open and Close operations. They are implemented through path validation, traversal and modification of the FDT.
+
+\textbf{Open}
+
+To open a file descriptor for a file, the target inode must first be resolved through the traversal function, with the file path therefore being supplied as a parameter. Alongside this, an opening mode is provided to specify which operations may be performed through the resulting file descriptor. This format is detailed in Listing~\ref{lst:file-open-ops}.
+
+\vspace{0.5cm}
+\begin{lstlisting}[caption={File opening mode enum.}, label={lst:file-open-ops}]
+typedef enum {
+   READ_OP = 0b01,
+   WRITE_OP = 0b10,
+   READ_WRITE_OP = 0b11
+} file_open_operations_t;
+\end{lstlisting}
+
+Once the inode is acquired, the calling client’s permissions are validated according to the requested opening mode. If permitted, the client’s file descriptor table (FDT) is scanned for a free entry. If one is found, a file descriptor containing the inode index, operation mode and initial file offset of 0 is placed at that location. The index at which this entry is stored is then returned to the client as the handle used to reference the file in subsequent operations.
+
+If no free file descriptor entry is available, an error is returned indicating the client has reached its maximum number of open files.
+
+
+\textbf{Close}
+
+To close a file descriptor, a client passes the corresponding handle. The Close operation first verifies that this handle is valid, by ensuring it falls within the range 0 to the maximum number of concurrent file descriptors permitted per client. If valid, the corresponding entry in the file descriptor table (FDT) is marked not-in-use.
+
+The operation must also inspect the deletion-pending flag of the inode referenced by that file descriptor. If this flag is set, the system checks whether this was the final open handle to the file by scanning the full FDT for any remaining references to that inode. If none remain, the inode entry is passed to the deletion routine for final removal.
+
+\subsubsection{Data Movement}
+
+Access and modification of file data are achieved through Read and Write operations. These are realised through coordinated access to file descriptors, inodes and storage blocks. Rather than operating on paths, both operations require the target file to already be open and referenced through a file descriptor handle.
+
+\textbf{Read}
+
+Alongside the target handle, the Read operation additionally takes the requested number of bytes to be read. If this exceeds the client’s buffer size, the request is limited accordingly and the client notified through the return code.
+
+If the file descriptor is valid, its opening mode is checked to ensure the Read bit is set. The associated inode is then resolved through the inode index stored in the file descriptor, and the current file offset is used to determine both the block at which reading begins and the offset within that block. This is calculated through integer division and remainder operations on the block size.
+
+The operation then reads data from the resolved block, either through direct or indirect references as required, copying data into the client buffer until either the requested number of bytes has been read or the end of file is reached. If the end of a block is encountered first, the next referenced block in the inode is resolved and reading continues. Reaching the end of the file before satisfying the full request is returned as a partial success.
+
+Once complete, the file descriptor’s offset is updated to reflect the new cursor position. This updated offset, together with the number of bytes read, is returned to the client alongside the return code.
+
+\textbf{Write}
+
+The Write operation similarly takes a file descriptor handle and the number of bytes to write, validating both similarly to Read. A buffer containing the data to be written is also required, though this may be supplied either implicitly or explicitly depending on whether the synchronous or asynchronous interface is used.
+
+As with the Read operation, the starting block and offset within that block are calculated. Data from the client buffer is then copied into the file from that position onwards. If the end of a block is reached, writing continues into the next referenced block where one already exists.
+
+If writing reaches the end of the file and additional storage is required, further blocks are allocated, linked into the inode and used to continue the write. Once complete, the inode size metadata and file descriptor offset are updated, and the new offset and number of bytes written are returned to the client. A partial write occurs only if additional blocks are required but no further blocks are available for allocation.
+\newpage
 \subsubsection{Metadata Access and Modification}
-TODO
-\subsubsection{Entry Deletion}
-TODO
+
+Metadata access and modification operations are implemented through traversal and inspection of inode and directory structures, with updates applied where permitted.
+
+\textbf{Get Size and Get Permissions}
+
+These operations each take a single target path as a parameter and utilise the traversal function to resolve the target inode, returning an appropriate error code if this fails. Once the inode is acquired, Read permission is validated for the calling client and, if successful, the appropriate metadata field is extracted from the inode and returned.
+
+\textbf{Set Permissions}
+
+This operation follows the same approach, but additionally takes a new permission code to apply, represented as a bitmask constructed from the enum values shown in Listing~\ref{lst:permissions}. This allows permissions to be represented compactly within the inode, while still supporting efficient validation through bitwise operations.
+
+\vspace{0.4cm}
+\begin{lstlisting}[caption={Permissions bitmask enum.}, label={lst:permissions}]
+typedef enum {
+   PERM_PRIVATE = 0b000,
+   PERM_READ = 0b001,
+   PERM_WRITE = 0b010,
+   PERM_EXECUTE = 0b100,
+   PERM_PUBLIC = 0b111
+} permissions_t;
+\end{lstlisting}
+\vspace{-0.2cm}
+
+The permissions field in the inode is updated to this value only if the calling client ID matches the ID stored in the owner field; otherwise, a permissions error is returned.
+
+\textbf{List} 
+
+The List operation similarly acquires the inode of the target path through traversal, but result generation is more involved than reading a single inode field. It first verifies that the target inode represents a directory, failing otherwise, and checks that the calling client holds the required Execute permission. It then iterates through the directory’s blocks, appending the path of each in-use directory entry to a result buffer, halting addition if continuing would exceed the client’s buffer capacity. 
+
+\textbf{Exists}
+
+This operation takes a single target path as a parameter and uses the traversal function to search for it. Its implementation differs only in its handling of lookup failure: rather than returning an error when the target is not found, it returns false. If the target is successfully resolved, it returns true. 
 
 \section{Error Handling}
 

@@ -16,7 +16,13 @@
     \Huge \bfseries #1\par\nobreak
     \vskip 30\p@
   }}
-
+\RequirePackage{tocloft}
+\setlength{\cftbeforechapskip}{15pt}
+\setlength{\cftbeforesecskip}{5pt}
+\setlength{\cftbeforesubsecskip}{4pt}
+\setlength{\cftbeforesubsubsecskip}{3pt}
+\renewcommand{\cftsubsubsecfont}{\hspace*{1em}}
+\renewcommand{\cftsubsubsecpagefont}{}
 \makeatother
 % The regulations say that 12pt should be used
 % Change the MSc option to MPhil, MRes or PhD if appropriate
@@ -29,8 +35,15 @@
 \usepackage{pslatex} % Use Postscript fonts
 \usepackage{titlesec}
 \usepackage[caption=false]{subfig}
-\usepackage{hyperref}
+\usepackage{hyperref} 
 \usepackage{tikz}
+\usepackage{titlesec}
+
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{14.1pt}{17pt}\selectfont\bfseries} % Change \Large to desired size
+  {\thesubsubsection}
+  {1em}
+  {}
 \usetikzlibrary{calc}
 \usetikzlibrary{arrows.meta, positioning}
 \titlespacing*{\chapter}{0pt}{-20pt}{0pt}
@@ -91,7 +104,7 @@
 
 \prefacesection{Abstract}
 \input{chapters/1_abstract}
-
+\newpage
 \afterabstract
 
 \prefacesection{Acknowledgements}
@@ -109,10 +122,14 @@ I would like to thank...
 \include{chapters/5_implementation}
 \include{chapters/6_evaluation}
 \include{chapters/7_conclusion}
+ 
+\bibliography{refs}    % this causes the references to be listed
 
-  \bibliography{refs}    % this causes the references to be listed
-
-\bibliographystyle{abbrv}
+\begingroup
+\sloppy
+\raggedright
+\bibliographystyle{IEEEtran}
+\endgroup
 %% the bibliography style determines the format  in which both citations and references are printed,
 %% other possible values are plain and abbrv
 %%
@@ -121,10 +138,5 @@ I would like to thank...
 %%
 %% University regulations simply require that your citation style be consistent, so see what style
 %% your supervisor recommends.
-
-% Appendices start here
-
-\appendix
-\include{appendix1}
 
 \end{document}
