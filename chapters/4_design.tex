@@ -1,16 +1,14 @@
 \chapter{Design}
 \label{cha:design}
 
-This section describes the design of the FS core, and its two interfaces. As both components significantly influence how operations are issued and processed, their design plays a key role in overall system behaviour. 
+This section describes the design of the FS core and its two interfaces. As both components significantly influence how operations are issued and processed, their design plays a key role in overall system behaviour. 
 
 \section{System Requirements and Constraints}
-The design of the file server is driven by both functional requirements and the constraints imposed by Microkit and seL4.
+The design of the file server is driven by both functional requirements and the constraints imposed by Microkit and seL4. From a functional perspective, the system must provide a core set of FS operations for files, alongside support for directory structures and management of associated metadata such as permissions and file size. It must present a consistent and simple interface to clients, returning appropriate error codes in the event of invalid inputs or failure conditions.
 
-From a functional perspective, the system must provide a core set of FS operations for files, alongside support for directory structures and management of associated metadata such as permissions and file size. It must present a consistent and simple interface to clients, returning appropriate error codes in the event of invalid inputs or failure conditions.
+The design must also support multiple independent clients, preserving correctness and consistency in the presence of interleaved operations. In addition, the core FS must support both synchronous and asynchronous interface models, enabling direct comparison between the two approaches. In particular, the asynchronous design should allow efficient batching of operations to reduce IPC interactions and improve overall operation throughput.
 
-The design must also support multiple independent clients, preserving correctness and consistency in the presence of interleaved operations. In addition, the core FS must support both synchronous and asynchronous interface models, enabling direct comparison between the two approaches. In particular, the asynchronous design must support efficient batching of operations to reduce IPC interactions and improve overall operation throughput.
-
-Several constraints significantly shape the design. The Microkit framework enforces a statically defined system configuration, meaning the number of clients and associated resources are fixed at system definition time, constraining dynamic adaptation. For development simplicity, the system operates without persistent storage, resulting in a purely in-memory FS. Additionally, due to current seL4 constraints, execution is limited to a single core, restricting the exploitation of parallelism. As a result, the design relies on batching and efficient communication patterns, rather than parallel execution, to achieve performance improvements.
+Several constraints significantly shape the design. The Microkit framework enforces a statically defined system configuration, meaning the number of clients and associated resources are fixed at system definition time, constraining dynamic adaptation. For development simplicity, the system also operates without persistent storage, resulting in a purely in-memory FS. Additionally, due to current seL4 constraints, execution is limited to a single core, restricting the exploitation of parallelism. As a result, the design relies on batching and efficient communication patterns, rather than parallel execution, to achieve performance improvements.
 
 \section{IPC Design and File Server Interface}
 
@@ -18,22 +16,14 @@ The FS interface defines how clients issue requests and receive results. As the 
 
 \subsection{Synchronous Model \textit{(Baseline)}}
 
-This model provides a simple and well-defined interface for issuing FS operations and receiving results.
-
-The communication flow is as follows:
-\begin{itemize}
+This model provides a simple and well-defined interface for issuing FS operations and receiving results., The communication flow is as follows:
+\begin{itemize}[itemsep=0.1ex, topsep=0.1ex]
     \item A client issues a single operation via a synchronous IPC call and blocks until the request is completed. 
-    \item The server receives the request, processes the operation, and returns the result. 
+    \item The server receives the request, processes the operation and returns the result. 
     \item The client then resumes execution.
 \end{itemize}
 
-In this model, it is assumed any subsequent operation may depend on the result of the request, hence the client must do no further processing until the response is received. Consequently, client execution is effectively serialised with that of the FS, as shown in Figure \ref{fig:sync}, even if the client and server execute on different cores. The server, therefore, only performs work when servicing requests and is otherwise idle.
-
-As operations are strictly sequential, a single shared buffer per client is sufficient. Each request can reuse the same buffer, as its contents are consumed before the next operation is issued. This simplifies both memory management and interface design, as data is always read from and written to a consistent location.
-
-To reduce overhead, non-data components of an operation may be passed directly within the IPC message. This avoids the need for complex parsing logic, as the shared buffer is reserved for file-related data such as filenames or file contents, while the IPC parameters encode the operation type and associated metadata, such as file descriptors or byte counts.
-
-In a multiclient setting, blocking effects are amplified, as after issuing a request, a client must wait for both the server to become available and its operation to complete, as shown in Figure \ref{fig:sync}. As a result, requests are effectively serialised across clients. Hence, with more than two clients, the FS must maintain a queue of pending requests to ensure fair servicing.
+In this model, it is assumed any subsequent instruction may depend on the result of the request, hence the client must do no further processing until the response is received. Consequently, client execution is effectively serialised with that of the FS, as shown in Figure \ref{fig:sync}, even if the client and server execute on different cores. The server, therefore, only performs work when servicing requests and is otherwise idle.
 
 \begin{figure}[H]
     \centering
@@ -41,6 +31,13 @@ In a multiclient setting, blocking effects are amplified, as after issuing a req
     \caption{Synchronous multiclient-server interaction.}
     \label{fig:sync}
 \end{figure}
+\vspace{-0.4cm}
+
+As operations are strictly sequential, a single shared buffer per client is sufficient. Each request can reuse the same buffer as its contents are consumed before the next operation is issued. This simplifies both memory management and interface design, as data is always read from and written to a consistent location.
+
+To reduce overhead, non-data components of an operation may be passed directly within the IPC message. This avoids the need for complex parsing logic, as the shared buffer is reserved only for data such as filenames or file contents, while the IPC parameters encode the operation type and associated metadata, such as FDs or byte counts.
+
+In a multiclient setting, blocking effects are amplified, as after issuing a request, a client must wait for both the server to become available and its operation to complete, as shown in Figure \ref{fig:sync}. As a result, requests are effectively serialised across clients. Hence, with more than two clients, the FS must maintain a queue of pending requests to ensure fair servicing.
 
 Consequently, this model permits no concurrency in relation to the FS, and clients spend a significant portion of time blocked, particularly as the number of clients increases. Additionally, IPC overhead is incurred on a per-operation basis, making it unsuitable for workloads where large numbers of independent operations are performed.
 
@@ -52,11 +49,11 @@ This non-blocking communication is achieved through a notification-based mechani
 
 When the server is idle, a notification triggers immediate processing of the corresponding request. Otherwise, as the clients do not wait, request submissions must be stored until they can be processed. As the server may be busy, this queuing cannot be managed internally by the server at the time of submission. Instead, each client is assigned a dedicated shared memory region with the server, used to queue requests. Notifications therefore carry no data, acting solely to signal that work is available. Hence, upon completing an operation, the server may poll these client queues to identify and service any pending requests that may have been submitted while it was busy.
 
-To support efficient and correct operation, this shared memory must be carefully structured. As in the synchronous design, a separation between operation metadata and operation data is maintained. However, due to the absence of message-based data transfer, a queue of submission entries is required in addition to per-operation data buffers. To enable multiple outstanding requests without contention, a pool of submission buffers is used rather than a single shared buffer. This pool must be bounded to balance memory usage against achievable concurrency. Therefore, alongside the necessary metadata, each submission entry must include a reference to the operations associated buffer.
+To support efficient and correct operation, this shared memory must be carefully structured. As in the synchronous design, a separation between operation metadata and operation data is maintained. However, due to the absence of message-based metadata transfer, a queue of submission entries is required in addition to per-operation data buffers. To enable multiple outstanding requests without contention, a pool of submission buffers is used rather than a single shared buffer. This pool must be bounded to balance memory usage against achievable concurrency. Therefore, alongside the necessary metadata, each submission entry must include a reference to the operations associated buffer.
 
-A corresponding completion queue and set of response buffers are provided for the server to return results. Separating submission and completion structures avoids the need for in-place modification of request data, which simplifies reasoning about ownership and correctness. This design ensures that each buffer has a clear single producer – single consumer relationship, reducing the risk of data corruption, and avoids unnecessary allocation of buffers for operations that do not require them.
- \newpage
-As operations are completed in-order, per client, completion entries correspond directly to submitted operations. To acquire these responses, a client may either check the completion queue or wait for a notification from the server. Each completion entry then contains the result of the operation, including any return value or error status, as well as an possible response buffer index.
+A corresponding completion queue and set of response buffers are provided for the server to return results to. Separating submission and completion structures avoids the need for in-place modification of request data, which simplifies reasoning about ownership and correctness. This design ensures that each queue and buffer pool has a clear single producer – single consumer relationship, reducing the risk of data corruption and avoiding unnecessary allocation of buffers for operations that do not require them.
+\newpage
+As operations are completed in-order, per client, completion entries correspond directly to submitted operations. To acquire these responses, a client may either check the completion queue or wait for a notification from the server. Each completion entry then contains the result of the operation, including any return value or error status, as well as a possible response buffer index.
 
 By decoupling request submission from notification, this design implicitly enables batching. A client may enqueue multiple requests before notifying the server, allowing a single IPC event to trigger the processing of multiple operations. This amortises communication overhead across a batch of operations, as illustrated by Client~1 in Figure~\ref{fig:async}. To maximise efficiency, the server processes all queued requests for a client before switching to another. However, this must be bounded to prevent starvation, ensuring fair servicing across clients. To maintain correctness, queue entries are marked as ready explicitly by the client, rather than relying solely on queue occupancy, allowing the server to distinguish between valid and incomplete submissions.
 
@@ -66,37 +63,37 @@ By decoupling request submission from notification, this design implicitly enabl
     \caption{Asynchronous multiclient-server interaction.}
     \label{fig:async}
 \end{figure} 
+\vspace{-0.3cm}
 
-While batching can increase the latency of individual operations, it reduces overall IPC frequency and context switching, improving system throughput. Furthermore, the decoupled nature of the interaction allows client execution and server processing to overlap where possible, reducing unnecessary serialization and enabling more efficient utilisation of system resources.
+While batching can increase the latency of individual operations, it reduces overall IPC frequency and context switching, improving system throughput. Furthermore, the decoupled nature of the interaction allows client execution and server processing to overlap where possible, reducing unnecessary serialisation and enabling more efficient utilisation of system resources.
 
-The improvements can be understood through an analytical model of the system. Let $a_n$ denote the time taken for a batch of $n$ operations in the asynchronous system, then let $x$ represent the internal processing time per operation and $c_{a_n}$ represent the communication overhead for the batch.
-
+The improvements can be understood through an analytical model of the system. Let $a_n$ denote the time taken for a batch of $n$ operations in the asynchronous system, then let $x$ represent the internal processing time per operation and $c$ represent the communication overhead a the batch.
+\newpage
 Therefore, the total execution time for an asynchronous batch of operations can be expressed as:
 
 \begin{equation}
-a_n = c_{a_n} + n x
+a_n = c + n x
 \end{equation}
 
 Hence, the average time per operation is:
 
 \begin{equation}
-\frac{a_n}{n} = \frac{c_{a_n}}{n} + x
+\frac{a_n}{n} = \frac{c}{n} + x
 \end{equation}
 
-This shows that as the batch size increases, the communication overhead is split across multiple operations, causing the per-operation communication cost $\frac{c_{a_n}}{n}$ to decrease. In the limit, the average operation time approaches the internal processing cost $x$, indicating that communication overhead becomes negligible.
+This shows that as the batch size increases, the communication overhead is split across multiple operations, causing the per-operation communication cost $\frac{c}{n}$ to decrease. In the limit, the average operation time approaches the internal processing cost $x$, indicating that communication overhead becomes negligible.
 
 This highlights the fundamental advantage of batching, as it allows the system to approach a performance bound determined primarily by computation rather than communication.
 
 \section{File Server}
 
-The following subsections discuss the internal design of the file server, including its data structures and organisation. The design focuses on providing a simple and efficient structure to support the required operations, while remaining compatible with both synchronous and asynchronous interface models. 
+The following subsections discuss the internal design of the FS, including its data structures and organisation. The design focuses on providing a simple and efficient structure to support the required operations, while remaining compatible with both synchronous and asynchronous interface models. 
 
 \subsection{Architectural Overview}
 
 The FS is structured as a set of modular components, each responsible for a distinct aspect of operation. Rather being a single body of logic, functionality is decomposed into separate components for request handling, FS operations, runtime state management and storage management. Together, these provide a unified service to clients while maintaining a clear separation of concerns, in keeping with microkernel design principles.  Furthermore, this modularity supports uniform error handling, allowing failures to be detected accurately and propagated naturally between components.
 
 At the highest level, the request handling layer forms the entry point into the server, receiving operations from clients and dispatching them to the appropriate FS logic. The FS core implements the semantics of individual file operations, coordinating access to the internal data structures required to service them. Runtime state management maintains execution state associated with active file handles, such as access modes and file offsets, while the storage layer manages the underlying in-memory representation of file contents, metadata and allocation state. This decomposition is illustrated in Figure~\ref{fig:arch}.
-\newpage
 
 \begin{figure}[H]
     \centering
@@ -104,33 +101,36 @@ At the highest level, the request handling layer forms the entry point into the 
     \caption{Architectural overview of the file server.}
     \label{fig:arch}
 \end{figure}
+\vspace{-0.3cm}
 
-At a system level, the FS is responsible for servicing client file operations, maintaining correctness of FS state, managing storage resources, and coordinating access across multiple clients. Importantly, these responsibilities are independent of whether requests arrive through the synchronous or asynchronous interface, as both models share the same internal FS logic. This ensures that differences in measured performance arise from interface behaviour rather than differences in core FS operation.
+At a system level, the FS is responsible for servicing client operations, maintaining correctness of FS state, managing storage resources and coordinating access across multiple clients. Importantly, these responsibilities are independent of whether requests arrive through the synchronous or asynchronous interface, as both models share the same internal FS logic. This ensures that differences in measured performance arise from interface behaviour rather than differences in core FS operation.
 
 This modular structure allows internal structures or algorithms to be modified without affecting the overall architecture, while supporting extensibility, as features such as persistent storage could be introduced without fundamentally redesigning the server.
 
 Hierarchical file storage through a directory structure is supported, allowing files and directories to be organised using path-based naming. Directories may contain both files and subdirectories, enabling nested storage and traversal in a conventional tree-like structure. This was chosen over a flat namespace to support structured management and realistic FS behaviour. 
 
-The FS supports a set of operations intended to provide a sufficiently complete and practical FS interface for both functional use and evaluation, without introducing unnecessary complexity beyond the scope of the work. These include file and directory creation (Create File, Create Directory), data access (Read, Write, Seek), file lifecycle management (Open, Close, Delete), metadata and state queries (Get Size, Exists, Get Permissions, Set Permissions), and directory enumeration (List).
-
+The FS supports a set of operations intended to provide a sufficiently complete and practical FS interface for both functional use and evaluation, without introducing unnecessary complexity beyond the scope of the work. These include file and directory creation (Create File, Create Directory), data access (Read, Write, Seek), file lifecycle management (Open, Close, Delete), metadata and state queries (Get Size, Exists, Get Permissions, Set Permissions) and directory enumeration (List).
+\newpage
 \subsection{Component Design and Interactions}
 
 Significant storage management is required to support FS operations, motivating separate structures for representing data, metadata, runtime state and namespace organisation, along with mechanisms to govern their interaction. 
 
 \subsubsection{Blocks}
 
-Blocks form the fundamental unit of data storage in the FS. They represent fixed-size regions of memory used flexibly to hold dynamic FS data, including file contents, directory entries and, indirect block references. Using a unified block abstraction allows storage to be allocated according to demand, rather than partitioning memory into separate fixed regions for different data types. This allows files and directories to grow as required while avoiding unnecessary reservation of space when demand is low.
+Blocks form the fundamental unit of data storage in the FS. They represent fixed-size regions of memory that are used to flexibly hold dynamic FS data, including file contents, directory entries and, indirect block references. Using a unified block abstraction allows storage to be allocated according to demand, rather than partitioning memory into separate fixed regions for different data types. This allows files and directories to grow as required while avoiding unnecessary reservation of space when demand is low.
 
 While fixed-size allocation means all operations occur at block granularity, potentially wasting space when storing very small files, this was accepted in exchange for more efficient allocation management and simpler indexing and data extension. A size of 4~KiB was selected as a practical balance between storage granularity and management overhead. As the system is sufficiently modular, however, this block size remains configurable.
 
 Blocks are managed through a Block Allocation Table (BAT), as illustrated in Figure~\ref{fig:bat}. This maintains one entry per block, with each entry storing a flag indicating whether the corresponding block is free or allocated. This enables rapid rearrangement of FS data.
 
+\vspace{-0.2cm}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\linewidth]{chapters/images/block_alloc.png}
+    \includegraphics[width=0.53\linewidth]{chapters/images/block_alloc.png}
     \caption{Block allocation table structure.}
     \label{fig:bat}
 \end{figure}
+\vspace{-0.3cm}
 
 Blocks are stored within a contiguous block pool and are accessed by index, with these indices being stored within inodes.
 
@@ -138,16 +138,17 @@ Blocks are stored within a contiguous block pool and are accessed by index, with
 
 Inodes provide the central metadata structure of the file system, representing either files or directories and linking their logical identity to the underlying storage by holding both entry metadata and block references. This structure separates metadata from data storage, simplifying management of FS state, while also providing a uniform representation for FS objects, reducing special-case handling. Furthermore, resolving persistent objects independently of their names avoids repeated path-based lookup. 
 
+This metadata must hold a variety of information to allow rich and secure system functionality. To avoid requiring a separate allocation table, each inode includes an in-use flag to enable efficient allocation and deallocation. The inode type (file or directory) is also stored, ensuring associated data is interpreted appropriately and supporting valid file traversal. Ownership and access permissions are additionally stored to support multiple clients safely. 
+
+Inodes store block references either directly or, where additional references are required, through indirect blocks, as shown in Figure~\ref{fig:indirect-blocks}. This allows files to grow beyond the capacity of direct block references while preserving a uniform model structure, although very large files may incur modest additional access overhead due to frequent indirect reference resolution. 
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{chapters/images/inode.png}
     \caption{inode and block reference structure.}
     \label{fig:indirect-blocks}
 \end{figure}
-
-This metadata must hold a variety of information to allow rich and secure system functionality. To avoid requiring a separate allocation table, each inode includes an in-use flag to enable efficient allocation and deallocation. The inode type (file or directory) is also stored, ensuring associated data is interpreted appropriately and supporting valid file traversal. Ownership and access permissions are additionally stored to support multiple clients safely. 
-
-Inodes store block references either directly or, where additional references are required, through indirect blocks, as shown in Figure~\ref{fig:indirect-blocks}. This allows files to grow beyond the capacity of direct block references while preserving a uniform model structure, although very large files may incur modest additional access overhead due to frequent indirect reference resolution. 
+\vspace{-0.3cm}
 
 To aid efficient data access and ensure only initialised storage is accessed, an inode also stores the file size, indicating the extent of valid file data. Together with the block references, this supports Read operations through resolution of valid file data and Write operations through access to existing blocks, while determining when file extension requires allocation of additional blocks. 
 
@@ -156,6 +157,9 @@ This design introduces an additional level of separation between FS objects and 
 \subsubsection{Directories}
 
 Directories provide the namespace structure of the file system, enabling hierarchical organisation through mappings from names to inode references. They are represented using the same inode and block structures used elsewhere in the file system, reusing existing abstractions rather than requiring a separate storage mechanism, thereby preserving flexibility in data use and storage efficiency. 
+
+A directory is represented by a directory inode whose associated blocks store a list of nested files and subdirectories as directory entries. Each directory entry is a structure linking an entry name to its respective inode via an index, as shown in Figure~\ref{fig:directory-entries}. 
+
 \vspace{0.3cm}
 \begin{figure}[H]
     \centering
@@ -163,18 +167,17 @@ Directories provide the namespace structure of the file system, enabling hierarc
     \caption{Directory structure via inodes and blocks.}
     \label{fig:directory-entries}
 \end{figure}
+\vspace{-0.2cm}
 
-A directory is represented by a directory inode whose associated blocks store a list of nested files and subdirectories as directory entries. Each directory entry is a structure linking an entry name to its respective inode via an index, as shown in Figure~\ref{fig:directory-entries}. 
-\newpage
 This recursive structure enables hierarchical namespace organisation through arbitrary nesting of directories and files, supporting structured management beyond what would be possible in a flat namespace. It also provides inherent path-based access, where successive path segments are resolved by searching the entries of the current directory, descending into a child directory when a matching entry is found, until the target inode is reached, or a path is deemed invalid.  
 
 For general use, a permanent root directory is created during system initialisation, through which all files and directories are organised upon. Special directory entries such as . and .., as well as symbolic links, are not supported, reducing namespace complexity and avoiding additional traversal cases. 
 
-This structure was chosen to support path-based access and structured file storage. However, as path resolution requires directory traversal, lookup incurs some overhead, particularly if deeply nested paths are common. Linearly scanning directories for target entries was chosen over more complex indexed lookup to reduce management overhead and implementation complexity. This was considered appropriate as scale of the file system is relatively small, and it does not impact comparison of the communication models. 
+This structure was chosen to support path-based access and structured file storage. However, as path resolution requires directory traversal, lookup incurs some overhead, particularly if deeply nested paths are common. Linearly scanning directories for target entries was chosen over more complex indexed lookup to reduce management overhead and implementation complexity. This was considered appropriate as scale of the file system is relatively small and it does not impact comparison of the communication models. 
 
 \subsubsection{File Descriptors}
 
-File descriptors maintain runtime state for open files, providing a layer of indirection between client operations and persistent file metadata. As shown in Figure~\ref{fig:file-descriptors}, a file descriptor links a client-visible handle to the inode representing the underlying file, while additionally storing the transient state required for continued access.
+File descriptors maintain runtime state for open files, providing a layer of indirection between client operations and persistent file metadata. As shown in Figure~\ref{fig:file-descriptors}, an FD links a client-visible handle to the inode representing the underlying file, while additionally storing the transient state required for continued access.
 
 \begin{figure}[H]
     \centering
@@ -182,39 +185,35 @@ File descriptors maintain runtime state for open files, providing a layer of ind
     \caption{File descriptor structure.}
     \label{fig:file-descriptors}
 \end{figure}
-\newpage
+\vspace{-0.25cm}
 
-This state includes a reference to the associated inode, the current file offset, and the mode in which the file was opened. Separating this runtime state from inode metadata allows information specific to an active open instance, rather than the file itself, to be maintained, supporting multiclient access. This is additionally useful for operations such as sequential reads or writes, where file position may persist across operations and need not be re-specified.
+This state includes the current file offset and the mode in which the file was opened. Separating this runtime state from inode metadata allows information specific to an active open instance, rather than the file itself, to be maintained, supporting multiclient access. This is additionally useful for operations such as sequential reads or writes, where file position may persist across operations and need not be re-specified.
 
-File descriptors are created and returned to a client when a file is opened, and are subsequently used by Read, Write, Seek and Close operations to reference the open file. This improves efficiency by avoiding path resolution for every operation, as the file descriptor links directly to the associated inode.
+FDs are created and returned to a client when a file is opened, and are subsequently used by Read, Write, Seek and Close operations to reference the open file. This improves efficiency by avoiding path resolution for every operation, as the FD links directly to the associated inode.
 
-This design does introduce some overhead in maintaining descriptor state, but this is modest relative to the performance benefits it provides. Fixed-size file descriptor regions do, however, impose a bounded number of simultaneously open files per client.
+This design does introduce some overhead in maintaining descriptor state, but this is modest relative to the performance benefits it provides. Fixed-size FD regions do, however, impose a bounded number of simultaneously open files per client.
 
 \subsection{Request Processing Flow}
 
-FS requests follow a common processing path regardless of operation type. Once a request is received by the FS, it is first decoded to determine the requested operation and extract any associated parameters. Basic validation is then performed, such as verifying the operation code is recognised, the required parameters are present and checking that any referenced file handles or paths are correctly formed.
+FS requests follow a common processing path regardless of operation type to reduce duplicated logic, ensure consistent validation across operations and simplify reasoning about correctness within the FS. Once a request is received by the FS, it is first decoded to determine the requested operation and extract any associated parameters. Basic validation is then performed, such as verifying the operation code is recognised, the required parameters are present and checking that any referenced file handles or paths are correctly formed.
 
 Following validation, the request is dispatched to the appropriate FS logic. The general flow is:
-\begin{itemize}
+\begin{itemize}[itemsep=0.2ex, topsep=0.2ex]
     \item Service operation
     \item Access internal structures
     \item Update state if required
     \item Generate response
 \end{itemize}
 
-For example, Read request follows this general structure by validating the supplied file handle exists, consulting the open file state to determine the current offset, resolving the relevant storage blocks containing the requested data, and returning the result while updating the file offset. 
-
-This shared processing path was chosen to reduce duplicated logic, ensure consistent validation across operations, and simplify reasoning about correctness within the FS.
+For example, the Read operation follows this general structure by validating the supplied file handle exists, consulting the open file state to determine the current offset, resolving the relevant storage blocks containing the requested data and returning the result while updating the file offset. 
 
 \subsection{Multiclient Support}
 
 Multiclient support is provided through a combination of per-client runtime state, client isolation and centralised coordination through the FS.
 
-Per-client state is maintained through both persistent and runtime structures. Ownership and access permissions are stored within inode metadata, allowing access control decisions to be enforced consistently regardless of which client issues a request. Ownership associates each entry with the client that created it, while permissions are represented through Read, Write and Execute flags, where an unset flag indicates that the corresponding operation may only be performed on that entry by the owner. If a flag is set, however, the operation may be performed by any client. Permission modification, however, is always restricted to the owner. 
+Per-client state is maintained through both persistent and runtime structures. Ownership and access permissions are stored within inode metadata, allowing access control decisions to be enforced consistently regardless of which client issues a request. Ownership associates each entry with the client that created it, while permissions are represented through Read, Write and Execute flags, where an unset flag indicates that the corresponding operation may only be performed on that entry by the owner. If a flag is set, however, the operation may be performed by any client. Although, permission modification is always restricted to the owner. 
 
-Additionally, each client's runtime state is kept in a separate region of the file descriptor table, with a local maximum number of open files. This ensures that one client’s open file state cannot interfere with that of another. This separation provides isolation even when multiple clients access shared resources, as multiple clients may access the same underlying file, but each through their own client context.
+Additionally, each client's runtime state is kept in a separate region of the File Descriptor Table (FDT), with a local maximum number of open files. This ensures that one client’s open file state cannot interfere with that of another. This separation provides isolation even when multiple clients access shared resources, as multiple clients may access the same underlying file, each through their own client context.
 
-Consistency of shared resources is preserved through centralised mediation by the FS; all file operations pass through the server and are serviced atomically.
-
-A particular case of shared resource consistency arises when one client deletes a file that remains open by others. In this case, deletion is deferred until the final client closes the file, ensuring that active references remain valid and preventing removal of data still in use.
+Consistency of shared resources is preserved through centralised mediation by the FS; all file operations pass through the server and are serviced atomically. A particular case of shared resource consistency arises when one client deletes a file that remains open by others. In this case, deletion is deferred until the final client closes the file, ensuring that active references remain valid and preventing removal of data still in use.
 

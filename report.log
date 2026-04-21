@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  21 APR 2026 00:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.3.17)  21 APR 2026 17:49
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -508,14 +508,22 @@ File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 \tikz@expandcount=\count335
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz/libraries\tikzlibrarytopaths.code.tex
 File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-))) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz/libraries\tikzlibrarycalc.code.tex
+))) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enumitem.sty
+Package: enumitem 2025/02/06 v3.11 Customized lists
+\labelindent=\skip93
+\enit@outerparindent=\dimen287
+\enit@toks=\toks37
+\enit@inbox=\box69
+\enit@count@id=\count336
+\enitdp@description=\count337
+) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz/libraries\tikzlibrarycalc.code.tex
 File: tikzlibrarycalc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibraryarrows.meta.code.tex
 File: pgflibraryarrows.meta.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfarrowinset=\dimen287
-\pgfarrowlength=\dimen288
-\pgfarrowwidth=\dimen289
-\pgfarrowlinewidth=\dimen290
+\pgfarrowinset=\dimen288
+\pgfarrowlength=\dimen289
+\pgfarrowwidth=\dimen290
+\pgfarrowlinewidth=\dimen291
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz/libraries\tikzlibrarypositioning.code.tex
 File: tikzlibrarypositioning.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
@@ -524,7 +532,7 @@ File: lstlang1.sty 2025/11/14 1.11b listings language file
 File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count336
+\l__color_backend_stack_int=\count338
 ) (report.aux (chapters/2_introduction.aux) (chapters/3_background.aux) (chapters/4_design.aux) (chapters/5_implementation.aux
 
 LaTeX Warning: Label `lst:file-open-ops' multiply defined.
@@ -591,24 +599,24 @@ LaTeX Font Info:    ... okay on input line 91.
 
 (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count337
-\scratchdimen=\dimen291
-\scratchbox=\box69
-\nofMPsegments=\count338
-\nofMParguments=\count339
-\everyMPshowfont=\toks37
-\MPscratchCnt=\count340
-\MPscratchDim=\dimen292
-\MPnumerator=\count341
-\makeMPintoPDFobject=\count342
-\everyMPtoPDFconversion=\toks38
+\scratchcounter=\count339
+\scratchdimen=\dimen292
+\scratchbox=\box70
+\nofMPsegments=\count340
+\nofMParguments=\count341
+\everyMPshowfont=\toks38
+\MPscratchCnt=\count342
+\MPscratchDim=\dimen293
+\MPnumerator=\count343
+\makeMPintoPDFobject=\count344
+\everyMPtoPDFconversion=\toks39
 ) (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-\c@lstlisting=\count343
+\c@lstlisting=\count345
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
@@ -741,120 +749,115 @@ LaTeX Warning: Citation `' on page 2 undefined on input line 71.
 
 LaTeX Warning: Citation `' on page 2 undefined on input line 71.
 
-
-Overfull \hbox (32.66835pt too wide) in paragraph at lines 71--72
-[]\OT1/ptm/m/n/12 This re-port presents the de-sign and im-ple-men-ta-tion of an asyn-chronous, mul-ti-client FS for the seL4 microkernel[[]],
- []
-
 [2]
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 79.
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 81.
  (C:\Users\luker\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-)) [3] [4]
+)) [3]
 \openout2 = `chapters/3_background.aux'.
 
  (chapters/3_background.tex
 Chapter 2.
 
-LaTeX Warning: Citation `' on page 5 undefined on input line 47.
+LaTeX Warning: Citation `' on page 4 undefined on input line 47.
 
 
-LaTeX Warning: Citation `' on page 5 undefined on input line 47.
+LaTeX Warning: Citation `' on page 4 undefined on input line 47.
 
-[5
+[4
 
 
 
 
 ]
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 131.
+LaTeX Warning: Citation `' on page 5 undefined on input line 131.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 131.
+LaTeX Warning: Citation `' on page 5 undefined on input line 131.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 131.
+LaTeX Warning: Citation `' on page 5 undefined on input line 131.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 133.
+LaTeX Warning: Citation `' on page 5 undefined on input line 133.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 133.
+LaTeX Warning: Citation `' on page 5 undefined on input line 133.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 133.
+LaTeX Warning: Citation `' on page 5 undefined on input line 133.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 133.
+LaTeX Warning: Citation `' on page 5 undefined on input line 133.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 135.
+LaTeX Warning: Citation `' on page 5 undefined on input line 135.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 135.
+LaTeX Warning: Citation `' on page 5 undefined on input line 135.
 
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 135.
+LaTeX Warning: Citation `' on page 5 undefined on input line 135.
+
+[5]
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 137.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 137.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 137.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 139.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 139.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 145.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 145.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 145.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 147.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 147.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 147.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 147.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 155.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 155.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 155.
+
+
+LaTeX Warning: Citation `' on page 6 undefined on input line 155.
 
 [6]
 
-LaTeX Warning: Citation `' on page 7 undefined on input line 137.
+LaTeX Warning: Citation `' on page 7 undefined on input line 157.
 
 
-LaTeX Warning: Citation `' on page 7 undefined on input line 137.
+LaTeX Warning: Citation `' on page 7 undefined on input line 157.
 
 
-LaTeX Warning: Citation `' on page 7 undefined on input line 137.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 139.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 139.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 145.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 145.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 145.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 147.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 147.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 147.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 147.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 155.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 155.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 155.
-
-
-LaTeX Warning: Citation `' on page 7 undefined on input line 155.
-
-[7]
-
-LaTeX Warning: Citation `' on page 8 undefined on input line 157.
-
-
-LaTeX Warning: Citation `' on page 8 undefined on input line 157.
-
-
-LaTeX Warning: Citation `' on page 8 undefined on input line 157.
+LaTeX Warning: Citation `' on page 7 undefined on input line 157.
 
 
 Overfull \hbox (21.12471pt too wide) in paragraph at lines 157--158
@@ -862,260 +865,265 @@ Overfull \hbox (21.12471pt too wide) in paragraph at lines 157--158
  []
 
 
-LaTeX Warning: Citation `' on page 8 undefined on input line 159.
+LaTeX Warning: Citation `' on page 7 undefined on input line 159.
+
+
+LaTeX Warning: Citation `' on page 7 undefined on input line 239.
+
+
+LaTeX Warning: Citation `' on page 7 undefined on input line 243.
+
+[7]
+
+LaTeX Warning: Citation `' on page 8 undefined on input line 247.
+
+
+LaTeX Warning: Citation `' on page 8 undefined on input line 251.
+
+
+LaTeX Warning: Citation `' on page 8 undefined on input line 313.
 
 [8]
 
-LaTeX Warning: Citation `' on page 9 undefined on input line 240.
+LaTeX Warning: Citation `' on page 9 undefined on input line 378.
 
 
-LaTeX Warning: Citation `' on page 9 undefined on input line 244.
+LaTeX Warning: Citation `' on page 9 undefined on input line 384.
 
 
-LaTeX Warning: Citation `' on page 9 undefined on input line 248.
-
-
-LaTeX Warning: Citation `' on page 9 undefined on input line 252.
+LaTeX Warning: Citation `' on page 9 undefined on input line 384.
 
 [9]
 
-LaTeX Warning: Citation `' on page 10 undefined on input line 313.
+LaTeX Warning: Citation `' on page 10 undefined on input line 465.
 
 
-LaTeX Warning: Citation `' on page 10 undefined on input line 377.
+LaTeX Warning: Citation `' on page 10 undefined on input line 467.
 
 
-LaTeX Warning: Citation `' on page 10 undefined on input line 383.
-
-
-LaTeX Warning: Citation `' on page 10 undefined on input line 383.
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 [10]
 
-LaTeX Warning: Citation `' on page 11 undefined on input line 464.
+LaTeX Warning: Citation `' on page 11 undefined on input line 521.
 
 
-LaTeX Warning: Citation `' on page 11 undefined on input line 466.
+LaTeX Warning: Citation `' on page 11 undefined on input line 523.
+
+
+LaTeX Warning: Citation `' on page 11 undefined on input line 525.
+
+
+LaTeX Warning: Citation `' on page 11 undefined on input line 532.
+
+
+LaTeX Warning: Citation `' on page 11 undefined on input line 534.
 
 [11]
 
-LaTeX Warning: Citation `' on page 12 undefined on input line 520.
+LaTeX Warning: Citation `' on page 12 undefined on input line 536.
 
-
-LaTeX Warning: Citation `' on page 12 undefined on input line 522.
-
-
-LaTeX Warning: Citation `' on page 12 undefined on input line 524.
-
-
-LaTeX Warning: Citation `' on page 12 undefined on input line 531.
-
-[12]
-
-LaTeX Warning: Citation `' on page 13 undefined on input line 533.
-
-
-LaTeX Warning: Citation `' on page 13 undefined on input line 535.
-
-<chapters/images/contig.png, id=638, 432.11438pt x 414.79968pt>
+<chapters/images/contig.png, id=634, 432.11438pt x 414.79968pt>
 File: chapters/images/contig.png Graphic file (type png)
 <use chapters/images/contig.png>
-Package pdftex.def Info: chapters/images/contig.png  used on input line 547.
-(pdftex.def)             Requested size: 215.1019pt x 206.48158pt.
-[13]
-<chapters/images/linked.png, id=646, 407.27156pt x 399.74344pt>
+Package pdftex.def Info: chapters/images/contig.png  used on input line 548.
+(pdftex.def)             Requested size: 204.85672pt x 196.64581pt.
+[12 <./chapters/images/contig.png>]
+<chapters/images/linked.png, id=643, 407.27156pt x 399.74344pt>
 File: chapters/images/linked.png Graphic file (type png)
 <use chapters/images/linked.png>
-Package pdftex.def Info: chapters/images/linked.png  used on input line 560.
-(pdftex.def)             Requested size: 215.1019pt x 211.12495pt.
- [14 <./chapters/images/contig.png> <./chapters/images/linked.png>]
+Package pdftex.def Info: chapters/images/linked.png  used on input line 563.
+(pdftex.def)             Requested size: 199.73804pt x 196.04677pt.
 
-LaTeX Warning: Citation `' on page 15 undefined on input line 569.
 
-<chapters/images/indexed.png, id=655, 336.50719pt x 292.09125pt>
+LaTeX Warning: Citation `' on page 13 undefined on input line 572.
+
+<chapters/images/indexed.png, id=646, 336.50719pt x 292.09125pt>
 File: chapters/images/indexed.png Graphic file (type png)
 <use chapters/images/indexed.png>
-Package pdftex.def Info: chapters/images/indexed.png  used on input line 573.
-(pdftex.def)             Requested size: 256.07481pt x 222.27689pt.
+Package pdftex.def Info: chapters/images/indexed.png  used on input line 576.
+(pdftex.def)             Requested size: 230.46576pt x 200.05008pt.
+[13 <./chapters/images/linked.png> <./chapters/images/indexed.png>]
 
-LaTeX Warning: Citation `' on page 15 undefined on input line 582.
+LaTeX Warning: Citation `' on page 14 undefined on input line 586.
 
-<chapters/images/fat.png, id=658, 415.5525pt x 361.35pt>
+<chapters/images/fat.png, id=655, 415.5525pt x 361.35pt>
 File: chapters/images/fat.png Graphic file (type png)
 <use chapters/images/fat.png>
-Package pdftex.def Info: chapters/images/fat.png  used on input line 586.
+Package pdftex.def Info: chapters/images/fat.png  used on input line 590.
 (pdftex.def)             Requested size: 266.31999pt x 231.58852pt.
-[15 <./chapters/images/indexed.png>]
 
-LaTeX Warning: Citation `' on page 16 undefined on input line 594.
+LaTeX Warning: Citation `' on page 14 undefined on input line 598.
 
 
-Overfull \hbox (4.45656pt too wide) in paragraph at lines 594--595
+Overfull \hbox (4.45656pt too wide) in paragraph at lines 598--599
 []\OT1/ptm/m/n/12 Alternatively, per-file meta-data strate-gies, such as inode-based poli-cies used in POSIX-compliant systems[[]],
  []
 
-<chapters/images/blocks.png, id=667, 565.36218pt x 536.75531pt>
+<chapters/images/blocks.png, id=658, 565.36218pt x 536.75531pt>
 File: chapters/images/blocks.png Graphic file (type png)
 <use chapters/images/blocks.png>
-Package pdftex.def Info: chapters/images/blocks.png  used on input line 598.
-(pdftex.def)             Requested size: 256.07481pt x 243.11836pt.
-[16 <./chapters/images/fat.png> <./chapters/images/blocks.png>]
+Package pdftex.def Info: chapters/images/blocks.png  used on input line 602.
+(pdftex.def)             Requested size: 307.2929pt x 291.75186pt.
+[14 <./chapters/images/fat.png>]
 
-LaTeX Warning: Citation `' on page 17 undefined on input line 606.
+LaTeX Warning: Citation `' on page 15 undefined on input line 610.
 
-<chapters/images/dirs.png, id=676, 687.31781pt x 534.49687pt>
+<chapters/images/dirs.png, id=666, 687.31781pt x 534.49687pt>
 File: chapters/images/dirs.png Graphic file (type png)
 <use chapters/images/dirs.png>
-Package pdftex.def Info: chapters/images/dirs.png  used on input line 613.
+Package pdftex.def Info: chapters/images/dirs.png  used on input line 620.
 (pdftex.def)             Requested size: 332.89412pt x 258.87181pt.
-[17 <./chapters/images/dirs.png>]
+[15 <./chapters/images/blocks.png>] [16 <./chapters/images/dirs.png>]
 
-LaTeX Warning: Citation `' on page 18 undefined on input line 629.
-
-
-LaTeX Warning: Citation `' on page 18 undefined on input line 629.
+LaTeX Warning: Citation `' on page 17 undefined on input line 636.
 
 
-LaTeX Warning: Citation `' on page 18 undefined on input line 631.
+LaTeX Warning: Citation `' on page 17 undefined on input line 636.
 
-) [18]
+
+LaTeX Warning: Citation `' on page 17 undefined on input line 638.
+
+) [17]
 \openout2 = `chapters/4_design.aux'.
 
  (chapters/4_design.tex
 Chapter 3.
-[19
+[18
 
 
 
 
 ]
-<chapters/images/sync.png, id=694, 724.20563pt x 487.8225pt>
+<chapters/images/sync.png, id=689, 724.20563pt x 487.8225pt>
 File: chapters/images/sync.png Graphic file (type png)
 <use chapters/images/sync.png>
-Package pdftex.def Info: chapters/images/sync.png  used on input line 40.
+Package pdftex.def Info: chapters/images/sync.png  used on input line 30.
 (pdftex.def)             Requested size: 307.2929pt x 206.99057pt.
- [20] [21 <./chapters/images/sync.png>] [22]
-<chapters/images/async.png, id=712, 730.98094pt x 478.78876pt>
+ [19 <./chapters/images/sync.png>] [20]
+<chapters/images/async.png, id=703, 730.98094pt x 478.78876pt>
 File: chapters/images/async.png Graphic file (type png)
 <use chapters/images/async.png>
-Package pdftex.def Info: chapters/images/async.png  used on input line 65.
+Package pdftex.def Info: chapters/images/async.png  used on input line 62.
 (pdftex.def)             Requested size: 348.258pt x 228.10645pt.
- [23 <./chapters/images/async.png>] [24]
-<chapters/images/arch.png, id=726, 791.20593pt x 686.565pt>
+ [21 <./chapters/images/async.png>]
+<chapters/images/arch.png, id=711, 791.20593pt x 686.565pt>
 File: chapters/images/arch.png Graphic file (type png)
 <use chapters/images/arch.png>
-Package pdftex.def Info: chapters/images/arch.png  used on input line 103.
+Package pdftex.def Info: chapters/images/arch.png  used on input line 100.
 (pdftex.def)             Requested size: 281.68385pt x 244.42894pt.
- [25 <./chapters/images/arch.png>]
-<chapters/images/block_alloc.png, id=733, 520.19344pt x 436.63126pt>
+ [22] [23 <./chapters/images/arch.png>]
+<chapters/images/block_alloc.png, id=725, 520.19344pt x 436.63126pt>
 File: chapters/images/block_alloc.png Graphic file (type png)
 <use chapters/images/block_alloc.png>
-Package pdftex.def Info: chapters/images/block_alloc.png  used on input line 130.
-(pdftex.def)             Requested size: 281.68385pt x 236.43695pt.
- [26 <./chapters/images/block_alloc.png>]
-<chapters/images/inode.png, id=739, 737.00343pt x 343.2825pt>
+Package pdftex.def Info: chapters/images/block_alloc.png  used on input line 129.
+(pdftex.def)             Requested size: 271.43867pt x 227.83572pt.
+ [24 <./chapters/images/block_alloc.png>]
+<chapters/images/inode.png, id=732, 737.00343pt x 343.2825pt>
 File: chapters/images/inode.png Graphic file (type png)
 <use chapters/images/inode.png>
-Package pdftex.def Info: chapters/images/inode.png  used on input line 143.
+Package pdftex.def Info: chapters/images/inode.png  used on input line 147.
 (pdftex.def)             Requested size: 409.72125pt x 190.83832pt.
- [27 <./chapters/images/inode.png>]
-<chapters/images/dir_inode.png, id=747, 721.19438pt x 456.95718pt>
+ [25 <./chapters/images/inode.png>]
+<chapters/images/dir_inode.png, id=739, 721.19438pt x 456.95718pt>
 File: chapters/images/dir_inode.png Graphic file (type png)
 <use chapters/images/dir_inode.png>
-Package pdftex.def Info: chapters/images/dir_inode.png  used on input line 162.
+Package pdftex.def Info: chapters/images/dir_inode.png  used on input line 166.
 (pdftex.def)             Requested size: 460.93153pt x 292.04718pt.
- [28 <./chapters/images/dir_inode.png>]
-<chapters/images/fds.png, id=755, 939.51pt x 487.8225pt>
+ [26 <./chapters/images/dir_inode.png>]
+<chapters/images/fds.png, id=746, 939.51pt x 487.8225pt>
 File: chapters/images/fds.png Graphic file (type png)
 <use chapters/images/fds.png>
-Package pdftex.def Info: chapters/images/fds.png  used on input line 181.
+Package pdftex.def Info: chapters/images/fds.png  used on input line 184.
 (pdftex.def)             Requested size: 358.50317pt x 186.14116pt.
- [29 <./chapters/images/fds.png>] [30]) [31]
+ [27 <./chapters/images/fds.png>]) [28]
 \openout2 = `chapters/5_implementation.aux'.
 
  (chapters/5_implementation.tex
 Chapter 4.
 
-LaTeX Warning: Citation `' on page 32 undefined on input line 8.
+LaTeX Warning: Citation `' on page 29 undefined on input line 7.
 
 
-LaTeX Warning: Citation `' on page 32 undefined on input line 10.
+LaTeX Warning: Citation `' on page 29 undefined on input line 9.
 
 
-LaTeX Warning: Citation `' on page 32 undefined on input line 12.
+LaTeX Warning: Citation `' on page 29 undefined on input line 11.
 
+[29
+
+
+
+
+]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 22.
-[32
-
-
-
-
-] [33] [34] [35]
-<chapters/images/queues.png, id=824, 758.835pt x 581.17125pt>
+ [30] [31]
+<chapters/images/queues.png, id=807, 758.835pt x 581.17125pt>
 File: chapters/images/queues.png Graphic file (type png)
 <use chapters/images/queues.png>
 Package pdftex.def Info: chapters/images/queues.png  used on input line 113.
 (pdftex.def)             Requested size: 368.74835pt x 282.41753pt.
-<chapters/images/buffers.png, id=826, 449.42906pt x 415.5525pt>
+ [32]
+<chapters/images/buffers.png, id=813, 449.42906pt x 415.5525pt>
 File: chapters/images/buffers.png Graphic file (type png)
 <use chapters/images/buffers.png>
-Package pdftex.def Info: chapters/images/buffers.png  used on input line 122.
+Package pdftex.def Info: chapters/images/buffers.png  used on input line 123.
 (pdftex.def)             Requested size: 204.85672pt x 189.41273pt.
- [36 <./chapters/images/queues.png>] [37 <./chapters/images/buffers.png>] [38] [39] [40] [41] [42]
-<chapters/images/traversal.png, id=910, 593.21625pt x 472.01344pt>
+ [33 <./chapters/images/queues.png> <./chapters/images/buffers.png>] [34] [35] [36] [37] [38]
+<chapters/images/traversal.png, id=895, 593.21625pt x 472.01344pt>
 File: chapters/images/traversal.png Graphic file (type png)
 <use chapters/images/traversal.png>
-Package pdftex.def Info: chapters/images/traversal.png  used on input line 274.
+Package pdftex.def Info: chapters/images/traversal.png  used on input line 279.
 (pdftex.def)             Requested size: 409.72125pt x 326.02094pt.
- [43 <./chapters/images/traversal.png>] [44] [45] [46] [47] [48] [49]) [50]
+ [39 <./chapters/images/traversal.png>] [40] [41] [42] [43] [44]) [45]
 \openout2 = `chapters/6_evaluation.aux'.
 
  (chapters/6_evaluation.tex
 Chapter 5.
-[51
+[46
 
 
 
 
-] [52] [53]
-<chapters/images/avg_operation_time_by_batch_size.png, id=997, 454.5783pt x 282.8166pt>
+] [47] [48]
+<chapters/images/avg_operation_time_by_batch_size.png, id=976, 454.5783pt x 282.8166pt>
 File: chapters/images/avg_operation_time_by_batch_size.png Graphic file (type png)
 <use chapters/images/avg_operation_time_by_batch_size.png>
 Package pdftex.def Info: chapters/images/avg_operation_time_by_batch_size.png  used on input line 85.
 (pdftex.def)             Requested size: 358.50317pt x 223.04721pt.
- [54] [55 <./chapters/images/avg_operation_time_by_batch_size.png>]
-<chapters/images/avg_operation_time_gradient_by_batch_size.png, id=1009, 455.7828pt x 282.8166pt>
+ [49 <./chapters/images/avg_operation_time_by_batch_size.png>]
+<chapters/images/avg_operation_time_gradient_by_batch_size.png, id=984, 455.7828pt x 282.8166pt>
 File: chapters/images/avg_operation_time_gradient_by_batch_size.png Graphic file (type png)
 <use chapters/images/avg_operation_time_gradient_by_batch_size.png>
-Package pdftex.def Info: chapters/images/avg_operation_time_gradient_by_batch_size.png  used on input line 102.
-(pdftex.def)             Requested size: 358.50317pt x 222.45169pt.
-<chapters/images/total_execution_time_by_clients.png, id=1011, 455.7828pt x 282.8166pt>
+Package pdftex.def Info: chapters/images/avg_operation_time_gradient_by_batch_size.png  used on input line 101.
+(pdftex.def)             Requested size: 348.258pt x 216.09506pt.
+<chapters/images/total_execution_time_by_clients.png, id=986, 455.7828pt x 282.8166pt>
 File: chapters/images/total_execution_time_by_clients.png Graphic file (type png)
 <use chapters/images/total_execution_time_by_clients.png>
 Package pdftex.def Info: chapters/images/total_execution_time_by_clients.png  used on input line 113.
-(pdftex.def)             Requested size: 384.11221pt x 238.3411pt.
- [56 <./chapters/images/avg_operation_time_gradient_by_batch_size.png>]
-<chapters/images/sync_completion_variation_by_clients.png, id=1019, 456.0237pt x 283.0575pt>
+(pdftex.def)             Requested size: 363.62967pt x 225.63216pt.
+ [50 <./chapters/images/avg_operation_time_gradient_by_batch_size.png>]
+<chapters/images/sync_completion_variation_by_clients.png, id=994, 456.0237pt x 283.0575pt>
 File: chapters/images/sync_completion_variation_by_clients.png Graphic file (type png)
 <use chapters/images/sync_completion_variation_by_clients.png>
-Package pdftex.def Info: chapters/images/sync_completion_variation_by_clients.png  used on input line 132.
+Package pdftex.def Info: chapters/images/sync_completion_variation_by_clients.png  used on input line 133.
 (pdftex.def)             Requested size: 250.95612pt x 155.7728pt.
-<chapters/images/async_completion_variation_by_clients.png, id=1020, 456.0237pt x 283.0575pt>
+<chapters/images/async_completion_variation_by_clients.png, id=995, 456.0237pt x 283.0575pt>
 File: chapters/images/async_completion_variation_by_clients.png Graphic file (type png)
 <use chapters/images/async_completion_variation_by_clients.png>
-Package pdftex.def Info: chapters/images/async_completion_variation_by_clients.png  used on input line 136.
+Package pdftex.def Info: chapters/images/async_completion_variation_by_clients.png  used on input line 137.
 (pdftex.def)             Requested size: 250.95612pt x 155.7728pt.
- [57 <./chapters/images/total_execution_time_by_clients.png>]) [58 <./chapters/images/sync_completion_variation_by_clients.png> <./chapters/images/async_completion_variation_by_clients.png>]
+ [51 <./chapters/images/total_execution_time_by_clients.png>]) [52 <./chapters/images/sync_completion_variation_by_clients.png> <./chapters/images/async_completion_variation_by_clients.png>]
 \openout2 = `chapters/7_conclusion.aux'.
 
  (chapters/7_conclusion.tex
 Chapter 6.
-[59
+[53
 
 
 
 
-]) [60] [61] (report.bbl
+]) [54] [55] (report.bbl
 ** WARNING: IEEEtran.bst: No hyphenation pattern has been
 ** loaded for the language `en'. Using the pattern for
 ** the default language instead.
@@ -1131,7 +1139,7 @@ Underfull \hbox (badness 6493) in paragraph at lines 26--30
 
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
 (Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 39.
-) [62
+) [56
 
 
 
@@ -1148,20 +1156,20 @@ LaTeX Warning: There were undefined references.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: C5A238F070231792CE375108012D12D5;13940.
+(rerunfilecheck)             Checksum: 57D9FF3FA214AC7D37FF6CF0A236C8EA;14013.
  ) 
 Here is how much of TeX's memory you used:
- 25331 strings out of 467871
- 473511 string characters out of 5418376
- 1193917 words of memory out of 5000000
- 53439 multiletter control sequences out of 15000+600000
- 679428 words of font info for 130 fonts, out of 8000000 for 9000
+ 25653 strings out of 467871
+ 479235 string characters out of 5418376
+ 1210514 words of memory out of 5000000
+ 53766 multiletter control sequences out of 15000+600000
+ 677603 words of font info for 127 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,12n,104p,1092b,2059s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,104p,1093b,1999s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/luker/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (72 pages, 1544478 bytes).
+Output written on report.pdf (66 pages, 1538960 bytes).
 PDF statistics:
- 1161 PDF objects out of 1200 (max. 8388607)
- 316 named destinations out of 1000 (max. 500000)
+ 1135 PDF objects out of 1200 (max. 8388607)
+ 310 named destinations out of 1000 (max. 500000)
  822 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -4,85 +4,85 @@
 \contentsline {section}{\numberline {1.3}Evaluation Strategy}{3}{section.1.3}%
 \contentsline {section}{\numberline {1.4}Key Findings}{3}{section.1.4}%
 \contentsline {section}{\numberline {1.5}Dissertation Structure}{3}{section.1.5}%
-\contentsline {chapter}{\numberline {2}Background}{5}{chapter.2}%
-\contentsline {section}{\numberline {2.1}OS Kernels}{5}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Definition and Characteristics}{5}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Microkernels Versus Monolithic Kernels}{6}{subsection.2.1.2}%
-\contentsline {section}{\numberline {2.2}seL4 Microkernel}{7}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Overview and Characteristics}{7}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Design}{8}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Use Cases and Applications}{9}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}Microkit Framework for seL4}{9}{subsection.2.2.4}%
-\contentsline {section}{\numberline {2.3}Client-Server Communication}{10}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Synchronous Model}{10}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Asynchronous Model}{11}{subsection.2.3.2}%
-\contentsline {section}{\numberline {2.4}File Servers in Operating Systems}{11}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Role and Functionality}{11}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Abstractions}{12}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}Storage and Organisation}{13}{subsection.2.4.3}%
-\contentsline {subsubsection}{File Layout}{13}{subsubsection*.6}%
-\contentsline {subsubsection}{Allocation Strategies}{13}{subsubsection*.7}%
-\contentsline {subsubsection}{Metadata Organisation}{15}{subsubsection*.8}%
-\contentsline {subsubsection}{Directory Structure}{17}{subsubsection*.9}%
-\contentsline {subsection}{\numberline {2.4.4}Client Management}{18}{subsection.2.4.4}%
-\contentsline {section}{\numberline {2.5}Related Work}{18}{section.2.5}%
-\contentsline {chapter}{\numberline {3}Design}{19}{chapter.3}%
-\contentsline {section}{\numberline {3.1}System Requirements and Constraints}{19}{section.3.1}%
-\contentsline {section}{\numberline {3.2}IPC Design and File Server Interface}{19}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Synchronous Model \textit {(Baseline)}}{20}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Asynchronous Model \textit {(Proposed IPC Mitigation Strategy)}}{21}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}File Server}{24}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Architectural Overview}{24}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Component Design and Interactions}{26}{subsection.3.3.2}%
-\contentsline {subsubsection}{Blocks}{26}{subsubsection*.10}%
-\contentsline {subsubsection}{inodes}{27}{subsubsection*.11}%
-\contentsline {subsubsection}{Directories}{28}{subsubsection*.12}%
-\contentsline {subsubsection}{File Descriptors}{29}{subsubsection*.13}%
-\contentsline {subsection}{\numberline {3.3.3}Request Processing Flow}{30}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Multiclient Support}{30}{subsection.3.3.4}%
-\contentsline {chapter}{\numberline {4}Implementation}{32}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Development Environment and Tools}{32}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Microkit Framework Setup}{32}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Interface}{34}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Synchronous Server Model}{34}{subsection.4.3.1}%
-\contentsline {subsubsection}{Client-Server Communication}{34}{subsubsection*.14}%
-\contentsline {subsubsection}{API}{35}{subsubsection*.15}%
-\contentsline {subsection}{\numberline {4.3.2}Asynchronous Server Model}{36}{subsection.4.3.2}%
-\contentsline {subsubsection}{Client-Server Communication}{36}{subsubsection*.16}%
-\contentsline {subsubsection}{API}{40}{subsubsection*.17}%
-\contentsline {section}{\numberline {4.4}File Server}{40}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Mechanisms}{40}{subsection.4.4.1}%
-\contentsline {subsubsection}{Blocks}{41}{subsubsection*.18}%
-\contentsline {subsubsection}{inodes}{41}{subsubsection*.19}%
-\contentsline {subsubsection}{Directories}{43}{subsubsection*.20}%
-\contentsline {subsubsection}{File Descriptors}{44}{subsubsection*.21}%
-\contentsline {subsection}{\numberline {4.4.2}Operations}{45}{subsection.4.4.2}%
-\contentsline {subsubsection}{Namespace Mutation}{45}{subsubsection*.22}%
-\contentsline {subsubsection}{Runtime State Management}{46}{subsubsection*.23}%
-\contentsline {subsubsection}{Data Movement}{47}{subsubsection*.24}%
-\contentsline {subsubsection}{Metadata Access and Modification}{49}{subsubsection*.25}%
-\contentsline {section}{\numberline {4.5}Error Handling}{50}{section.4.5}%
-\contentsline {chapter}{\numberline {5}Evaluation}{51}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Validation}{51}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Unit Tests}{51}{subsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.1.2}Integration Tests}{52}{subsection.5.1.2}%
-\contentsline {subsubsection}{Single Client}{52}{subsubsection*.26}%
-\contentsline {subsubsection}{Multiple Clients}{52}{subsubsection*.27}%
-\contentsline {section}{\numberline {5.2}Performance Evaluation}{53}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Goals}{53}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Metrics}{53}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Experimental Setup}{53}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}Benchmark Design}{53}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}Results and Analysis}{55}{subsection.5.2.5}%
-\contentsline {subsubsection}{Single-Client Per-Operation Benchmark}{55}{subsubsection*.28}%
-\contentsline {subsubsection}{Realistic Multiclient Workload}{56}{subsubsection*.29}%
-\contentsline {chapter}{\numberline {6}Conclusion}{59}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Contributions}{59}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Drawbacks and Limitations}{59}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}FS Limitations}{59}{subsection.6.2.1}%
-\contentsline {subsection}{\numberline {6.2.2}Benchmarking Constraints}{60}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Lack of Persistent Storage}{60}{subsection.6.2.3}%
-\contentsline {subsection}{\numberline {6.2.4}Single-Threaded Execution}{60}{subsection.6.2.4}%
-\contentsline {subsection}{\numberline {6.2.5}Additional Client Burden}{60}{subsection.6.2.5}%
-\contentsline {section}{\numberline {6.3}Future Work}{61}{section.6.3}%
-\contentsline {chapter}{Bibliography}{62}{chapter*.30}%
+\contentsline {chapter}{\numberline {2}Background}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Operating System Kernels}{4}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Definition and Characteristics}{4}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Microkernels Versus Monolithic Kernels}{5}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}seL4 Microkernel}{6}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Overview and Characteristics}{6}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Design}{7}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Use Cases and Applications}{8}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Microkit Framework for seL4}{8}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Client-Server Communication}{9}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Synchronous Model}{9}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Asynchronous Model}{10}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.4}File Servers in Operating Systems}{10}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Role and Functionality}{10}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Abstractions}{11}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Storage and Organisation}{11}{subsection.2.4.3}%
+\contentsline {subsubsection}{File Layout}{11}{subsubsection*.6}%
+\contentsline {subsubsection}{Allocation Strategies}{12}{subsubsection*.7}%
+\contentsline {subsubsection}{Metadata Organisation}{14}{subsubsection*.8}%
+\contentsline {subsubsection}{Directory Structure}{15}{subsubsection*.9}%
+\contentsline {subsection}{\numberline {2.4.4}Client Management}{16}{subsection.2.4.4}%
+\contentsline {section}{\numberline {2.5}Related Work}{17}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Design}{18}{chapter.3}%
+\contentsline {section}{\numberline {3.1}System Requirements and Constraints}{18}{section.3.1}%
+\contentsline {section}{\numberline {3.2}IPC Design and File Server Interface}{18}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Synchronous Model \textit {(Baseline)}}{19}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Asynchronous Model \textit {(Proposed IPC Mitigation Strategy)}}{20}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}File Server}{22}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Architectural Overview}{22}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Component Design and Interactions}{24}{subsection.3.3.2}%
+\contentsline {subsubsection}{Blocks}{24}{subsubsection*.10}%
+\contentsline {subsubsection}{inodes}{25}{subsubsection*.11}%
+\contentsline {subsubsection}{Directories}{26}{subsubsection*.12}%
+\contentsline {subsubsection}{File Descriptors}{27}{subsubsection*.13}%
+\contentsline {subsection}{\numberline {3.3.3}Request Processing Flow}{28}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Multiclient Support}{28}{subsection.3.3.4}%
+\contentsline {chapter}{\numberline {4}Implementation}{29}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Development Environment and Tools}{29}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Microkit Framework Setup}{29}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Interface}{31}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Synchronous Server Model}{31}{subsection.4.3.1}%
+\contentsline {subsubsection}{Client-Server Communication}{31}{subsubsection*.14}%
+\contentsline {subsubsection}{API}{32}{subsubsection*.15}%
+\contentsline {subsection}{\numberline {4.3.2}Asynchronous Server Model}{32}{subsection.4.3.2}%
+\contentsline {subsubsection}{Client-Server Communication}{32}{subsubsection*.16}%
+\contentsline {subsubsection}{API}{36}{subsubsection*.17}%
+\contentsline {section}{\numberline {4.4}File Server}{37}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Mechanisms}{37}{subsection.4.4.1}%
+\contentsline {subsubsection}{Blocks}{37}{subsubsection*.18}%
+\contentsline {subsubsection}{inodes}{37}{subsubsection*.19}%
+\contentsline {subsubsection}{Directories}{38}{subsubsection*.20}%
+\contentsline {subsubsection}{File Descriptors}{40}{subsubsection*.21}%
+\contentsline {subsection}{\numberline {4.4.2}Operations}{41}{subsection.4.4.2}%
+\contentsline {subsubsection}{Namespace Mutation}{41}{subsubsection*.22}%
+\contentsline {subsubsection}{Runtime State Management}{42}{subsubsection*.23}%
+\contentsline {subsubsection}{Data Movement}{43}{subsubsection*.24}%
+\contentsline {subsubsection}{Metadata Access and Modification}{44}{subsubsection*.25}%
+\contentsline {section}{\numberline {4.5}Error Handling}{45}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Evaluation}{46}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Validation}{46}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Unit Tests}{46}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Integration Tests}{47}{subsection.5.1.2}%
+\contentsline {subsubsection}{Single Client}{47}{subsubsection*.26}%
+\contentsline {subsubsection}{Multiple Clients}{47}{subsubsection*.27}%
+\contentsline {section}{\numberline {5.2}Performance Evaluation}{47}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Goals}{47}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Metrics}{48}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Experimental Setup}{48}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Benchmark Design}{48}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}Results and Analysis}{49}{subsection.5.2.5}%
+\contentsline {subsubsection}{Single-Client Per-Operation Benchmark}{49}{subsubsection*.28}%
+\contentsline {subsubsection}{Realistic Multiclient Workload}{51}{subsubsection*.29}%
+\contentsline {chapter}{\numberline {6}Conclusion}{53}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Contributions}{53}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Drawbacks and Limitations}{53}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}FS Limitations}{53}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Benchmarking Constraints}{54}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Lack of Persistent Storage}{54}{subsection.6.2.3}%
+\contentsline {subsection}{\numberline {6.2.4}Single-Threaded Execution}{54}{subsection.6.2.4}%
+\contentsline {subsection}{\numberline {6.2.5}Additional Client Burden}{54}{subsection.6.2.5}%
+\contentsline {section}{\numberline {6.3}Future Work}{55}{section.6.3}%
+\contentsline {chapter}{Bibliography}{56}{chapter*.30}%

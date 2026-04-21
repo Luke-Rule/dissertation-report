@@ -5,7 +5,7 @@ This dissertation investigated whether IPC overhead in seL4-based systems could 
 
 \section{Contributions}
 
-This work contributes a complete and practical user-space file server for the seL4 Microkit framework, supporting multiclient access, a simple FS API, and both synchronous and asynchronous communication interfaces. It demonstrates that complex, stateful services can be realised in user space within seL4 while maintaining structured interaction, correctness and practical usability.
+This work contributes a complete and practical user-space file server for the seL4 Microkit framework, supporting multiclient access, a simple FS API and both synchronous and asynchronous communication interfaces. It demonstrates that complex, stateful services can be realised in user space within seL4 while maintaining structured interaction, correctness and practical usability.
 
 This work also contributes empirical insight into mitigation of IPC overhead through asynchronous communication. Evaluation showed that batching can substantially improve throughput and reduce average operation latency, while also demonstrating that these benefits are strongly workload-dependent.
 
@@ -25,7 +25,7 @@ Evaluation required the development of custom benchmarks due to the specialised 
 
 The system operates entirely in memory, with no backing disk. Incorporating persistent storage would introduce substantial additional complexity, particularly around buffering, write-back policies and cache management, beyond the scope of this work. Its absence also results in highly deterministic and relatively low operation latencies. In realistic storage-backed systems, higher and more variable I/O latency would reduce the relative impact of IPC overhead, meaning these results likely represent an upper bound on the benefits of communication overhead reduction in practice.
 
-However, such systems would typically operate on multi-core hardware, where an asynchronous design such as the one presented here could offset some of this reduced relative benefit through increased concurrency and non-blocking execution.
+However, if implemented on multi-core hardware, the asynchronicity provided by this system could offset this reduced benefit through increased concurrency and non-blocking execution.
 
 \subsection{Single-Threaded Execution}
 

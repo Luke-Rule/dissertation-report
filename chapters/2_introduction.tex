@@ -62,22 +62,24 @@ Simultaneously, modern software and hardware architectures increasingly employ m
 \label{fig:coupled}
 \end{figure}
 \newpage
-Microkernel design naturally aligns with these requirements\cite{}. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly Inter-Process Communication (IPC) across protected domains. 
+Microkernel design naturally aligns with these requirements\cite{}. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly IPC across protected domains. 
 
 The L4 family of microkernels\cite{} addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design\cite{}; yet, despite these advances, IPC overhead remains a fundamental constraint in microkernel-based systems and a barrier to their wider adoption\cite{}. However, by combining these performance improvements with strong security guarantees through formal verification\cite{}, the seL4 microkernel represents a significant step towards real-world competitiveness, particularly in safety-critical domains\cite{}, although, performance remains a limiting factor, especially for high-frequency IPC workloads.
 
 One of the most frequently accessed OS services is the File Server (FS)\cite{}, which acts as the primary interface for persistent storage and data exchange. FS operations are both latency-sensitive and IPC-intensive\cite{}, making them critical to overall system performance in microkernel environments. In synchronous architectures even simple file operations may involve multiple IPC operations between the client and the FS, amplifying the impact of communication overhead.
 
-This report presents the design and implementation of an asynchronous, multiclient FS for the seL4 microkernel\cite{}, validates its correctness and usability, and evaluates its effectiveness in mitigating IPC overhead. The proposed architecture decouples request submission from response handling, reducing blocking behaviour, increasing concurrency and enabling the \textit{batching} of operations, where multiple requests may be combined and sent together. These properties have the potential to improve throughput and resource utilisation under both single and multiclient workloads, particularly when deployed on increasingly multicore machines\cite{}, where parallel execution can be fully exploited. In addition, beyond serving as an evaluation platform, the implementation constitutes a practical, reusable system component, demonstrating how critical services can be structured within a microkernel environment using Microkit, seL4's component-based OS framework. 
+This report presents the design and implementation of an asynchronous, multiclient FS for the seL4 micro-kernel\cite{}, validates its correctness and usability, and evaluates its effectiveness in mitigating IPC overhead. The proposed architecture decouples request submission from response handling, reducing blocking behaviour, increasing concurrency and enabling the \textit{batching} of operations, where multiple requests may be combined and sent together. These properties have the potential to improve throughput and resource utilisation under both single and multiclient workloads, particularly when deployed on increasingly multicore machines\cite{}, where parallel execution can be fully exploited. In addition, beyond serving as an evaluation platform, the implementation constitutes a practical, reusable system component, demonstrating how critical services can be structured within a microkernel environment using Microkit, seL4's component-based OS framework. 
 
 \section{Aims and Objectives}
 
 Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems, this work aims to further mitigate IPC costs by reducing the number of interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space FS.
 \newpage
+
 This project has the following objectives:
-\begin{itemize}
+
+\begin{itemize}[itemsep=0.2ex, topsep=0.2ex]
     \item \textbf{Design and implement}:
-        \begin{itemize}
+        \begin{itemize}[itemsep=0.2ex, topsep=0.2ex]
             \item A viable FS core capable of supporting a wide range of file and directory operations.
             \item An efficient storage model based on inode and block abstractions, supporting effective space utilisation and flexible file and directory representation.
             \item A scalable, asynchronous interface enabling concurrent request submissions and completion handling from multiple clients, alongside a synchronous interface to facilitate comparison between communication models.
@@ -85,17 +87,17 @@ This project has the following objectives:
             \item A benchmarking framework to evaluate asynchronous FS performance against a synchronous baseline under realistic workloads.
         \end{itemize}
     \item \textbf{Validate}: the correctness of the FS through comprehensive multi-level testing.
-    \item \textbf{Evaluate}: the effectiveness of the asynchronous FS architecture in reducing IPC overhead and improving performance, in terms of latency, throughput, and scalability.
+    \item \textbf{Evaluate}: the effectiveness of the asynchronous FS architecture in reducing IPC overhead and improving performance, in terms of latency, throughput and scalability.
 \end{itemize}
 
 
 \section{Evaluation Strategy}
 
-To evaluate the proposed implementation, this work considered both FS correctness at multiple levels of granularity — unit, integration and end-to-end testing — and the performance characteristics of asynchronous queue-based submission compared with synchronous blocking calls through a set of varied benchmarks measuring key metrics including latency, throughput and scalability. Experiments were conducted across different levels of request batching, with workloads designed to approximate realistic file system usage patterns. As the system is novel, custom benchmarks were required. 
+To evaluate the proposed implementation, this work considered both FS correctness at multiple levels of testing granularity and the performance characteristics of asynchronous queue-based submission compared with synchronous blocking calls through a set of varied benchmarks measuring key metrics including latency, throughput and scalability. Experiments were conducted across different levels of request batching, with custom workloads designed to approximate realistic file system usage. 
 
 \section{Key Findings}
 
-The evaluation demonstrated that the asynchronous model introduced negligible overhead compared to synchronous execution when no batching was applied, with equivalent per-operation latencies. Crucially, as batching was introduced, significant improvements were observed, with up to a 60\% increase in operation throughput, showing that reducing IPC frequency can substantially improve performance. 
+The evaluation demonstrated that the asynchronous model introduced negligible overhead compared to synchronous execution when no batching was applied, with equivalent per-operation latencies. Crucially, as batching was introduced, significant improvements were observed, with up to a 70\% increase in operation throughput, showing that reducing IPC frequency can substantially improve performance. 
 
 \section{Dissertation Structure}
 

@@ -1,7 +1,6 @@
 \chapter{Implementation}
 \label{cha:implementation}
-% TODO: past tense
-This section describes the implementation of the file server, building upon the designs presented in the previous section. 
+This section describes the implementation of the FS, building upon the designs presented in the previous section. 
 
 \section{Development Environment and Tools}
 
@@ -13,12 +12,13 @@ Debugging and verification were primarily performed using logging via serial out
 
 \section{Microkit Framework Setup}
 
-Microkit provided a declarative mechanism for defining execution, memory and IPC structures via an XML-based description. A single client example of this system definition is shown in Listing~\ref{lst:system}.
+Microkit provides a declarative mechanism for defining execution, memory and IPC structures via an XML-based description. A single client example of this system definition is shown in Listing~\ref{lst:system}.
 
-Each PD represents an independent user-space process with its own address space and execution context. Hence, separate PDs were defined for the file server and each client. The relevant program images were assigned to each domain, and memory regions were declared and mapped into their address spaces at specified locations. A dedicated memory region for FS state was declared and mapped solely to the server. Additionally, for each client, regions to hold shared communication data, such as buffers, were declared and mapped into both the file server and the corresponding client.
+Each PD represents an independent user-space process with its own address space and execution context. Hence, separate PDs were defined for the FS and each client. The relevant program images were assigned to each domain and memory regions were declared and mapped into their address spaces at specified locations. A dedicated memory region for FS state was declared and mapped solely to the server. Additionally, for each client, regions to hold shared communication data, such as buffers, were declared and mapped into both the FS and the corresponding client.
 
-Alongside this shared memory, IPC between PDs was established using channels, as detailed in Section~\ref{sec:microkitbg}, with each client being connected to the file server. By defining memory regions and notification channels through Microkit, capability management of all objects is handled automatically by the framework, significantly reducing the complexity of managing and securing IPC. 
-\vspace{0.5cm}
+Alongside this shared memory, IPC between PDs was established using channels, as detailed in Section~\ref{sec:microkitbg}, with each client being connected to the FS. By defining memory regions and notification channels through Microkit, capability management of all objects is handled automatically by the framework, significantly reducing the complexity of managing and securing IPC. 
+
+\newpage
 \begin{lstlisting}[caption={Microkit system definition.}, label={lst:system}]
      <!-- File Server Memory Region -->
     <memory_region name="fs_memory" size="0x10133000" />
@@ -51,17 +51,16 @@ Alongside this shared memory, IPC between PDs was established using channels, as
         <end pd="client_0" id="0" pp="true"/>
     </channel>
 \end{lstlisting}
-\newpage
 
 To support varying workloads with this static configuration, a script was developed to generate the system description for a configurable number of clients automatically.
 
-Microkit also requires specification each PD's priority. This determines the order in which they are scheduled by the seL4 kernel, directly influencing system responsiveness and fairness. The file server was, therefore, assigned a higher priority than the clients to ensure that requests were serviced promptly. Clients were assigned equal priorities to each another to maintain fairness across request sources. 
-
+Microkit also requires specification each PD's priority. This determines the order in which they are scheduled by the seL4 kernel, directly influencing system responsiveness and fairness. The FS was, therefore, assigned a higher priority than the clients to ensure that requests were serviced promptly. Clients were assigned equal priorities to each another to maintain fairness across request sources. 
+\newpage
 \section{Interface}
 
 \subsection{Synchronous Server Model}
 
-This is the simpler of the two models, and as such, was implemented first to validate the correctness of the file system. 
+Being the simpler of the two models, this was implemented first to validate the correctness of the FS. 
 
 \subsubsection{Client-Server Communication}
 
@@ -69,12 +68,11 @@ Microkit’s protected procedure call (\texttt{microkit\_ppcall}) provides both 
 
 In addition to control transfer, \texttt{microkit\_ppcall} supports the transmission of up to 64 words of data in both the request and response. As file names and data are handled via shared buffers, this capacity is sufficient to encode the operation code and associated parameters or return values. Message size is configurable, allowing each operation to transmit only the required data. Consequently, the server must validate the message size after decoding the operation to ensure all necessary parameters are present. 
 
-\newpage
 The client request flow proceeds as follows:
-\begin{itemize}
+\begin{itemize}[itemsep=0.2ex, topsep=0.2ex]
     \item The client writes any required data (such as file names or file contents) into its shared buffer.
     \item A message is constructed containing the operation code and relevant parameters.
-    \item The client invokes the file server via \texttt{microkit\_ppcall} on its dedicated channel, passing the constructed message.
+    \item The client invokes the FS via \texttt{microkit\_ppcall} on its dedicated channel, passing the constructed message.
     \item The client thread is automatically suspended until the operation completes.
 \end{itemize}
 
@@ -91,29 +89,32 @@ Since all clients share this entry point, the \texttt{channel} parameter is used
 
 Alongside extracting the operation code and parameters from the message the server may also access the client’s shared buffer. By arranging the client buffers sequentially the server can treat them as an array and index into it directly using the client’s channel identifier to locate the appropriate buffer. 
 
-Once the operation is complete, the server constructs a response message containing the result code and any return values, and returns it from the protected function. This automatically delivers the response to the corresponding client and resumes the client thread, which can then inspect the result and any updated buffer contents. 
+Once the operation is complete, the server constructs a response message containing the result code and any return values and returns it from the protected function. This automatically delivers the response to the corresponding client and resumes the client thread, which can then inspect the result and any updated buffer contents. 
 
 \subsubsection{API}
 
-To simplify usage and ensure consistent interaction with the file server, the communication and buffer management logic is encapsulated within a set of wrapper functions. These abstractions hide the details of message construction and extraction, buffer usage, and IPC invocation. 
+To simplify usage and ensure consistent interaction with the FS, the communication and buffer management logic is encapsulated within a set of wrapper functions. These abstractions hide the details of message construction and extraction, buffer usage and IPC invocation. 
 
-To reduce the number of parameters required for these library calls, each operation has a specific function that can be called, which accepts only the parameters required for that operation and returns an operation unique struct for maximum access simplicity.
+To reduce the number of parameters required for these library calls, each operation has a specific function that can be called, which accepts only the parameters required for that operation and returns an operation unique struct for access simplicity.
 
-For example, the \texttt{send\_open\_file\_request} function takes the desired access mode, a pointer to the file name, and the address of the client’s shared buffer. It copies the file name into the buffer, constructs a new message containing the \texttt{OPEN} operation code and mode parameter, and invokes the file server. Upon completion, it forms and returns a \texttt{result\_code\_file\_id} struct from the FS response.
+For example, the \texttt{send\_open\_file\_request} function takes the desired access mode, a pointer to the file name and the address of the client’s shared buffer. It copies the file name into the buffer, constructs a new message containing the Open operation code and mode parameter, and invokes the FS. Upon completion, it forms and returns a \texttt{result\_code\_file\_id} struct from the FS response.
 
 \subsection{Asynchronous Server Model}
 
 \subsubsection{Client-Server Communication}
-Rather than transferring control directly to the file server for each operation, the asynchronous model implements communication through shared memory and notification-based signalling. Clients submit requests by writing to shared data structures and continue execution until they explicitly check for completion. 
+Rather than transferring control directly to the FS for each operation, the asynchronous model implements communication through shared memory and notification-based signalling. Clients submit requests by writing to shared data structures and continue execution until they explicitly check for completion. 
 
-Each client is assigned a submission queue, a completion queue, and corresponding buffer pools for transferring file-related data. Submission buffers are used to store request data such as write contents, while completion buffers hold data returned by the server, such as read results. Allocation tables are maintained for both buffer pools to manage allocation. A full operation flow example is displayed in Figure \ref{fig:queues}.
-\vspace{0.4cm}
+Each client is assigned a submission queue and a completion queue for managing requests and responses, and corresponding buffer pools for transferring file-related data. Submission buffers are used to store request data such as write contents, while completion buffers hold data returned by the server, such as read results. Allocation tables are maintained for both buffer pools to manage allocation. 
+
+A full operation flow example is displayed in Figure \ref{fig:queues}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.72\linewidth]{chapters/images/queues.png}
     \caption{Asynchronous client-server communication via shared queues and buffers.}
     \label{fig:queues}
 \end{figure}
+\vspace{-0.3cm}
 
 For operations requiring data transfer, the client first acquires a submission buffer by locating a free entry in the allocation table, as shown in Figure~\ref{fig:buffers}. If no buffer is available, the client must wait until its previously issued operations complete and their resources are released. 
  
@@ -123,10 +124,10 @@ For operations requiring data transfer, the client first acquires a submission b
     \caption{Buffer management in asynchronous communication.}
     \label{fig:buffers}
 \end{figure}
+\vspace{-0.3cm}
 
 Once a buffer is acquired, the client writes the required data and constructs a submission queue entry describing the requested operation, including its parameters and the associated buffer index. The structure of this entry is shown in Listing~\ref{lst:submission-entry}. 
 
-\vspace{0.5cm}
 \begin{lstlisting}[caption={Submission queue entry structure.}, label={lst:submission-entry}]
 struct submission_queue_entry
 {
@@ -136,19 +137,15 @@ struct submission_queue_entry
     size_t buffer_index;
 } typedef submission_queue_entry_t;
 \end{lstlisting}
+\vspace{-0.2cm}
 
 Submission and completion queues are implemented as fixed-size circular buffers, each maintaining head and tail pointers. Using fixed-size entries allows direct indexing via the head and tail pointers.  
 
-\newpage
-New entries are written at the tail, while entries are consumed from the head. The producer updates the tail pointer after adding entries, and the consumer updates the head pointer after removing entries. Before adding or removing entries, the state of the queue must be checked to ensure it is not full or empty, respectively, by comparing the head and tail pointers. As a result, these pointers must be shared between the client and the server. 
+Entries are added at the tail and consumed from the head, with the producer updating the tail pointer after submitting new entries and the consumer updating the head pointer after removing entries. Before adding or removing entries, the state of the queue must be checked to ensure it is not full or empty, respectively, by comparing the head and tail pointers. As a result, these pointers must be shared between the client and the server. 
 
-As Microkit only allows memory sharing at page granularity, with a minimum mapping size of 1~KiB, each client is allocated a contiguous region of shared memory with the file server, which holds all the necessary data structures, simplifying the static system description.
+As Microkit only allows memory sharing at page granularity, with a minimum mapping size of 1~KiB, each client is allocated a contiguous region of shared memory with the FS, which holds all the necessary data structures, simplifying the static system description. This memory is organised as a single structured layout, as defined in the FS API. This also allows the relative sizes of internal structures to be adjusted without affecting the overall interface. The structure is shown in Listing~\ref{lst:client-data}.
 
-This memory is organised as a single structured layout, as defined in the file server API. This also allows the relative sizes of internal structures to be adjusted without affecting the overall interface. The structure is shown in Listing~\ref{lst:client-data}.
-
-Similarly to the synchronous setup, all client memory regions are of uniform size and arranged sequentially, the server can index directly using the client’s channel identifier to access the corresponding client state. Encapsulating all client state within a single structure simplifies function interfaces, as only a pointer to this structure needs to be passed, enabling a modular implementation of the file system. 
-
-\vspace{0.6cm}
+\vspace{0.5cm}
 \begin{lstlisting}[caption={Client shared data structure.}, label={lst:client-data}]
 struct client {
     size_t submission_queue_head;
@@ -166,21 +163,24 @@ struct client {
 } typedef client_t;
 \end{lstlisting}
 
-\newpage
+Similarly to the synchronous setup, all client memory regions are of uniform size and arranged sequentially, so the server can index them directly using the client’s channel identifier. Encapsulating all client state within a single structure simplifies function interfaces, as only a pointer to this structure needs to be passed, enabling a modular implementation of the file system. 
+
 Once the desired number of submission entries have been added, the client sets its ready flag and signals the server using Microkit’s \texttt{microkit\_notify} function. This sends a notification along a statically defined channel without blocking the client, allowing it to continue issuing further requests or performing other work. The ready flag allows the server to efficiently poll clients when required and ensures that only clients that have explicitly indicated pending work are serviced. 
 
 If the server is idle, receiving a notification causes its thread to be scheduled. Execution begins at the designated entry point: 
 
+\vspace{0.4cm}
 \begin{lstlisting}
 void notified(microkit_channel ch)
 \end{lstlisting}
 
 The \texttt{channel} identifier is used to determine which client issued the notification. The server then checks that the client’s submission queue is valid and begins processing any pending entries. 
 
-To service an operation, the server consumes the next entry in the submission queue and extracts its parameters. If the operation requires a completion buffer, an attempt is made to acquire one via the same mechanism as the submission buffer. If successful, the operation is performed, and any result data is written to the allocated buffer. 
+To service an operation, the server consumes the next entry in the submission queue and extracts its parameters. If the operation requires a completion buffer, an attempt is made to acquire one via the same mechanism as the submission buffer. If successful, the operation is performed and any result data is written to the allocated buffer. 
 
-A completion queue entry is then constructed containing the result code, any return values, and the buffer index. This entry is added to the completion queue. The structure of this entry is shown in Listing~\ref{lst:completion-entry}.
+A completion queue entry is then constructed containing the result code, any return values and the buffer index. This entry is added to the completion queue. The structure of this entry is shown in Listing~\ref{lst:completion-entry}.
 
+\vspace{0.4cm}
 \begin{lstlisting}[caption={Completion entry structure.}, label={lst:completion-entry}]
 struct completion_queue_entry
 {
@@ -192,42 +192,45 @@ struct completion_queue_entry
 \end{lstlisting}
 
 Once the operation is complete, the submission buffer is released by marking its entry in the allocation table as free, as its contents have been consumed. The server then continues processing entries from the submission queue until it is empty or a predefined per-client batch limit is reached.
+\newpage
+When processing is complete, the server updates the client’s flags to indicate that results are available and that no outstanding requests remain (if processing was not terminated early), before sending a notification to wake the client if it is idle.
 
-When processing is complete, the server updates the client’s flags to indicate that results are available, and that no outstanding requests remain (if processing was not terminated early), before sending a notification to wake the client if it is idle.
-
-On the client side, once notified or when explicitly checking for completion, the client removes entries from the completion queue and processes the results. After consuming any returned data, it releases the corresponding completion buffers by updating the allocation table, making them available for future operations. 
+On the client side, once notified or after explicitly checking for completion, the client removes entries from the completion queue and processes the results. After consuming any returned data, it releases the corresponding completion buffers by updating the allocation table, making them available for future operations. 
 
 \subsubsection{API}
 
-Much of this communication complexity is abstracted away by library functions, with dedicated wrapper functions for each operation providing a simple and consistent interface for interacting with the file server. 
+Much of this communication complexity is abstracted, with dedicated wrappers for each operation providing a simple and consistent interface for interacting with the FS. 
 
-For example, \texttt{send\_open\_file\_request} takes a file name, the desired opening mode and a pointer to the client’s shared state structure. It first attempts to acquire a free submission buffer, failing if none are available, and copies the file name into the buffer. Using this buffer index and the supplied parameters, it constructs a \texttt{submission\_queue\_entry\_t}, inserts it into the submission queue if space is available, and advances the submission queue tail. An appropriate result code is then returned to the client to indicate whether submission was successful.
+For example, \texttt{send\_open\_file\_request} takes a file name, the desired opening mode and a pointer to the client’s shared state structure. It first attempts to acquire a free submission buffer, failing if none are available, and copies the file name into the buffer. Using this buffer index and the supplied parameters, it constructs a \texttt{submission\_queue\_entry\_t}, inserts it into the submission queue if space is available and advances the submission queue tail. An appropriate result code is then returned to the client to indicate whether submission was successful.
 
-As request submission is non-blocking, additional helper functions are required both for notifying the server and for collecting results. Two notification mechanisms are provided. The first uses \texttt{microkit\_notify} to signal the file server and then returns immediately, allowing the client to continue execution when further independent work is available. The second is intended for situations where subsequent processing depends on completion of a submitted operation. In this case, \texttt{microkit\_ppcall} is used to suspend the client thread until the server has processed the request, similarly to the synchronous system. This is more efficient than busy waiting when no further useful work can be performed. Both the \texttt{notified} and \texttt{protected} server entry points then delegate to the same \texttt{service\_client} function, ensuring that request handling remains identical regardless of how servicing was triggered.
+As request submission is non-blocking, additional helper functions are required both for notifying the server and for collecting results. Two notification mechanisms are provided. The first uses \texttt{microkit\_notify} to signal the FS and then returns immediately, allowing the client to continue execution when further independent work is available. The second is intended for situations where subsequent processing depends on completion of a submitted operation. In this case, \texttt{microkit\_ppcall} is used to suspend the client thread until the server has processed the request, similarly to the synchronous system. This is more efficient than busy waiting when no further useful work can be performed. Both the \texttt{notified} and \texttt{protected} server entry points then delegate to the same \texttt{service\_client} function, ensuring that request handling remains identical regardless of how servicing was triggered.
 
 If the client does not block when notifying the server, it must later check whether results are available. This can first be done by inspecting the \texttt{complete} flag. However, if multiple operations were submitted as a batch, the flag may be set before all expected results have been completed, in which case the completion queue head and tail pointers must also be compared. As no useful work may remain while waiting for these results, dedicated wrapper functions were implemented to either busy wait on these conditions or yield execution, returning only once the requested operations have completed.
 
 Results are then retrieved using \texttt{get\_next\_completion\_entry}, with buffer management handled by dedicated helper functions.
 
+\newpage
 \section{File Server}
 
-This section details the realisation of the file server design, covering implementation of its internal structures and the mechanisms used to handle FS operations.
+This section details the realisation of the FS design, covering implementation of its internal structures and the mechanisms used to handle FS operations.
 
 \subsection{Data Structures and Access Mechanisms}
 
-The file server is allocated a large chunk of memory for internal use during Microkit initialisation, which is then partitioned using statically defined constants into the internal data structures described in this section. This partitioning therefore defines key system scale properties. 
+The FS is allocated a large chunk of memory for internal use during Microkit initialisation, which is then partitioned using statically defined constants into the internal data structures described in this section. This partitioning therefore defines key system scale properties. 
 
-For example, increasing inode capacity allows more entries to be represented, but reduces available block space and therefore the potential size of stored file data. As this partitioning is performed within the file server itself, however, the system may be reconfigured easily.
+For example, increasing inode capacity allows more entries to be represented, but reduces available block space and therefore the potential size of stored file data. As this partitioning is performed within the FS itself, however, the system may be reconfigured easily.
 
 \subsubsection{Blocks}
 
-Blocks are implemented as fixed-size regions within a contiguous memory pool, with allocation managed through the BAT. This is realised by structuring block memory as an array of elements of size \texttt{BLOCK\_SIZE}. The number of blocks that fit within this region is recorded, and a Boolean array of equal size is created to form the BAT. Each block is therefore associated with a corresponding index, which is used both to access block data and its BAT entry directly.
+Blocks are implemented as fixed-size regions within a contiguous memory pool, with allocation managed through the BAT. This is realised by structuring block memory as an array of elements of size \texttt{BLOCK\_SIZE}. The number of blocks that fit within this region is recorded and a Boolean array of equal size is created to form the BAT. Each block is therefore associated with a corresponding index, which is used both to access block data and its BAT entry, directly.
 
 As all blocks share the same representation, any block may store file data, directory entries or indirect block indices. Allocation for all such uses is performed through a linear scan of the BAT for an unset entry indicating a free block, while deallocation simply marks the corresponding BAT entry as free.
 
 \subsubsection{inodes}
 
 Inodes are implemented as fixed-size metadata structures, each representing a FS object and linking it to its associated storage blocks. To enable direct access, these are stored contiguously in an inode table. The inode structure is shown in Listing~\ref{lst:inode}.
+
+Blocks are referenced both directly and through single indirection. Space for eleven direct block references was chosen to minimise inode size while allowing reasonably large files and directories before indirect access is required, providing 44~KiB of directly addressable storage. For simplicity, and given the intended scale of the file system, only one indirect block is supported. This still allows substantial file growth, as a single indirect block may hold up to 128 additional block references. These capacities are defined through statically configured constants, allowing simple modification of system limits if requirements change. 
 \newpage
 \begin{lstlisting}[caption={Inode structure.}, label={lst:inode}]
 struct i_node
@@ -241,24 +244,23 @@ struct i_node
 } typedef i_node_t;
 \end{lstlisting}
 \vspace{-0.2cm}
-The \texttt{entry\_size} field stores the exact number of bytes of file data, or the number of entries within a directory, returned when queried through the Get Size operation.In contrast, \texttt{blocks\_used} limits reads and indicates when additional blocks are required for writes. This must be stored separately from \texttt{entry\_size}, as directory entries may be deleted, meaning a directory’s allocated blocks need not be full, so the number of blocks that must be scanned to reach all child entries cannot be inferred from \texttt{entry\_size} alone. This additionally allows excess blocks to be identified and freed through defragmentation. 
 
-Blocks are referenced both directly and through single indirection. Space for eleven direct block references was chosen to minimise inode size while allowing reasonably large files and directories before indirect access is required, providing 44~KiB of directly addressable storage. For simplicity, and given the intended scale of the file system, only one indirect block is supported. This still allows substantial file growth, as a single indirect block may hold up to 128 additional block references. These capacities are defined through statically configured constants, allowing simple modification of system limits if requirements change. 
+The \texttt{entry\_size} field stores the exact number of bytes of file data, or the number of entries, within a directory that is returned when queried through the Get Size operation. In contrast, \texttt{blocks\_used} limits reads and indicates when additional blocks are required for writes. This must be stored separately from \texttt{entry\_size}, as directory entries may be deleted, meaning a directory’s allocated blocks need not be full, so the number of blocks that must be scanned to reach all child entries cannot be inferred from \texttt{entry\_size} alone. This additionally allows excess blocks to be identified and freed through defragmentation. 
 
-To maximise block availability, block index fields are initially empty other than the first direct block, as every entry is allocated an initial block on creation to ensure immediate storage availability. Additional block indices are populated only as growth requires, allowing later access to those blocks for both use and deallocation during deletion.  As long as the number of allocated blocks does not exceed the maximum number of direct pointers, newly allocated block addresses can be stored directly in the inode. Once this limit is exceeded, an indirect block must first be allocated and its address stored in the inode’s indirect block field. Any further block addresses are then stored in the indirect block rather than in the inode itself. 
+To maximise block availability, block index fields are initially empty, other than the first direct block, as every entry is allocated an initial block on creation to ensure immediate storage availability. Additional block indices are populated only when growth requires.  As long as the number of allocated blocks does not exceed the maximum number of direct pointers, newly allocated block addresses can be stored directly in the inode. Once this limit is exceeded, an indirect block must first be allocated and its address stored in the inode’s indirect block field, with any further block addresses then stored in the indirect block rather than the inode itself. 
 
-To reduce space overhead, the deletion required flag, in-use flag, inode type and permissions are packed into a single byte, which is set and read using bit masks, as shown in Listing~\ref{lst:inode-mode}.  Padding is also included to support efficient alignment of inode entries in memory. 
-\vspace{0.3cm}
+To reduce space overhead, the deletion required flag, in-use flag, inode type and permissions bits are packed into a single byte, which is set and read using bit masks, as shown in Listing~\ref{lst:inode-mode}.  Padding is also included to support efficient alignment of inode entries in memory. 
+\vspace{0.5cm}
 \begin{lstlisting}[caption={Inode mode field bit packing.}, label={lst:inode-mode}]
     i_node->mode = IS_DELETED_BIT << 5 | PERMISSION_BITS << 2 | DIRECTORY_BIT << 1| IN_USE_BIT;
 \end{lstlisting}
-
+\vspace{-0.2cm}
 
 \subsubsection{Directories}
 
 Directories are implemented through directory inodes whose associated blocks store directory entries, realising the hierarchical organisation described in the design. The directory entry structure is illustrated in Listing~\ref{lst:directory-entry}.
+\newpage
 
-\vspace{0.5cm}
 \begin{lstlisting}[caption={Directory entry structure.}, label={lst:directory-entry}]
 struct directory_entry
 {
@@ -267,23 +269,25 @@ struct directory_entry
 } typedef directory_entry_t;
 \end{lstlisting}
 
-By storing both the entry name and corresponding inode index, directory entries encode the namespace structure of the file system. To simplify entry management and maintain space and lookup efficiency, file and directory names are constrained to a fixed maximum length. Additionally, to ensure all created entries are accessible, names must not be empty, contain invalid characters, or duplicate another entry within the same directory.
+By storing both the entry name and corresponding inode index, directory entries encode the namespace structure of the file system. To simplify entry management and maintain space and lookup efficiency, file and directory names are constrained to a fixed maximum length. Additionally, to ensure all created entries are accessible, names must not be empty, contain invalid characters or duplicate another entry within the same directory.
 
+This representation enables resolution of entries through path-based lookup, as illustrated in Figure~\ref{fig:path}. A path is represented as a sequence of directory names to traverse, terminating in the target file or directory. Path segments are delineated by the ‘/’ character, with all paths beginning at the root directory, denoted by a leading ‘/’. The root directory is initialised at system startup as inode~0, with all entries contained beneath it. 
+
+\vspace{-0.2cm}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{chapters/images/traversal.png}
     \caption{Path-based lookup through directory traversal.}
     \label{fig:path}
 \end{figure}
-
-This representation enables resolution of entries through path-based lookup, as illustrated in Figure~\ref{fig:path}. A path is represented as a sequence of directory names to traverse, terminating in the target file or directory. Path segments are delineated by the ‘/’ character, with all paths beginning at the root directory, denoted by a leading ‘/’. The root directory is initialised at system startup as inode~0, with all entries contained beneath it. 
+\vspace{-0.2cm}
 
 Path resolution proceeds through successive traversal of directory entries. For each path segment, the entries of the current directory are searched via a linear scan until a matching name is found. If a match is found and the segment is not the final component of the path, the corresponding inode is accessed and its blocks are searched to continue traversal. However, this continued traversal only occurs if the client has Execute permissions for the directory to be entered, otherwise a permission denied error is returned. If traversal through a non-directory entry is attempted, the path is deemed invalid. The traversal is implemented recursively, which aligns naturally with the tree structure of the search space. 
 
 When the final segment is reached and a matching entry is found, the inode index stored in the corresponding directory entry is returned. If no match is found at any stage, the entry is deemed nonexistent. 
 
 \subsubsection{File Descriptors}
-File descriptors (FD) are implemented as runtime structures within per-client regions of the file descriptor table (FDT), maintaining open-file state for subsequent file operations. These link a client-accessible handle to a file and its current open state. For minimal abstraction and overhead, the file handles returned to clients are simply the index of the FD within that client’s FDT region. A file’s open instance may therefore be retrieved by direct indexing into the FDT using the client ID and FD handle.
+FDs are implemented as runtime structures within per-client regions of the FDT, maintaining open-file state for subsequent file operations. These link a client-accessible handle to a file and its current open state. For minimal abstraction and overhead, the file handles returned to clients are simply the index of the FD within that client’s FDT region. A file’s open instance may therefore be retrieved by direct indexing into the FDT using the client ID and FD handle.
 
 An FD is allocated by locating a free entry in the FDT through a linear scan of the descriptor entries. To simplify this check, an unused entry is indicated by an inode index value of \texttt{UINT32\_MAX}, which is otherwise invalid. When a file is closed, the corresponding FD is released by restoring this sentinel value. 
 
@@ -300,8 +304,8 @@ struct file_descriptor
 } typedef file_descriptor_t;
 \end{lstlisting}
 
+By storing the inode index directly, the FS may resolve the associated inode from an FD in constant time, rather than performing a search. When operations are performed through an FD, the relevant state is supplied automatically where required, for example the cursor position during reads. The \texttt{valid\_operations} field is represented as an \texttt{enum} value, as shown in Listing~\ref{lst:file-open-ops}, enabling operation validation while maintaining readability. 
 \newpage
-By storing the inode index directly, the file server may resolve the associated inode from an FD in constant time, rather than performing a search. When operations are performed through an FD, the relevant state is supplied automatically where required, for example the cursor position during reads. The valid operations field is represented as an enum value, as shown in Listing~\ref{lst:file-open-ops}, enabling operation validation while maintaining readability. 
 
 \vspace{0.5cm}
 \begin{lstlisting}[caption={File open operations enum.}, label={lst:file-open-ops}]
@@ -314,7 +318,7 @@ typedef enum {
 \vspace{-0.4cm}
 \subsection{Operations}
 
-These data structures and their associated mechanisms are used to implement the FS operations defined in the design. Each operation is implemented as a function that performs the necessary checks, manipulates the relevant data structures, and returns appropriate results or error codes. 
+These data structures and their associated mechanisms are used to implement the FS operations defined in the design. Each operation is implemented as a function that performs the necessary checks, manipulates the relevant data structures and returns appropriate results or error codes. 
 
 \subsubsection{Namespace Mutation}
 
@@ -322,23 +326,24 @@ The organisation of the FS is managed through Create and Delete operations.
 
 \textbf{Create}
 
-A creation operation takes as parameters the path of the entry to create, whether the entry is a file or directory, and the permissions to assign to it. The first step is to locate the inode of the target entry’s parent directory, allowing the new entry to be initialised and added as a child of that parent. This ordering allows path validation to occur inherently during traversal, avoiding a separate validation stage and preventing the need to undo partial initialisation should the path prove invalid. 
+A creation operation takes as parameters the path of the entry to create, whether the entry is a file or directory and the permissions to assign to it. The first step is to locate the inode of the target entry’s parent directory, allowing the new entry to be initialised and added as a child of that parent. This ordering allows path validation to occur inherently during traversal, avoiding a separate validation stage and preventing the need to undo partial initialisation should the path prove invalid. 
 
-Once the parent directory has been reached, the remaining path consists only of the desired entry name. If this name is valid and the calling client holds Write permissions on the parent directory, a free inode is allocated by scanning the inode table for an unset in-use flag, and a starting data block is allocated similarly. If both allocations are successful, the inode is populated with the supplied metadata and the allocated block index. 
+Once the parent directory has been reached, the remaining path consists only of the desired entry name. If this name is valid, and the calling client holds Write permissions on the parent directory, an inode and a starting data block are allocated. If both allocations are successful, the inode is populated with the supplied metadata and the allocated block index. 
 
-A directory entry is then formed from the entry name and allocated inode index, and inserted into the parent directory. This is achieved by scanning the parent’s blocks for free space. If none exists, a new block is allocated, linked to the parent, and used to store the new entry, with the parent inode’s size updated accordingly. 
+A directory entry is then formed from the entry name and allocated inode index and inserted into the parent directory. This is achieved by scanning the parent’s blocks for free space. If none exists, a new block is allocated, linked to the parent, and used to store the new entry, with the parent inode’s size updated accordingly. 
 
 Additionally, if creation of a file completes successfully, the library wrapper automatically triggers an Open operation for the issuing client, as the file is likely to be used immediately. Consequently, an opening mode must also be provided during file creation. 
 
+\newpage
 \textbf{Delete}
 
-Deletion requires removal of both the target entry and its reference within its parent directory. This requires locating both the target inode and the inode of its parent, achieved through the same traversal mechanism used for lookup, extended to additionally retain the parent inode index. Therefore it takes the target path as the sole operation parameter.
+Deletion requires removal of both the target inode and its reference within its parent directory. This requires locating both the target inode and the inode of its parent, achieved through the same traversal mechanism used for lookup, extended to additionally retain the parent inode index. Therefore it takes the target path as the sole operation parameter.
 
-Once the parent inode is located, its blocks are scanned linearly until the target's directory entry is found, which is then marked not in use. Before the target inode may be deallocated, any associated data blocks must also be freed. For files, this involves marking all directly referenced blocks, any indirectly referenced blocks, and the indirect block itself, as free within the BAT. 
+Once the parent inode is located, its blocks are scanned linearly until the target's directory entry is found, which is then marked not in use. Before the target inode may be deallocated, any associated data blocks must also be freed. For files, this involves marking all directly referenced blocks, any indirectly referenced blocks and the indirect block itself, as free within the BAT. 
 
 For directories, deletion is recursive. As simply freeing a non-empty directory’s blocks would lose references to nested entries, all contained files and subdirectories must first be deleted. This is achieved by scanning the directory’s blocks and invoking the appropriate deletion function recursively for each contained entry. Only once all contents have been removed safely are the directory’s own blocks deallocated. 
 
-Deleting a file additionally causes it to be closed automatically for the issuing client, avoiding an additional client operation. To preserve multiclient correctness, however, files are only fully deleted once all clients have closed their handles to them. Their directory entry is removed immediately, preventing further opens, and allowing wider directory deletion, but the inode and associated data are retained until no descriptors referencing that inode remain. 
+Deleting a file additionally causes it to be closed automatically for the issuing client, avoiding an additional client operation. To preserve multiclient correctness, however, files are only fully deleted once all clients have closed their handles to them. Their directory entry is removed immediately, preventing further opens and allowing wider directory deletion, but the inode and associated data are retained until no descriptors referencing that inode remain. 
 
 This is implemented by scanning the FDT for references to the target inode during deletion. If any remain, a deletion-pending flag is set within the inode rather than deallocating it immediately, which Close operations must monitor.
 
@@ -350,7 +355,9 @@ The management of client specific data is done through Open, Close and Seek oper
 
 To open an FD for a file, the target inode must first be resolved through the traversal function, with the file path therefore being supplied as a parameter. Alongside this, an opening mode is provided to specify which operations may be performed through the resulting FD. This format is detailed in Listing~\ref{lst:file-open-ops}.
 
-\vspace{0.5cm}
+Once the inode is acquired, the calling client’s permissions are validated according to the requested opening mode. If permitted, the client’s FDT is scanned for a free entry. If one is found, an FD containing the inode index, operation mode and initial file offset of 0 is placed at that location. The index at which this entry is stored is then returned to the client as the handle used to reference the file in subsequent operations.
+
+\newpage
 \begin{lstlisting}[caption={File opening mode enum.}, label={lst:file-open-ops}]
 typedef enum {
    READ_OP = 0b01,
@@ -358,14 +365,13 @@ typedef enum {
    READ_WRITE_OP = 0b11
 } file_open_operations_t;
 \end{lstlisting}
-
-Once the inode is acquired, the calling client’s permissions are validated according to the requested opening mode. If permitted, the client’s FDT is scanned for a free entry. If one is found, an FD containing the inode index, operation mode and initial file offset of 0 is placed at that location. The index at which this entry is stored is then returned to the client as the handle used to reference the file in subsequent operations.
+\vspace{-0.2cm}
 
 If no free FD entry is available, an error is returned indicating the client has reached its maximum number of open files.
 
 \textbf{Close}
 
-To close an FD, a client passes the corresponding handle. The Close operation first verifies that this handle is valid, by ensuring it falls within the range 0 to the maximum number of concurrent FDs permitted per client. If valid, the corresponding entry in the FDT is marked not-in-use.
+To close an FD, a client passes the corresponding handle. The Close operation first verifies that this handle is valid, by ensuring it falls within the range of zero to the maximum number of concurrent FDs permitted per client. If valid, the corresponding entry in the FDT is marked not-in-use.
 
 The operation must also inspect the deletion-pending flag of the inode referenced by that FD. If this flag is set, the system checks whether this was the final open handle to the file by scanning the full FDT for any remaining references to that inode. If none remain, the inode entry is passed to the deletion routine for final removal.
 
@@ -381,33 +387,36 @@ Access and modification of file data are achieved through Read and Write operati
 
 Alongside the target handle, the Read operation additionally takes the requested number of bytes to be read. If this exceeds the client’s buffer size, the request is limited accordingly and the client notified through the return code.
 
-If the FD is valid, its opening mode is checked to ensure the Read bit is set. The associated inode is then resolved through the inode index stored in the FD, and the current file offset is used to determine both the block at which reading begins and the offset within that block. This is calculated through integer division and remainder operations on the block size.
+If the FD is valid, its opening mode is checked to ensure the Read bit is set. The associated inode is then resolved through the index stored in the FD and the current file offset is used to determine both the block at which reading begins and the offset within that block. This is calculated through integer division and remainder operations on the block size.
 
+\newpage
 The operation then reads data from the resolved block, either through direct or indirect references as required, copying data into the client buffer until either the requested number of bytes has been read or the end of file is reached. If the end of a block is encountered first, the next referenced block in the inode is resolved and reading continues. Reaching the end of the file before satisfying the full request is returned as a partial success.
 
 Once complete, the FD’s offset is updated to reflect the new cursor position. This updated offset, together with the number of bytes read, is returned to the client alongside the return code.
 
 \textbf{Write}
 
-The Write operation similarly takes an FD handle and the number of bytes to write, validating both similarly to Read. A buffer containing the data to be written is also required, though this may be supplied either implicitly or explicitly depending on whether the synchronous or asynchronous interface is used.
+The Write operation also takes an FD handle and the number of bytes to write, validating both similarly to Read. A buffer containing the data to be written is also required, though this may be supplied either implicitly or explicitly depending on whether the synchronous or asynchronous interface is used.
 
 As with the Read operation, the starting block and offset within that block are calculated. Data from the client buffer is then copied into the file from that position onwards. If the end of a block is reached, writing continues into the next referenced block where one already exists.
 
-If writing reaches the end of the file and additional storage is required, further blocks are allocated, linked into the inode and used to continue the write. Once complete, the inode size metadata and FD offset are updated, and the new offset and number of bytes written are returned to the client. A partial write occurs only if additional blocks are required but no further blocks are available for allocation.
-\newpage
+If writing reaches the end of the file and additional storage is required, further blocks are allocated, linked into the inode and used to continue the write. Once complete, the inode size metadata and FD offset are updated and the new offset and number of bytes written are returned to the client. A partial write occurs only if additional blocks are required but no further blocks are available for allocation.
+
 \subsubsection{Metadata Access and Modification}
 
 Metadata access and modification operations are implemented through traversal and inspection of inode and directory structures, with updates applied where permitted.
 
 \textbf{Get Size and Get Permissions}
 
-These operations each take a single target path as a parameter and utilise the traversal function to resolve the target inode. Once the inode is acquired, Read permission is validated for the calling client and, if successful, the appropriate metadata field is extracted from the inode and returned.
+These operations each take a single target path as a parameter and utilise the traversal function to resolve the target inode. Once the inode is acquired, it is validated that the calling client has the necessary Read permission. If successful, the appropriate metadata field is extracted from the inode and returned.
 
 \textbf{Set Permissions}
 
-This operation follows the same approach, but additionally takes a new permission code to apply, represented as a bitmask constructed from the enum values shown in Listing~\ref{lst:permissions}. This allows permissions to be represented compactly within the inode, while still supporting efficient validation through bitwise operations.
+This operation follows the same approach, but additionally takes a new permission code to apply, represented as a bit code constructed from the \texttt{enum} values shown in Listing~\ref{lst:permissions}. This allows permissions to be represented compactly within the inode, while still supporting efficient validation through bitwise operations.
 
-\vspace{0.4cm}
+The permissions field in the inode is updated to this value only if the calling client ID matches the ID stored in the owner field; otherwise, a permissions error is returned.
+
+\newpage
 \begin{lstlisting}[caption={Permissions bitmask enum.}, label={lst:permissions}]
 typedef enum {
    PERM_PRIVATE = 0b000,
@@ -419,11 +428,9 @@ typedef enum {
 \end{lstlisting}
 \vspace{-0.2cm}
 
-The permissions field in the inode is updated to this value only if the calling client ID matches the ID stored in the owner field; otherwise, a permissions error is returned.
-
 \textbf{List} 
 
-The List operation similarly acquires the inode of the target path through traversal, but result generation is more involved than reading a single inode field. It first verifies that the target inode represents a directory, failing otherwise, and checks that the calling client holds the required Execute permission. It then iterates through the directory’s blocks, appending the path of each in-use directory entry to a result buffer, halting addition if continuing would exceed the client’s buffer capacity. 
+The List operation similarly acquires the inode of the target path through traversal, but result generation is more involved than reading a single inode field. It first verifies that the target inode represents a directory (failing otherwise)   and checks that the calling client holds the required Execute permission. It then iterates through the directory’s blocks, appending the name of each in-use directory entry to a result buffer, halting addition if continuing would exceed the client’s buffer capacity. 
 
 \textbf{Exists}
 
