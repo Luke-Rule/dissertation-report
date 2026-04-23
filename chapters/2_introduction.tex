@@ -62,9 +62,9 @@ Simultaneously, modern software and hardware architectures increasingly employ m
 \label{fig:coupled} 
 \end{figure}
 \newpage
-Microkernel design naturally aligns with these requirements. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly IPC across protected domains\cite{silberschatz2013operating}. 
+Microkernel design naturally aligns with these requirements. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly IPC across the protected domains\cite{silberschatz2013operating}. 
 
-The L4 microkernel\cite{liedtke_improving_1993} addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design; however, despite these advances, IPC overhead remains a fundamental performance bottleneck in microkernel-based systems \cite{liedtke_improving_1993}. By combining these performance improvements with strong security guarantees through formal verification, the seL4 microkernel\cite{klein_sel4_2009} represents a significant step towards real-world competitiveness, particularly in safety-critical domains\cite{heiser_l4_2016}.
+The L4 microkernel\cite{liedtke_improving_1993} addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design; however, despite these advances, IPC overhead remains a fundamental performance driver in microkernel-based systems \cite{liedtke_improving_1993}. By combining these performance improvements with strong security guarantees through formal verification, the seL4 microkernel\cite{klein_sel4_2009} represents a significant step towards real-world competitiveness, particularly in safety-critical domains\cite{heiser_l4_2016}.
 
 One of the most frequently accessed OS services is the File Server (FS), which acts as the primary interface for persistent storage and data exchange\cite{silberschatz2013operating}. FS operations are both latency-sensitive and IPC-intensive, making them critical to overall system performance in microkernel environments. In synchronous architectures even simple file operations may involve multiple IPC operations between the client and the FS, amplifying the impact of communication overhead.
 
@@ -74,7 +74,7 @@ In addition, beyond serving as an evaluation platform, the implementation consti
 
 \section{Aims and Objectives}
 
-Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems, this work aims to further mitigate IPC costs by reducing the number of interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space FS.
+Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems\cite{herlihy2020art}, this work aims to further mitigate IPC costs by reducing the number of interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space FS.
 \newpage
 
 This project has the following objectives:

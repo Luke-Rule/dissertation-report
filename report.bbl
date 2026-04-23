@@ -88,6 +88,11 @@ G.~Heiser and K.~Elphinstone, ``L4 {Microkernels}: {The} {Lessons} from 20
   {Years} of {Research} and {Deployment},'' \emph{ACM Trans. Comput. Syst.},
   vol.~34, no.~1, pp. 1:1--1:29, Apr. 2016.
 
+\bibitem{herlihy2020art}
+M.~Herlihy, N.~Shavit, V.~Luchangco, and M.~Spear, \emph{The art of
+  multiprocessor programming}.\hskip 1em plus 0.5em minus 0.4em\relax Newnes,
+  2020.
+
 \bibitem{hofmann_ensuring_2011}
 O.~S. Hofmann, A.~M. Dunn, S.~Kim, I.~Roy, and E.~Witchel, ``Ensuring operating
   system kernel integrity with {OSck},'' \emph{SIGARCH Comput. Archit. News},
@@ -133,6 +138,12 @@ J.~Liedtke, ``Improving {IPC} by kernel design,'' in \emph{Proceedings of the
   '93.\hskip 1em plus 0.5em minus 0.4em\relax New York, NY, USA: Association
   for Computing Machinery, Dec. 1993, pp. 175--188.
 
+\bibitem{liu2021scale}
+J.~Liu, A.~Rebello, Y.~Dai, C.~Ye, S.~Kannan, A.~C. Arpaci-Dusseau, and R.~H.
+  Arpaci-Dusseau, ``Scale and performance in a filesystem semi-microkernel,''
+  in \emph{Proceedings of the ACM SIGOPS 28th Symposium on Operating Systems
+  Principles}, 2021, pp. 819--835.
+
 \bibitem{mogul_effect_1991}
 J.~C. Mogul and A.~Borg, ``\BIBforeignlanguage{en}{The effect of context
   switches on cache performance},'' \emph{\BIBforeignlanguage{en}{ACM SIGPLAN
@@ -143,6 +154,12 @@ J.~C. Mogul and A.~Borg, ``\BIBforeignlanguage{en}{The effect of context
 Y.~Nakata, ``{ACL} vs {Capability},'' {Accessed}: 2026-04-18. [Online].
   Available: \url{https://www.chikuwa.it/blog/2023/capability/}
 \BIBentrySTDinterwordspacing
+
+\bibitem{novikov2018verification}
+E.~Novikov and I.~Zakharov, ``Verification of operating system monolithic
+  kernels without extensions,'' in \emph{International Symposium on Leveraging
+  Applications of Formal Methods}.\hskip 1em plus 0.5em minus 0.4em\relax
+  Springer, 2018, pp. 230--248.
 
 \bibitem{qemu}
 \BIBentryALTinterwordspacing

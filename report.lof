@@ -27,10 +27,13 @@
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Buffer management in asynchronous communication.}}{33}{figure.4.2}%
 \contentsline {figure}{\numberline {4.3}{\ignorespaces Path-based lookup through directory traversal.}}{39}{figure.4.3}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Average time per operation by batch size (Read and Write)}}{49}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Gradient of average time per operation by batch size (Read and Write)}}{50}{figure.5.2}%
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Total execution time per client by number of clients (Synchronous vs Asynchronous)}}{51}{figure.5.3}%
-\contentsline {figure}{\numberline {5.4}{\ignorespaces Client completion time variability (min - max) by number of clients}}{52}{figure.5.4}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Average ticks per operation by batch size (Read and Write)}}{49}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Gradient of average ticks per operation by batch size (Read and Write)}}{50}{figure.5.2}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Total ticks per client by number of clients (Synchronous vs Asynchronous)}}{51}{figure.5.3}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Range of client completion times (ticks) by number of clients}}{52}{figure.5.4}%
 \contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Synchronous}}}{52}{subfigure.4.1}%
 \contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Asynchronous}}}{52}{subfigure.4.2}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Normalised range of client completion times (ticks) by number of clients}}{52}{figure.5.5}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Synchronous}}}{52}{subfigure.5.1}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Asynchronous}}}{52}{subfigure.5.2}%
 \addvspace {10\p@ }

@@ -43,13 +43,13 @@ The primary goal of this evaluation was to compare the performance characteristi
 
 For the per-operation benchmarking, performance was evaluated using the average time per-operation, taken from the total execution time of a long sequence of the specified operation, to amortise any stochastic effects. For the more realistic workflows, time taken to complete the whole suite was used.
 
-Time measurement was performed using the CPU cycle counter, as the low-level execution environment did not provide native timing facilities. The cycle count was recorded before and after each client’s measurable operations and converted to elapsed time using the processor’s clock frequency. Results were averaged across multiple runs to mitigate run-to-run noise and improve reliability.
+Time measurement was performed using the CPU cycle counter, as the low-level execution environment did not provide native timing facilities. The cycle count was recorded before and after each client’s measurable operations. Results were averaged across multiple runs to mitigate run-to-run noise and improve reliability.
 
 In multiclient scenarios, fairness was also considered. This was validated by recording the total time taken by each client to complete its workload.
 
 \subsection{Experimental Setup}
 
-All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platform\cite{qemu}, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and FS state.
+All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platf-\newline orm\cite{qemu}, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and FS state.
 
 All operations were validated for correctness during execution to ensure that performance results reflected valid system behaviour rather than erroneous outcomes. During the varied workload, this processing also mimicked non-file I/O that would occur in a typical system, helping measured performance reflect realistic operating conditions.
 
@@ -60,7 +60,7 @@ Two benchmark suites were developed to evaluate system performance. The first wa
 This initial aim was achieved through a single-client benchmark which repeatedly executed a single type of operation allowing controlled measurements of individual operation costs for both systems. Both read and write operations were evaluated independently, as they are representative of common FS usage and exhibit differing behaviour. As timing was recorded from the client’s perspective, this included both internal server processing time and communication overhead.
  
 For the asynchronous implementation, the benchmark was executed with varying batch sizes. A batch size of one provided a baseline comparison, to ensure that the asynchronous design did not significantly degrade performance when batching was not possible, which is important as many real workloads contain inherent dependencies, while larger batch sizes allowed evaluation of how less IPC reduces per-operation cost.
-
+\newpage
 The second benchmark was a multiclient, realistic workload designed to simulate typical FS usage. Multiple clients executed independently, each performing a sequence of varied operations across many files. This sequence represented a complete file lifecycle. Operations were interleaved across clients to introduce contention and better reflect real-world usage patterns.
 
 As batching is central to the performance benefits of the asynchronous design, this benchmark was structured to allow batching where it would naturally occur, without artificially constraining the workload, as a workload with strict dependencies between operations would remove the asynchronous benefits and provide limited insight beyond the single-operation baseline benchmark. 
@@ -83,15 +83,17 @@ Performance was measured across varying numbers of clients, enabling analysis of
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{chapters/images/avg_operation_time_by_batch_size.png}
-    \caption{Average time per operation by batch size (Read and Write)}
+    \caption{Average ticks per operation by batch size (Read and Write)}
     \label{fig:avg_operation_time_by_batch_size}
 \end{figure}
 
-Figure~\ref{fig:avg_operation_time_by_batch_size} shows how the average time taken per operation is affected by batch size for both read and write operations, alongside the synchronous baseline for comparison. The synchronous system achieves 70~$\mu$s for writes and 58~$\mu$s for reads.
+Figure~\ref{fig:avg_operation_time_by_batch_size} shows how the average time taken per operation is affected by batch size for both read and write operations, alongside the synchronous baseline for comparison. The synchronous system achieves approximately 4375 cycles for writes and 3625 for reads.
 
-At a batch size of one, asynchronous performance is effectively identical to the synchronous case, with writes at 69~$\mu$s and reads at 57~$\mu$s. This confirms that negligible overhead is introduced in the absence of batching, validating that it can be used without performance degradation in more dependent workflows.
+At a batch size of one, asynchronous performance is effectively identical to the synchronous case, with writes and reads taking around 4313 and 3562 cycles, respectively. This confirms that negligible overhead is introduced in the absence of batching, validating that it can be used without performance degradation in more dependent workflows.
 
-As batch size increases, a substantial reduction in per-operation cost is observed, indicating that communication overhead forms a significant component of total operation latency. For write operations, latency decreases from 69~$\mu$s at batch size one to a minimum of 27~$\mu$s at batch sizes of seven and above, corresponding to an approximate 60\% reduction. Read operations, with less internal processing cost, exhibit an even greater relative improvement, decreasing from 57~$\mu$s to 17~$\mu$s, yielding reductions of 70\%.
+As batch size increases, a substantial reduction in per-operation cost is observed, indicating that communication overhead forms a significant component of total operation latency. For write operations, latency decreases to less than 1800 cycles at batch sizes of seven and above, corresponding to an approximate 60\% reduction. Read operations, with less internal processing cost, exhibit an even greater relative improvement, decreasing to around 1000 cycles, yielding reductions of 70\%.
+
+This aligns with expected results. At a batch size of 7, six IPC round trips are avoided. The total reduction of approximately 2500 cycles therefore corresponds to roughly 420 cycles saved per IPC round trip. This is consistent with the expected cost of IPC in seL4, at approximately 200 cycles per direction\cite{klein_sel4_2009}.
 
 The majority of this improvement occurs at relatively small batch sizes, with both the write and read operations exhibiting extremely similar trends, showing this that behaviour is consistent. 90\% of the total reduction seen was achieved by a batch size of 4, beyond this point, performance improvements become incremental, plateauing completely beyond a batch size of 7, as the system approaches its performance bound. This trend is further supported by Figure \ref{fig:avg_operation_time_gradient_by_batch_size}. The gradient magnitude of the per-operation time for both operations decreases rapidly as batch size increases, approaching zero at larger batch sizes.
 
@@ -99,7 +101,7 @@ The majority of this improvement occurs at relatively small batch sizes, with bo
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.68\linewidth]{chapters/images/avg_operation_time_gradient_by_batch_size.png}
-    \caption{Gradient of average time per operation by batch size (Read and Write)}
+    \caption{Gradient of average ticks per operation by batch size (Read and Write)}
     \label{fig:avg_operation_time_gradient_by_batch_size}
 \end{figure}
 \vspace{-0.3cm}
@@ -111,20 +113,18 @@ These results closely follow the analytical model discussed in section \ref{sec:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.71\linewidth]{chapters/images/total_execution_time_by_clients.png}
-    \caption{Total execution time per client by number of clients (Synchronous vs Asynchronous)}
+    \caption{Total ticks per client by number of clients (Synchronous vs Asynchronous)}
     \label{fig:total_execution_time_by_clients}
 \end{figure}
 \vspace{-0.2cm}
 
 Figure \ref{fig:total_execution_time_by_clients} shows the mean execution time per client as a function of the number of concurrent clients for both the synchronous and asynchronous systems. Across all client counts, both systems exhibit relatively stable performance, with the asynchronous design consistently outperforming the synchronous baseline. 
 
-For a single client, the synchronous system took approximately 232~ms to complete the suite, compared to 140~ms for the asynchronous system, representing a reduction of approximately 40\%. This improvement remains consistent as the number of clients increases. Expectedly, this reduction is lower than the single-operation benchmark, as there was less opportunity for batching due to dependencies between operations, and the presence of other non-file I/O processing reduced the proportion of time spent on IPC. However, the still substantial improvements across all client counts confirm that the benefits of reduced communication overhead are maintained at high levels of contentention and in more complex and realistic workloads.  
+For a single client, the synchronous system took approximately $14500000$ cycles to complete the suite, compared to around $8750000$ for the asynchronous system, representing a reduction of approximately 40\%. This improvement remains consistent as the number of clients increases. Expectedly, this reduction is lower than the single-operation benchmark, as there was less opportunity for batching due to dependencies between operations, and the presence of other non-file I/O processing reduced the proportion of time spent on IPC. However, the still substantial improvements across all client counts confirm that the benefits of reduced communication overhead are maintained at high levels of contentention and in more complex and realistic workloads.  
 
 Although there is some variation across client counts, it is minimal and exhibits no clear trend, suggesting that the workload scales predictably and that the systems remain robust as load increases.
-
-Fairness between clients is illustrated in Figure~\ref{fig:completion_variation_by_clients} through variation in client completion times. While this is a coarse measure, capturing only overall completion time rather than fairness during execution, it provides a basic check that no client is excessively delayed.
-
-Both systems exhibit very similar behaviour, with relatively low completion-time variation that increases modestly with client count, as expected under growing contention. Although the synchronous system shows slightly lower variation, the difference is minimal, implying that neither design exhibits a significant fairness issue or introduces disproportionate delays for individual clients.
+\newpage
+Fairness between clients is illustrated in Figure~\ref{fig:completion_variation_by_clients} through variation in client completion times. While this is a coarse measure, capturing only overall completion time rather than fairness during execution, it provides a basic check that no client is excessively delayed. Both systems exhibit very similar behaviour, with relatively low completion-time variation that increases modestly with client count, as expected under growing contention, as when the variation is averaged over the number of clients, this trend diminishes, as shown in Figure~\ref{fig:completion_variation_by_clients2}. 
 
 \begin{figure}[H]
     \centering
@@ -135,9 +135,25 @@ Both systems exhibit very similar behaviour, with relatively low completion-time
     \subfloat[Asynchronous]{%
     \includegraphics[width=0.49\linewidth]{chapters/images/async_completion_variation_by_clients.png}
     }
-    \caption{Client completion time variability (min - max) by number of clients}
+    \caption{Range of client completion times (ticks) by number of clients}
     \label{fig:completion_variation_by_clients}
 \end{figure}
 \vspace{-0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Synchronous]{%
+    \includegraphics[width=0.49\linewidth]{chapters/images/sync_completion_variation_by_clients2.png}
+    }
+    \hfill
+    \subfloat[Asynchronous]{%
+    \includegraphics[width=0.49\linewidth]{chapters/images/async_completion_variation_by_clients2.png}
+    }
+    \caption{Normalised range of client completion times (ticks) by number of clients}
+    \label{fig:completion_variation_by_clients2}
+\end{figure}
+\vspace{-0.2cm}
+
+Although the synchronous system shows slightly lower variations, the difference is minimal, implying that neither design exhibits a significant fairness issue or introduces disproportionate delays for individual clients.
 
 Overall, these results show that the asynchronous design can substantially reduce IPC overhead and improve performance where batching opportunities exist, while maintaining fairness comparable to the synchronous system and introducing negligible overhead when batching is not exploited.
