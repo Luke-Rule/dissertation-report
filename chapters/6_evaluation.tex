@@ -49,7 +49,7 @@ In multiclient scenarios, fairness was also considered. This was validated by re
 
 \subsection{Experimental Setup}
 
-All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platform, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and FS state.
+All experiments were conducted within the same emulated environment using QEMU's default \texttt{virt} platform\cite{qemu}, ensuring consistency across all tests. The synchronous and asynchronous implementations were evaluated under identical conditions, with the same workloads, file sizes and FS state.
 
 All operations were validated for correctness during execution to ensure that performance results reflected valid system behaviour rather than erroneous outcomes. During the varied workload, this processing also mimicked non-file I/O that would occur in a typical system, helping measured performance reflect realistic operating conditions.
 

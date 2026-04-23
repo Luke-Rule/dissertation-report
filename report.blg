@@ -14,59 +14,58 @@ A level-1 auxiliary file: chapters/6_evaluation.aux
 Reallocating 'name_of_file' (item size: 1) to 26 items.
 A level-1 auxiliary file: chapters/7_conclusion.aux
 Reallocating 'name_of_file' (item size: 1) to 5 items.
-Reallocating 'name_of_file' (item size: 1) to 9 items.
-The style file: IEEEtran.bst
+Reallocating 'name_of_file' (item size: 1) to 10 items.
+The style file: IEEEtranS.bst
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'wiz_functions' (item size: 4) to 6000 items.
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Database file #1: refs.bib
-Warning--I didn't find a database entry for ""
--- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- IEEEtranS.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+** Sorting version - not for normal IEEE work.
 
 Done.
-You've used 4 entries,
-            4087 wiz_defined-function locations,
-            847 strings with 8026 characters,
-and the built_in function-call counts, 1752 in all, are:
-= -- 118
-> -- 28
-< -- 3
-+ -- 12
-- -- 6
-* -- 89
-:= -- 312
-add.period$ -- 8
-call.type$ -- 4
-change.case$ -- 4
-chr.to.int$ -- 9
-cite$ -- 4
-duplicate$ -- 141
-empty$ -- 165
-format.name$ -- 7
-if$ -- 367
+You've used 34 entries,
+            4566 wiz_defined-function locations,
+            1108 strings with 14482 characters,
+and the built_in function-call counts, 28766 in all, are:
+= -- 2458
+> -- 768
+< -- 183
++ -- 391
+- -- 188
+* -- 1571
+:= -- 4289
+add.period$ -- 78
+call.type$ -- 34
+change.case$ -- 194
+chr.to.int$ -- 447
+cite$ -- 34
+duplicate$ -- 1875
+empty$ -- 2273
+format.name$ -- 207
+if$ -- 6503
 int.to.chr$ -- 0
-int.to.str$ -- 4
-missing$ -- 32
-newline$ -- 41
-num.names$ -- 4
-pop$ -- 101
+int.to.str$ -- 34
+missing$ -- 340
+newline$ -- 135
+num.names$ -- 70
+pop$ -- 972
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 161
 quote$ -- 2
-skip$ -- 119
+skip$ -- 2021
 stack$ -- 0
-substring$ -- 17
-swap$ -- 76
-text.length$ -- 0
+substring$ -- 1235
+swap$ -- 1402
+text.length$ -- 34
 text.prefix$ -- 0
-top$ -- 5
-type$ -- 4
+top$ -- 6
+type$ -- 332
 warning$ -- 0
-while$ -- 5
-width$ -- 5
-write$ -- 59
-(There was 1 warning)
+while$ -- 151
+width$ -- 36
+write$ -- 341

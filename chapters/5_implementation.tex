@@ -4,11 +4,11 @@ This section describes the implementation of the FS, building upon the designs p
 
 \section{Development Environment and Tools}
 
-The system was implemented in C using version 2.0.1 of the Microkit framework for seL4\cite{}. The build process was managed using a Make-based system, coordinating compilation, linking and image generation.
+The system was implemented in C using version 2.0.1 of the Microkit framework for seL4\cite{microkit_2_0_1}. The build process was managed using a Make-based system, coordinating compilation, linking and image generation.
 
-All development and testing were conducted in an emulated environment using QEMU\cite{}, targeting the \texttt{virt} generic virtual machine model. This allowed rapid iteration without requiring physical hardware.
+All development and testing were conducted in an emulated environment using QEMU, targeting the \texttt{virt} generic virtual machine model\cite{qemu}. This allowed rapid iteration without requiring physical hardware.
 
-Debugging and verification were primarily performed using logging via serial output, enabling inspection of system behaviour during execution. Additional support tools included Git\cite{} for version control and reproducibility of development progress.
+Debugging and verification were primarily performed using logging via serial output, enabling inspection of system behaviour during execution. Additional support tools included Git\cite{git} for version control and reproducibility of development progress.
 
 \section{Microkit Framework Setup}
 
@@ -97,7 +97,7 @@ To simplify usage and ensure consistent interaction with the FS, the communicati
 
 To reduce the number of parameters required for these library calls, each operation has a specific function that can be called, which accepts only the parameters required for that operation and returns an operation unique struct for access simplicity.
 
-For example, the \texttt{send\_open\_file\_request} function takes the desired access mode, a pointer to the file name and the address of the client’s shared buffer. It copies the file name into the buffer, constructs a new message containing the Open operation code and mode parameter, and invokes the FS. Upon completion, it forms and returns a \texttt{result\_code\_file\_id} struct from the FS response.
+For example, the \texttt{send\_open\_file\_request} function takes the desired access mode, a pointer to the file name and the address of the client’s shared buffer. It writes the file name into the buffer, constructs a new message containing the Open operation code and mode parameter, and invokes the FS. Upon completion, it forms and returns a \texttt{result\_code\_file\_id} struct from the FS response.
 
 \subsection{Asynchronous Server Model}
 
@@ -201,7 +201,7 @@ On the client side, once notified or after explicitly checking for completion, t
 
 Much of this communication complexity is abstracted, with dedicated wrappers for each operation providing a simple and consistent interface for interacting with the FS. 
 
-For example, \texttt{send\_open\_file\_request} takes a file name, the desired opening mode and a pointer to the client’s shared state structure. It first attempts to acquire a free submission buffer, failing if none are available, and copies the file name into the buffer. Using this buffer index and the supplied parameters, it constructs a \texttt{submission\_queue\_entry\_t}, inserts it into the submission queue if space is available and advances the submission queue tail. An appropriate result code is then returned to the client to indicate whether submission was successful.
+For example, \texttt{send\_open\_file\_request} takes a file name, the desired opening mode and a pointer to the client’s shared state structure. It first attempts to acquire a free submission buffer, failing if none are available, and writes the file name into the buffer. Using this buffer index and the supplied parameters, it constructs a \texttt{submission\_queue\_entry\_t}, inserts it into the submission queue if space is available and advances the submission queue tail. An appropriate result code is then returned to the client to indicate whether submission was successful.
 
 As request submission is non-blocking, additional helper functions are required both for notifying the server and for collecting results. Two notification mechanisms are provided. The first uses \texttt{microkit\_notify} to signal the FS and then returns immediately, allowing the client to continue execution when further independent work is available. The second is intended for situations where subsequent processing depends on completion of a submitted operation. In this case, \texttt{microkit\_ppcall} is used to suspend the client thread until the server has processed the request, similarly to the synchronous system. This is more efficient than busy waiting when no further useful work can be performed. Both the \texttt{notified} and \texttt{protected} server entry points then delegate to the same \texttt{service\_client} function, ensuring that request handling remains identical regardless of how servicing was triggered.
 

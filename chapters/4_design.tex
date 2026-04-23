@@ -8,7 +8,7 @@ The design of the file server is driven by both functional requirements and the 
 
 The design must also support multiple independent clients, preserving correctness and consistency in the presence of interleaved operations. In addition, the core FS must support both synchronous and asynchronous interface models, enabling direct comparison between the two approaches. In particular, the asynchronous design should allow efficient batching of operations to reduce IPC interactions and improve overall operation throughput.
 
-Several constraints significantly shape the design. The Microkit framework enforces a statically defined system configuration, meaning the number of clients and associated resources are fixed at system definition time, constraining dynamic adaptation. For development simplicity, the system also operates without persistent storage, resulting in a purely in-memory FS. Additionally, due to current seL4 constraints, execution is limited to a single core, restricting the exploitation of parallelism. As a result, the design relies on batching and efficient communication patterns, rather than parallel execution, to achieve performance improvements.
+Several constraints significantly shape the design. The Microkit framework enforces a statically defined system configuration, meaning the number of clients and associated resources are fixed at system definition time, constraining dynamic adaptation. For development simplicity, the system also operates without persistent storage, resulting in a purely in-memory FS. Additionally, at the time of development, Microkit was limited to execution on a single core, restricting the exploitation of parallelism. As a result, the design relies on batching and efficient communication patterns, rather than parallel execution, to achieve performance improvements.
 
 \section{IPC Design and File Server Interface}
 
@@ -67,7 +67,7 @@ By decoupling request submission from notification, this design implicitly enabl
 
 While batching can increase the latency of individual operations, it reduces overall IPC frequency and context switching, improving system throughput. Furthermore, the decoupled nature of the interaction allows client execution and server processing to overlap where possible, reducing unnecessary serialisation and enabling more efficient utilisation of system resources.
 
-The improvements can be understood through an analytical model of the system. Let $a_n$ denote the time taken for a batch of $n$ operations in the asynchronous system, then let $x$ represent the internal processing time per operation and $c$ represent the communication overhead a the batch.
+The improvements can be understood through an analytical model of the system. Let $a_n$ denote the time taken for a batch of $n$ operations in the asynchronous system, then let $x$ represent the internal processing time per operation and $c$ represent the communication overhead of a batch request.
 \newpage
 Therefore, the total execution time for an asynchronous batch of operations can be expressed as:
 

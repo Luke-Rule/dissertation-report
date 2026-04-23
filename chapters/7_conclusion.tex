@@ -29,16 +29,21 @@ However, if implemented on multi-core hardware, the asynchronicity provided by t
 
 \subsection{Single-Threaded Execution}
 
-The server and clients operate on a single thread, limiting concurrency and reducing the potential benefits of the asynchronous design. As a result, observed performance gains arise primarily from reduced communication overhead through batching rather than true parallel execution.
+The server and clients operate on a single thread, limiting concurrency and reducing the potential benefits of the asynchronous design. This reflects the execution environment used during development and evaluation, where multicore support was not available within Microkit. As a result, observed performance gains arise primarily from reduced communication overhead through batching rather than true parallel execution.
 
-This likely makes the measured gains a conservative estimate of the improvements achievable in a fully concurrent multicore system, where additional benefits from overlapping request generation, processing and response handling could be realised. The architecture is designed to be transferable to such an environment with only minor modification, once supported within seL4.
+This likely makes the measured gains a conservative estimate of the improvements achievable in a fully concurrent multicore system, where additional benefits from overlapping request generation, processing and response handling could be realised. The architecture is designed to be transferable to such an environment with only minor modification.
 
 \subsection{Additional Client Burden}
 
-The asynchronous design introduces additional client-side complexity through management of request queues, response buffers and batching decisions, increasing both per-client memory usage and implementation burden relative to the synchronous model.
+The asynchronous design introduces additional client-side complexity through management of request queues, response buffers and batching decisions, increasing both per-client memory usage and implementation burden relative to the synchronous model. 
 
+Furthermore, as Microkit requires shared memory regions to be statically defined, dynamic mapping of arbitrary memory objects is not possible. Consequently, all shared data must be passed via the predefined buffers, which may require additional copying, increasing operation latency.
+
+\newpage
 Although a supporting library abstracts much of this functionality, clients must still determine how to group operations into batches and when to synchronise, creating a workload-dependent trade-off between throughput and responsiveness. Thus, while the asynchronous model improves performance, it shifts part of the system complexity from the server to clients and may make correct usage more demanding.
 
 \section{Future Work}
 
-Future work should focus on extending the system to a multicore environment, when available, to fully realise concurrency benefits. Additionally, enhancing the FS to support a broader set of operations and more efficient data structures, such as tree-based indexing, would improve scalability, and introducing a caching layer and persistent storage would enable more realistic deployment scenarios. Finally, further exploration of IPC mechanisms, including hybrid synchronous–-asynchronous models and adaptive batching strategies, could also yield additional performance improvements. 
+Recent updates to Microkit have introduced multicore support, and future work would therefore aim to extend the system for a multicore environment to fully realise concurrency benefits. Alternatively, future work could attempt implementation of the FS directly on seL4, rather than through the Microkit framework, allowing more flexible, and possibly more efficient, memory management at the cost of development complexity. 
+
+Additionally, enhancing the FS to support a broader set of operations and more efficient data structures, namely tree-based indexing, would improve scalability, and introducing a caching layer and persistent storage would enable more realistic deployment scenarios. Finally, further exploration of IPC mechanisms, such as hybrid synchronous–-asynchronous models, could also yield additional performance improvements. 
