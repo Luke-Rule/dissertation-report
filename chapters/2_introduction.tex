@@ -3,9 +3,9 @@
 
 
 \section{Context and Motivation}
-Modern software systems are larger, more complex and more interconnected than ever before \cite{kleppmann_designing_2017}, placing significant demands upon the Operating Systems (OS) which underpin them. Contemporary mainstream operating systems, such as Windows and Linux are largely based upon monolithic kernel designs\footnote{macOS employs a `hybrid' kernel, but retains many monolithic characteristics\cite{singh_mac_2006}, and as such loses many of the security benefits typically associated with pure microkernel design.}\cite{tanenbaum_modern_2015}, where the majority of their functionality resides in a single, privileged address space. This key characteristic enables high performance, yet it comes at the cost of scalability, security and robustness, as it requires a large Trusted Computing Base (TCB) where a single fault can compromise the entire system\cite{tanenbaum_modern_2015}.
+Modern software systems are larger, more complex and more interconnected than ever before \cite{kleppmann_designing_2017}, placing significant demands upon the Operating Systems (OS) which underpin them. Contemporary mainstream operating systems, such as Windows and Linux are largely based upon monolithic kernel designs\footnote{macOS employs a `hybrid' kernel, but retains many monolithic characteristics~\cite{singh_mac_2006}, and as such loses many of the security benefits typically associated with pure microkernel design.}~\cite{tanenbaum_modern_2015}, where the majority of their functionality resides in a single, privileged address space. This key characteristic enables high performance, yet it comes at the cost of scalability, security and robustness, as it requires a large Trusted Computing Base (TCB) where a single fault can compromise the entire system~\cite{tanenbaum_modern_2015}.
 
-Simultaneously, modern software and hardware architectures increasingly employ modularity, isolation and concurrency: distributed systems, cloud-native microservices and data centre-scale applications all decompose functionality into loosely-coupled components\cite{kleppmann_designing_2017}, as illustrated in Figure \ref{fig:coupled}, and most current hardware performance scaling is driven by multi-core parallelism\cite{baumann_multikernel_2009}. These trends place pressure on OS design to provide stronger security guarantees and better support for concurrent, component-based execution.
+Simultaneously, modern software and hardware architectures increasingly employ modularity, isolation and concurrency: distributed systems, cloud-native microservices and data centre-scale applications all decompose functionality into loosely-coupled components~\cite{kleppmann_designing_2017}, as illustrated in Figure~\ref{fig:coupled}, and most current hardware performance scaling is driven by multi-core parallelism~\cite{baumann_multikernel_2009}. These trends place pressure on OS design to provide stronger security guarantees and better support for concurrent, component-based execution.
 \vspace{0.9cm}
 \begin{figure}[h]
 \centering
@@ -62,19 +62,19 @@ Simultaneously, modern software and hardware architectures increasingly employ m
 \label{fig:coupled} 
 \end{figure}
 \newpage
-Microkernel design naturally aligns with these requirements. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly IPC across the protected domains\cite{silberschatz2013operating}. 
+Microkernel design naturally aligns with these requirements. By minimising kernel functionality and moving most non-essential services, such as device drivers and file systems, into user space, microkernels reduce the TCB significantly and enforce separation between components. However, this modularity requires costly IPC across the protected domains~\cite{silberschatz2013operating}. 
 
-The L4 microkernel\cite{liedtke_improving_1993} addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design; however, despite these advances, IPC overhead remains a fundamental performance driver in microkernel-based systems \cite{liedtke_improving_1993}. By combining these performance improvements with strong security guarantees through formal verification, the seL4 microkernel\cite{klein_sel4_2009} represents a significant step towards real-world competitiveness, particularly in safety-critical domains\cite{heiser_l4_2016}.
+The L4 microkernel~\cite{liedtke_improving_1993} addressed this bottleneck by substantially reducing IPC costs through aggressive kernel minimisation and IPC fastpath design; however, despite these advances, IPC overhead remains a fundamental performance driver in microkernel-based systems \cite{liedtke_improving_1993}. By combining these performance improvements with strong security guarantees through formal verification, the seL4 microkernel~\cite{klein_sel4_2009} represents a significant step towards real-world competitiveness, particularly in safety-critical domains~\cite{heiser_l4_2016}.
 
-One of the most frequently accessed OS services is the File Server (FS), which acts as the primary interface for persistent storage and data exchange\cite{silberschatz2013operating}. FS operations are both latency-sensitive and IPC-intensive, making them critical to overall system performance in microkernel environments. In synchronous architectures even simple file operations may involve multiple IPC operations between the client and the FS, amplifying the impact of communication overhead.
+One of the most frequently accessed OS services is the File Server (FS), which acts as the primary interface for persistent storage and data exchange~\cite{silberschatz2013operating}. FS operations are both latency-sensitive and IPC-intensive, making them critical to overall system performance in microkernel environments. In synchronous architectures even simple file operations may involve multiple IPC operations between the client and the FS, amplifying the impact of communication overhead.
 
-This report presents the design and implementation of an asynchronous, multiclient FS for the seL4 micro-kernel, validates its correctness and usability, and evaluates its effectiveness in mitigating IPC overhead. The proposed architecture decouples request submission from response handling, reducing blocking behaviour, increasing concurrency and enabling the \textit{batching} of operations, where multiple requests may be combined and sent together. These properties have the potential to improve throughput and resource utilisation under both single and multiclient workloads, particularly when deployed on increasingly multicore machines\cite{tang_transparent_2022}, where parallel execution can be fully exploited. 
+This report presents the design and implementation of an asynchronous, multiclient FS for the seL4 micro-kernel, validates its correctness and usability, and evaluates its effectiveness in mitigating IPC overhead. The proposed architecture decouples request submission from response handling, reducing blocking behaviour, increasing concurrency and enabling the \textit{batching} of operations, where multiple requests may be combined and sent together. These properties have the potential to improve throughput and resource utilisation under both single and multiclient workloads, particularly when deployed on increasingly multicore machines~\cite{tang_transparent_2022}, where parallel execution can be fully exploited. 
 
-In addition, beyond serving as an evaluation platform, the implementation constitutes a practical, reusable system component, demonstrating how critical services can be structured within a microkernel environment using Microkit\cite{kocsis_sel4_2023}, seL4's component-based OS framework. 
+In addition, beyond serving as an evaluation platform, the implementation constitutes a practical, reusable system component, demonstrating how critical services can be structured within a microkernel environment using Microkit~\cite{kocsis_sel4_2023}, seL4's component-based OS framework. 
 
 \section{Aims and Objectives}
 
-Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems\cite{herlihy2020art}, this work aims to further mitigate IPC costs by reducing the number of interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space FS.
+Building upon the L4 family’s reduction of IPC overhead, and motivated by the increasing importance of concurrency in contemporary systems~\cite{herlihy2020art}, this work aims to further mitigate IPC costs by reducing the number of interactions required between components. In doing so, it also seeks to demonstrate the capabilities of the seL4 Microkit framework through the design and implementation of a flexible, user-space FS.
 \newpage
 
 This project has the following objectives:
@@ -89,7 +89,7 @@ This project has the following objectives:
             \item A benchmarking framework to evaluate asynchronous FS performance against a synchronous baseline under realistic workloads.
         \end{itemize}
     \item \textbf{Validate}: the correctness of the FS through comprehensive multi-level testing.
-    \item \textbf{Evaluate}: the effectiveness of the asynchronous FS architecture in reducing IPC overhead and improving performance, in terms of latency, throughput and scalability.
+    \item \textbf{Evaluate}: the effectiveness of the asynchronous FS architecture in reducing IPC overhead and improving performance in terms of latency, throughput and scalability.
 \end{itemize}
 
 
@@ -99,7 +99,7 @@ To evaluate the proposed implementation, this work considered both FS correctnes
 
 \section{Key Findings}
 
-The evaluation demonstrated that the asynchronous model introduced negligible overhead compared to synchronous execution when no batching was applied, with equivalent per-operation latencies. Crucially, as batching was introduced, significant improvements were observed, with up to a 70\% increase in operation throughput, showing that reducing IPC frequency can substantially improve performance. 
+The evaluation demonstrated that the asynchronous model introduced negligible overhead compared to synchronous execution when no batching was applied with equivalent per-operation latencies. Crucially, as batching was introduced, significant improvements were observed, with up to a 70\% increase in operation throughput, showing that reducing IPC frequency can substantially improve performance. 
 
 \section{Dissertation Structure}
 

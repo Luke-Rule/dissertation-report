@@ -38,8 +38,8 @@
 \contentsline {subsubsection}{inodes}{25}{subsubsection*.11}%
 \contentsline {subsubsection}{Directories}{26}{subsubsection*.12}%
 \contentsline {subsubsection}{File Descriptors}{27}{subsubsection*.13}%
-\contentsline {subsection}{\numberline {3.3.3}Request Processing Flow}{28}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Multiclient Support}{28}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.3}Multiclient Support}{28}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Request Processing Flow}{28}{subsection.3.3.4}%
 \contentsline {chapter}{\numberline {4}Implementation}{29}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Development Environment and Tools}{29}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Microkit Framework Setup}{29}{section.4.2}%
@@ -49,15 +49,15 @@
 \contentsline {subsubsection}{API}{32}{subsubsection*.15}%
 \contentsline {subsection}{\numberline {4.3.2}Asynchronous Server Model}{32}{subsection.4.3.2}%
 \contentsline {subsubsection}{Client-Server Communication}{32}{subsubsection*.16}%
-\contentsline {subsubsection}{API}{36}{subsubsection*.17}%
-\contentsline {section}{\numberline {4.4}File Server}{37}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Mechanisms}{37}{subsection.4.4.1}%
+\contentsline {subsubsection}{API}{35}{subsubsection*.17}%
+\contentsline {section}{\numberline {4.4}File Server}{36}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Data Structures and Access Mechanisms}{36}{subsection.4.4.1}%
 \contentsline {subsubsection}{Blocks}{37}{subsubsection*.18}%
 \contentsline {subsubsection}{inodes}{37}{subsubsection*.19}%
 \contentsline {subsubsection}{Directories}{38}{subsubsection*.20}%
-\contentsline {subsubsection}{File Descriptors}{40}{subsubsection*.21}%
-\contentsline {subsection}{\numberline {4.4.2}Operations}{41}{subsection.4.4.2}%
-\contentsline {subsubsection}{Namespace Mutation}{41}{subsubsection*.22}%
+\contentsline {subsubsection}{File Descriptors}{39}{subsubsection*.21}%
+\contentsline {subsection}{\numberline {4.4.2}Operations}{40}{subsection.4.4.2}%
+\contentsline {subsubsection}{Namespace Mutation}{40}{subsubsection*.22}%
 \contentsline {subsubsection}{Runtime State Management}{42}{subsubsection*.23}%
 \contentsline {subsubsection}{Data Movement}{43}{subsubsection*.24}%
 \contentsline {subsubsection}{Metadata Access and Modification}{44}{subsubsection*.25}%
@@ -85,4 +85,3 @@
 \contentsline {subsection}{\numberline {6.2.4}Single-Threaded Execution}{54}{subsection.6.2.4}%
 \contentsline {subsection}{\numberline {6.2.5}Additional Client Burden}{54}{subsection.6.2.5}%
 \contentsline {section}{\numberline {6.3}Future Work}{55}{section.6.3}%
-\contentsline {chapter}{Bibliography}{56}{chapter*.30}%

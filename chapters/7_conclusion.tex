@@ -7,7 +7,7 @@ This dissertation investigated whether IPC overhead in seL4-based systems could 
 
 This work contributes a complete and practical user-space file server for the seL4 Microkit framework, supporting multiclient access, a simple FS API and both synchronous and asynchronous communication interfaces. It demonstrates that complex, stateful services can be realised in user space within seL4 while maintaining structured interaction, correctness and practical usability.
 
-This work also contributes empirical insight into mitigation of IPC overhead through asynchronous communication. Evaluation showed that batching can substantially improve throughput and reduce average operation latency, while also demonstrating that these benefits are strongly workload-dependent.
+In addition, this work contributes empirical insight into mitigation of IPC overhead through asynchronous communication. Evaluation showed that batching can substantially improve throughput and reduce average operation latency by as much as 70\%, while also demonstrating that these benefits are strongly workload-dependent.
 
 \section{Drawbacks and Limitations}
 
@@ -23,15 +23,13 @@ Evaluation required the development of custom benchmarks due to the specialised 
 
 \subsection{Lack of Persistent Storage}
 
-The system operates entirely in memory, with no backing disk. Incorporating persistent storage would introduce substantial additional complexity, particularly around buffering, write-back policies and cache management, beyond the scope of this work. Its absence also results in highly deterministic and relatively low operation latencies. In realistic storage-backed systems, higher and more variable I/O latency would reduce the relative impact of IPC overhead, meaning these results likely represent an upper bound on the benefits of communication overhead reduction in practice.
-
-However, if implemented on multi-core hardware, the asynchronicity provided by this system could offset this reduced benefit through increased concurrency and non-blocking execution.
+The system operates entirely in memory, with no backing disk. Incorporating persistent storage would introduce substantial additional complexity, particularly around buffering, write-back policies and cache management, beyond the scope of this work. Its absence also results in highly deterministic and relatively low operation latencies. In realistic storage-backed systems, higher and more variable I/O latency would reduce the relative impact of IPC overhead, meaning these results likely represent an upper bound on the benefits of communication overhead reduction in practice. However, if implemented on multi-core hardware, the asynchronicity provided by this system could offset this reduced benefit through increased concurrency and non-blocking execution.
 
 \subsection{Single-Threaded Execution}
 
 The server and clients operate on a single thread, limiting concurrency and reducing the potential benefits of the asynchronous design. This reflects the execution environment used during development and evaluation, where multicore support was not available within Microkit. As a result, observed performance gains arise primarily from reduced communication overhead through batching rather than true parallel execution.
 
-This likely makes the measured gains a conservative estimate of the improvements achievable in a fully concurrent multicore system, where additional benefits from overlapping request generation, processing and response handling could be realised. The architecture is designed to be transferable to such an environment with only minor modification.
+This likely makes the measured gains a conservative estimate of the improvements achievable in a fully concurrent multicore system, where additional benefits from overlapping request generation, processing and response handling could be realised, with increased processor counts enabling greater potential for parallel work. The architecture is designed to be transferable to such an environment with only minor modification.
 
 \subsection{Additional Client Burden}
 
